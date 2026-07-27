@@ -1,0 +1,4 @@
+enum WorkspaceMode {
+  personal,
+  member,
+}

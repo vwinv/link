@@ -1,0 +1,643 @@
+{
+  "@@locale": "fr",
+  "appTitle": "DropOne",
+
+  "navCards": "Cartes",
+  "navScan": "Scan IA",
+  "navContacts": "Contacts",
+  "navProfile": "Profil",
+
+  "profileTitle": "Profil",
+  "profileSectionAccount": "COMPTE",
+  "profileSectionSettings": "RÉGLAGES",
+  "profileTeamSpace": "Espace équipe",
+  "profileManageWallet": "Gérer le Wallet",
+  "profileMyCards": "Mes cartes",
+  "profilePrivacy": "Confidentialité",
+  "privacyPolicyTitle": "Confidentialité",
+  "profileLogout": "Se déconnecter",
+  "profileDeleteAccount": "Supprimer le compte",
+  "profileLanguage": "Langue",
+  "profileEdit": "Modifier",
+  "profilePremiumTitle": "Passer à Premium",
+  "profilePremiumSubtitle": "Portfolio, designs pro, couleurs…",
+  "profileTeamConfigure": "Configurer votre équipe",
+  "profileTeamMembers": "{teamName} · {count} membres",
+  "@profileTeamMembers": {
+    "placeholders": {
+      "teamName": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
+  "profileCardsCount": "{count, plural, =1{1 carte} other{{count} cartes}}",
+  "@profileCardsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "profilePrivacySoon": "Paramètres de confidentialité bientôt disponibles",
+  "profileDeleteAccountTitle": "Supprimer le compte",
+  "profileDeleteAccountMessage": "Votre compte sera désactivé. Pour le récupérer, contactez-nous à contact@mega-sn.com.",
+  "profileDeleteAccountError": "Impossible de supprimer le compte pour le moment",
+  "profileCreateCardFirst": "Créez une carte pour commencer",
+  "profileCreateCardForWallet": "Créez une carte avant d’utiliser le Wallet",
+
+  "commonBack": "Retour",
+  "commonCancel": "Annuler",
+  "commonDelete": "Supprimer",
+  "commonSave": "Enregistrer",
+  "commonEdit": "Modifier",
+  "commonShare": "Partager",
+  "commonContinue": "Continuer",
+  "commonUnlock": "Débloquer",
+
+  "cardKindPersonal": "Carte perso",
+  "cardKindTeam": "Carte équipe",
+  "cardKindMember": "Carte membre",
+  "cardScopePersonal": "Personnelle",
+  "cardScopeProfessional": "Professionnelle",
+  "cardScopeMember": "Membre",
+  "cardScopePersonalShort": "Carte perso",
+  "cardScopeProfessionalShort": "Carte pro",
+  "cardScopeMemberShort": "Carte membre",
+
+  "myCardsGreeting": "Bonjour, {name} 👋",
+  "@myCardsGreeting": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "myCardsTitle": "Mes cartes",
+  "myCardsSharedContacts": "CONTACTS PARTAGÉS",
+  "myCardsSeeAll": "Tout voir",
+  "myCardsViews": "Vues",
+  "myCardsShares": "Partages",
+  "myCardsScans": "Scans",
+  "myCardsNoContacts": "Aucun contact pour le moment",
+  "myCardsProTitle": "Carte professionnelle",
+  "myCardsPersonalTitle": "Carte personnelle",
+  "myCardsPersonalSubtitle": "Créez votre carte personnelle pour partager vos coordonnées et développer votre réseau.",
+  "myCardsCreatePersonal": "Créer ma carte personnelle",
+  "myCardsProWithTeam": "Votre espace équipe est prêt. Finalisez votre carte professionnelle pour continuer.",
+  "myCardsProWithoutTeam": "Votre carte pro est liée à un espace équipe. Commencez par définir le nom, le logo et la couleur de marque.",
+  "myCardsCreatePro": "Créer ma carte pro",
+  "myCardsEditTeam": "Modifier l’équipe",
+  "myCardsContinueSetup": "Continuer la configuration",
+  "myCardsSetupTeam": "Configurer mon espace équipe",
+
+  "myCardTitle": "Ma carte",
+  "myCardSocialNetworks": "RÉSEAUX SOCIAUX",
+  "myCardPortfolio": "PORTFOLIO",
+  "myCardPortfolioLinked": "Votre portfolio est relié à cette carte.",
+  "myCardPortfolioPremium": "Reliez votre portfolio à la carte avec Premium",
+  "myCardSocialNotConfigured": "{platform} n’est pas encore configuré",
+  "@myCardSocialNotConfigured": {
+    "placeholders": {
+      "platform": { "type": "String" }
+    }
+  },
+  "myCardLinkOpenError": "Impossible d’ouvrir ce lien",
+
+  "pickCardTitle": "Choisir une carte",
+
+  "walletTitle": "Wallet",
+  "walletAddApple": "Ajouter à Apple Wallet",
+  "walletAddGoogle": "Ajouter à Google Wallet",
+  "walletSubtitle": "Accédez à votre carte depuis l’écran verrouillé, à tout moment.",
+  "walletAdding": "Ajout en cours...",
+  "walletAdded": "Carte ajoutée à {walletName}.",
+  "@walletAdded": {
+    "placeholders": {
+      "walletName": { "type": "String" }
+    }
+  },
+  "walletUnavailable": "Wallet non disponible sur cet appareil.",
+  "walletAddError": "Impossible d’ajouter la carte au Wallet.",
+  "walletAppleName": "Apple Wallet",
+  "walletGoogleName": "Google Wallet",
+
+  "editCardTitle": "Modifier ma carte",
+  "editCardSubtitle": "Ces informations apparaissent sur votre carte DropOne.",
+  "editCardFullName": "Nom complet",
+  "editCardJobTitle": "Fonction",
+  "editCardCompany": "Entreprise",
+  "editCardEmail": "E-mail",
+  "editCardPhone": "Téléphone",
+  "editCardCompanyLogo": "LOGO ENTREPRISE",
+  "editCardChangeLogo": "Changer le logo",
+  "editCardImportLogo": "Importer un logo",
+  "editCardLogoHint": "JPG, PNG · max 5 Mo",
+  "editCardRemoveLogo": "Supprimer le logo",
+  "editCardRemovePhoto": "Supprimer la photo",
+  "editCardSocialTitle": "RÉSEAUX SOCIAUX",
+  "editCardSocialSubtitle": "Ajoutez les liens à afficher sur votre carte.",
+  "editCardSaved": "Informations de la carte enregistrées",
+  "editCardSaveError": "Impossible d’enregistrer les informations",
+  "editCardNameRequired": "Nom requis",
+  "editCardEmailRequired": "E-mail requis",
+  "editCardEmailInvalid": "E-mail invalide",
+  "editCardNoCard": "Aucune carte à modifier",
+  "editCardGalleryError": "Impossible d’ouvrir la galerie : {message}",
+  "@editCardGalleryError": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+
+  "contactsTitle": "Contacts",
+  "contactsSearchHint": "Rechercher un contact",
+  "contactsCountZero": "Aucun contact enregistré",
+  "contactsCountOne": "1 contact enregistré",
+  "contactsCountMany": "{count} contacts enregistrés",
+  "@contactsCountMany": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "contactsAll": "TOUS LES CONTACTS",
+  "contactsScanPaperTitle": "Scanner une carte papier",
+  "contactsScanPaperSubtitle": "Numérisez un contact avec l’IA",
+  "contactsScanBannerTitle": "Scanner une carte de visite",
+  "contactsScanBannerSubtitle": "L’IA extrait les infos et crée un contact",
+  "contactsScanAction": "Scanner",
+  "contactsEmpty": "Aucun contact pour le moment",
+  "contactsEmptySearch": "Aucun résultat pour cette recherche",
+
+  "contactDetailTitle": "Fiche contact",
+  "contactDetailUntitled": "Contact",
+  "contactDetailViewCard": "Voir carte",
+  "contactDetailInfoTitle": "Informations",
+  "contactDetailJob": "Poste",
+  "contactDetailCompany": "Entreprise",
+  "contactDetailPhone": "Téléphone",
+  "contactDetailEmail": "Email",
+  "contactDetailSource": "Source",
+  "contactDetailAddedAt": "Ajouté le",
+  "contactDetailSourceExchange": "Échange Drop One",
+  "contactDetailSourceScan": "Scan IA",
+  "contactDetailUnavailable": "—",
+  "contactDetailActionsTitle": "Actions",
+  "contactDetailCall": "Appeler",
+  "contactDetailSendEmail": "Envoyer un email",
+  "contactDetailSendMessage": "Envoyer un message",
+  "contactDetailShare": "Partager le contact",
+  "contactDetailCopied": "Contact copié dans le presse-papiers",
+
+  "myCardsRecentContacts": "CONTACTS RÉCENTS",
+  "myCardsStatsSaved": "Enregistrées",
+  "myCardsNoContactsDot": "Aucun contact pour le moment.",
+  "myCardsSeeVisitors": "Voir les visiteurs",
+  "myCardsSeeVisitorsSubtitle": "Découvrez qui a vu votre carte",
+  "myCardsSeeStats": "Voir vos statistiques",
+  "myCardsSeeStatsSubtitle": "Découvrez qui a vu votre carte",
+  "myCardsMemberLogin": "Se connecter à mon espace membre",
+  "myCardsMemberLoginSubtitle": "Accédez à votre carte et votre équipe",
+
+  "memberHomeCardTab": "Ma carte",
+  "memberHomeTeamTab": "Mon équipe",
+  "memberHomeMyCardTitle": "Ma carte",
+  "memberHomeTeamTitle": "Mon équipe",
+  "memberHomeShare": "Partager",
+  "memberHomeWallet": "Wallet",
+  "memberHomeTotalViews": "Vues totales",
+  "memberHomeUniquePeople": "Personnes uniques",
+  "memberHomeViewersTitle": "Personnes ayant vu ma carte",
+  "memberHomeSeeAll": "Voir tout",
+  "memberHomeTeamOverview": "Aperçu de l’équipe",
+  "memberHomeMembersLabel": "Membres",
+  "memberHomeMembersListTitle": "Membres de l’équipe",
+  "memberHomeNoCard": "Aucune carte membre pour le moment.",
+  "memberHomeNoViewers": "Personne n’a encore vu votre carte.",
+  "memberHomeToday": "Aujourd’hui",
+  "memberHomeYesterday": "Hier",
+  "memberHomeDaysAgo": "{count}j",
+  "@memberHomeDaysAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "workspaceSwitchToPersonal": "Mon espace perso",
+  "workspaceStayMember": "Rester sur l’espace membre",
+  "workspaceMemberAccessBlocked": "Accès membre indisponible. Demandez une nouvelle invitation à votre équipe.",
+  "teamInviteScreenTitle": "Invitation à rejoindre une équipe",
+  "teamInvitationDeclinedBlocked": "Invitation refusée. L’accès membre est bloqué jusqu’à une nouvelle invitation.",
+
+  "cardAnalyticsTitle": "Statistiques",
+  "cardAnalyticsTotalViews": "Total views",
+  "cardAnalyticsUniqueVisitors": "Visiteurs uniques",
+  "cardAnalyticsSavedCards": "Cartes enregistrées",
+  "cardAnalyticsShares": "Partages",
+  "cardAnalyticsWeekChange": "{change}% cette semaine",
+  "@cardAnalyticsWeekChange": {
+    "placeholders": {
+      "change": { "type": "String" }
+    }
+  },
+  "cardAnalyticsPeriod7": "7 jours",
+  "cardAnalyticsPeriod30": "30 jours",
+  "cardAnalyticsPeriodCustom": "Personnaliser",
+  "cardAnalyticsScopeAll": "Tous",
+  "cardAnalyticsScopeTeam": "Équipe",
+  "cardAnalyticsScopePersonal": "Perso",
+  "cardAnalyticsScopeProfessional": "Professionnel",
+  "cardAnalyticsShowVisitors": "Afficher la liste des personnes qui ont vu votre carte",
+  "cardAnalyticsViewsEvolution": "Évolution des vues",
+  "cardAnalyticsDiscoverySources": "Sources de découverte",
+  "cardAnalyticsSeeAll": "Voir tout",
+  "cardAnalyticsRealtimeTip": "Les statistiques sont mises à jour en temps réel.",
+  "cardAnalyticsLoadError": "Impossible de charger les statistiques.",
+  "cardAnalyticsSourceQr": "QR Code",
+  "cardAnalyticsSourceShare": "Partage direct",
+  "cardAnalyticsSourceLink": "Lien",
+  "cardAnalyticsSourceNfc": "NFC",
+  "cardAnalyticsSourceApp": "Application",
+  "cardAnalyticsSourceOther": "Autres",
+
+  "cardVisitorsTitle": "Card views",
+  "cardVisitorsSearchHint": "Rechercher un visiteur...",
+  "cardVisitorsTotalViews": "Total views",
+  "cardVisitorsUnique": "Visiteurs uniques",
+  "cardVisitorsSaved": "Cartes enregistrées",
+  "cardVisitorsShares": "Partages",
+  "cardVisitorsFilterAll": "Tous",
+  "cardVisitorsFilterDropOne": "Drop One",
+  "cardVisitorsFilterGuest": "Sans compte",
+  "cardVisitorsToday": "AUJOURD’HUI",
+  "cardVisitorsYesterday": "HIER",
+  "cardVisitorsEmpty": "Aucun visiteur pour le moment.",
+  "cardVisitorsLoadError": "Impossible de charger les visiteurs.",
+
+  "cardVisitorDetailTitle": "Détails du visiteur",
+  "cardVisitorDetailAnonymousName": "Visiteur anonyme",
+  "cardVisitorDetailGuestBadge": "Sans compte Drop One",
+  "cardVisitorDetailAnonymousSubtitle": "Cette personne n'a pas encore de compte Drop One.",
+  "cardVisitorDetailAnonymousTip": "Une fois inscrit, vous pourrez voir son profil et entrer en contact.",
+  "cardVisitorDetailInviteCta": "Inviter sur Drop One",
+  "cardVisitorDetailInviteShort": "Inviter",
+  "cardVisitorDetailInviteBannerTitle": "Invitez ce visiteur",
+  "cardVisitorDetailInviteBannerBody": "Envoyez-lui une invitation pour qu'il rejoigne Drop One et échangez facilement.",
+  "cardVisitorDetailViewCard": "Voir carte",
+  "cardVisitorDetailConsultationTitle": "Informations de consultation",
+  "cardVisitorDetailDate": "Date",
+  "cardVisitorDetailTime": "Heure",
+  "cardVisitorDetailMethod": "Méthode",
+  "cardVisitorDetailDuration": "Temps passé",
+  "cardVisitorDetailLocation": "Localisation",
+  "cardVisitorDetailDevice": "Appareil",
+  "cardVisitorDetailSaved": "A enregistré votre carte",
+  "cardVisitorDetailShared": "A partagé votre carte",
+  "cardVisitorDetailYes": "Oui",
+  "cardVisitorDetailNo": "Non",
+  "cardVisitorDetailUnavailable": "—",
+  "cardVisitorDetailMethodQr": "QR Code",
+  "cardVisitorDetailMethodNfc": "NFC",
+  "cardVisitorDetailMethodShare": "Partage direct",
+  "cardVisitorDetailMethodApp": "Application",
+  "cardVisitorDetailMethodLink": "Lien partagé",
+  "cardVisitorDetailDurationSeconds": "{seconds} s",
+  "@cardVisitorDetailDurationSeconds": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "cardVisitorDetailDurationMinutes": "{minutes} min {seconds} s",
+  "@cardVisitorDetailDurationMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int" },
+      "seconds": { "type": "int" }
+    }
+  },
+  "cardVisitorDetailActionsTitle": "Actions",
+  "cardVisitorDetailSendMessage": "Envoyer un message",
+  "cardVisitorDetailAddContact": "Ajouter aux contacts",
+  "cardVisitorDetailShareProfile": "Partager son profil",
+  "cardVisitorDetailInviteShareSubject": "Rejoins-moi sur Drop One",
+  "cardVisitorDetailInviteShareText": "Salut ! Rejoins-moi sur Drop One pour échanger nos cartes facilement.\n\nTélécharge l'app :\n• iOS : {appStoreUrl}\n• Android : {playStoreUrl}\n\nMa carte : {cardUrl}",
+  "@cardVisitorDetailInviteShareText": {
+    "placeholders": {
+      "appStoreUrl": { "type": "String" },
+      "playStoreUrl": { "type": "String" },
+      "cardUrl": { "type": "String" }
+    }
+  },
+  "cardVisitorDetailMessageShareText": "Voici le profil Drop One de {name} : {url}",
+  "@cardVisitorDetailMessageShareText": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "url": { "type": "String" }
+    }
+  },
+  "cardVisitorDetailContactAdded": "{name} ajouté à vos contacts",
+  "@cardVisitorDetailContactAdded": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "cardVisitorDetailContactError": "Impossible d'ajouter ce contact.",
+
+  "scanTitle": "Scan IA",
+  "scanSubtitle": "Scannez une carte papier pour l'enregistrer.",
+  "scanScanCard": "Scanner la carte",
+  "scanAnalyzing": "Analyse de la carte…",
+  "scanNoTextDetected": "Aucun texte détecté. Reprenez la photo avec un meilleur éclairage.",
+  "scanUnreadableCard": "Carte difficile à lire. Vérifiez les champs avant d'enregistrer.",
+  "scanOwnCardError": "Vous ne pouvez pas scanner votre propre carte DropOne. Utilisez une carte papier d'un autre contact.",
+  "scanContactAddedNamed": "{name} ajouté à vos contacts",
+  "@scanContactAddedNamed": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "scanContactSavedToPhoneNamed": "{name} ajouté à vos contacts et au téléphone",
+  "@scanContactSavedToPhoneNamed": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "scanContactPhonePermissionDenied": "Contact enregistré. Autorisez l'accès aux contacts pour l'ajouter aussi au téléphone.",
+  "scanReviewTitle": "Vérifier le contact",
+  "scanReviewSubtitle": "Corrigez les informations extraites de la carte avant d'enregistrer.",
+  "scanReviewName": "Nom complet",
+  "scanReviewJobTitle": "Poste",
+  "scanReviewCompany": "Entreprise",
+  "scanReviewEmail": "E-mail",
+  "scanReviewPhone": "Téléphone",
+  "scanReviewSave": "Enregistrer",
+
+  "socialLinkedIn": "LinkedIn",
+  "socialInstagram": "Instagram",
+  "socialWhatsApp": "WhatsApp",
+  "socialX": "X",
+  "socialFacebook": "Facebook",
+
+  "commonSkip": "Passer",
+  "commonStart": "Commencer",
+  "commonRetry": "Réessayer",
+  "commonFinish": "Terminer",
+  "commonOrEmail": "ou par e-mail",
+  "commonIncluded": "Inclus",
+  "commonNotIncluded": "Non inclus",
+  "commonIncludedFeminine": "Incluse",
+  "commonUnlimited": "Illimités",
+  "commonGoHome": "Aller à l'accueil",
+  "commonAlreadyAccount": "Déjà un compte ? ",
+  "commonNoAccount": "Pas de compte ? ",
+  "commonEmailHint": "vous@exemple.com",
+  "commonPasswordHint": "••••••••",
+  "commonNameHint": "Alex Moreau",
+
+  "authLoginTitle": "Bon retour 👋",
+  "authLoginSubtitle": "Connectez-vous pour accéder à vos cartes.",
+  "authPassword": "Mot de passe",
+  "authPasswordRequired": "Mot de passe requis",
+  "authForgotPassword": "Mot de passe oublié ?",
+  "authForgotPasswordSoon": "Réinitialisation du mot de passe bientôt disponible",
+  "authSignIn": "Se connecter",
+  "authContinueApple": "Continuer avec Apple",
+  "authContinueGoogle": "Continuer avec Google",
+  "authGoogleNotConfigured": "Google Sign-In n’est pas configuré. Ajoutez vos identifiants OAuth.",
+  "authAppleNotConfigured": "Apple Sign-In n’est pas configuré sur le serveur.",
+  "authOAuthCancelled": "Connexion annulée",
+  "authCreateAccount": "Créer un compte",
+  "authRegisterTitle": "Créons votre compte",
+  "authRegisterSubtitle": "Quelques secondes et c'est prêt.",
+  "authFullNameRequired": "Nom complet requis",
+  "authPasswordMinLength": "Minimum 8 caractères",
+  "authCreateMyAccount": "Créer mon compte",
+  "authAccountDeleted": "Ce compte a été supprimé. Veuillez nous contacter au contact@mega-sn.com si vous voulez récupérer votre compte.",
+
+  "accountTypeTitle": "Comment allez-vous\nutiliser DropOne ?",
+  "accountTypeSubtitle": "Vous pourrez changer à tout moment.",
+  "accountTypePersonalTitle": "Pour moi",
+  "accountTypePersonalDescription": "Une carte personnelle pour réseauter et partager.",
+  "accountTypeTeamTitle": "Pour mon équipe",
+  "accountTypeTeamDescription": "Cartes de marque centralisées pour toute l'équipe.",
+  "accountTypeTeamBadge": "Équipe",
+  "accountTypeMemberLogin": "Se connecter en tant que membre",
+
+  "onboardingPage1Title": "Votre carte de visite,\ntoujours sur vous",
+  "onboardingPage1Description": "Créez une carte d'identité numérique élégante en moins de 2 minutes.",
+  "onboardingPage2Title": "Partagez en un instant",
+  "onboardingPage2Description": "QR code, AirDrop ou lien — sans application pour vos contacts.",
+  "onboardingPage3Title": "Gardez-la dans votre Wallet",
+  "onboardingPage3Description": "Ajoutez votre carte à Apple Wallet et accédez-y depuis l'écran verrouillé.",
+
+  "createCardPromptTitle": "Créons votre carte",
+  "createCardPromptSubtitle": "On démarre avec l'essentiel, vous\npersonnaliserez ensuite.",
+  "createCardPromptButton": "Créer ma carte",
+  "createCardHeaderTitle": "Nouvelle carte",
+  "createCardStepInfo": "Informations",
+  "createCardStepNetworks": "Réseaux",
+  "createCardStepPortfolio": "Portfolio",
+  "createCardYourInfoTitle": "Vos informations",
+  "createCardYourInfoSubtitle": "Elles apparaîtront sur votre carte.",
+  "createCardYourNetworksTitle": "Vos réseaux",
+  "createCardSkipStep": "Ignorer cette étape",
+  "createCardSuccessTitle": "Votre carte est prête !",
+  "createCardSuccessSubtitle": "Partagez-la ou ajoutez-la à votre Wallet dès maintenant.",
+  "createCardAddToWallet": "Ajouter au Wallet",
+  "walletAddedGeneric": "Carte ajoutée à votre Wallet.",
+
+  "shareCardTitle": "Partager ma carte",
+  "shareCardQrHint": "Faites scanner ce code — aucune app requise pour vos contacts.",
+  "shareOptionMessage": "Message",
+  "shareOptionAirDrop": "AirDrop",
+
+  "scanQuotaReached": "Quota de {max} scans IA atteint pour cette période.",
+  "@scanQuotaReached": {
+    "placeholders": {
+      "max": { "type": "int" }
+    }
+  },
+  "scanContactAdded": "Contact ajouté depuis le scan IA",
+  "scanRecordError": "Impossible d'enregistrer le scan",
+  "scanStart": "Lancer un scan",
+  "scanSeePremium": "Voir les offres Premium",
+  "scanUnlimited": "Scans illimités",
+  "scanNotIncluded": "Scan IA non inclus",
+  "scanUsedCount": "{used} / {max} scans utilisés",
+  "@scanUsedCount": {
+    "placeholders": {
+      "used": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+
+  "premiumTitle": "DropOne Premium",
+  "premiumStart": "Démarrer Premium",
+  "premiumProceedToPayment": "Procéder au paiement",
+  "premiumCheckoutRedirect": "Finalisez le paiement dans votre navigateur, puis revenez dans l'application.",
+  "premiumCheckoutLaunchError": "Impossible d'ouvrir la page de paiement",
+  "premiumRenewalNote": "Renouvellement automatique. Annulable à tout moment dans les réglages.",
+  "premiumLoadError": "Impossible de charger les offres.",
+  "premiumActivated": "Premium {title} ({price}) activé",
+  "@premiumActivated": {
+    "placeholders": {
+      "title": { "type": "String" },
+      "price": { "type": "String" }
+    }
+  },
+  "premiumSubscribeError": "Impossible de créer l'abonnement",
+  "premiumNoOffers": "Aucune offre configurée pour le moment",
+  "premiumFeatureType": "Type",
+  "premiumFeatureScans": "Scans IA",
+  "premiumFeatureUsers": "Utilisateurs",
+  "premiumFeatureCustomization": "Personnalisation",
+  "premiumFeaturePortfolio": "Portfolio",
+  "premiumFeatureWallet": "Wallet",
+  "premiumFeatureAnalytics": "Statistiques",
+  "premiumFeatureVisitors": "Visiteurs détaillés",
+  "premiumFeatureSocial": "Réseaux sociaux",
+  "premiumNoPricing": "Aucun tarif configuré",
+  "premiumAudienceTeam": "Équipe",
+  "premiumAudiencePersonal": "Personnel",
+  "premiumTeamMembers": "Jusqu'à {count} membres",
+  "@premiumTeamMembers": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "premiumScansPerPeriod": "{count} / période",
+  "@premiumScansPerPeriod": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "premiumOneUser": "1 utilisateur",
+  "premiumBadge": "Premium",
+  "premiumPortfolioLinked": "Portfolio relié à la carte",
+  "premiumSeeOffers": "Voir les offres Premium",
+  "premiumPortfolioSubtitle": "Reliez vos projets et réalisations à votre carte.",
+
+  "customizeTitle": "Personnaliser",
+  "customizeStyleSection": "STYLE DE CARTE",
+  "customizeOptionsSection": "OPTIONS",
+  "customizeSaved": "Carte enregistrée",
+  "customizeSyncError": "Modifications appliquées, synchronisation impossible",
+  "customizeProDesigns": "Designs professionnels",
+  "customizeProDesignsSubtitle": "Modèles premium prêts à l'emploi.",
+  "customizeShowQr": "Afficher le QR code",
+  "customizeCardBadge": "Badge de la carte",
+
+  "teamMembersLoadError": "Impossible de charger les membres",
+  "teamMembersSubscriptionRequired": "Un abonnement équipe actif est requis pour ajouter des membres.",
+  "teamMembersSeatLimitReached": "Limite de {max} sièges atteinte. Passez à une offre supérieure.",
+  "@teamMembersSeatLimitReached": {
+    "placeholders": {
+      "max": { "type": "int" }
+    }
+  },
+  "teamMembersAddTitle": "Ajouter un membre",
+  "teamMembersAddSubtitle": "Envoyez une invitation par e-mail. La personne devra l’accepter pour rejoindre l’équipe.",
+  "teamMembersFullNameHint": "Nina Ba",
+  "teamMembersJobTitleHint": "Commerciale",
+  "teamMembersEmailHint": "nina@megasn.com",
+  "teamMembersInvite": "Inviter",
+  "teamMembersSendInvitation": "Envoyer l’invitation",
+  "teamMembersSetAdmin": "Définir comme admin",
+  "teamMembersSetAdminSubtitle": "Peut gérer l’équipe et la marque.",
+  "teamMembersRemoveMember": "Retirer de l’équipe",
+  "teamMembersRemoveTitle": "Retirer ce membre ?",
+  "teamMembersRemoveMessage": "Voulez-vous retirer {name} de l’équipe ?",
+  "@teamMembersRemoveMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "teamMembersRemoveSuccess": "Membre retiré de l’équipe",
+  "teamMembersRemoveError": "Impossible de retirer ce membre",
+  "teamMembersCancelInvite": "Annuler l’invitation",
+  "teamMembersCancelInviteTitle": "Annuler l’invitation ?",
+  "teamMembersCancelInviteMessage": "Voulez-vous annuler l’invitation envoyée à {name} ?",
+  "@teamMembersCancelInviteMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "teamMembersCancelInviteSuccess": "Invitation annulée",
+  "teamMembersInviteSuccess": "Invitation envoyée",
+  "teamMembersInviteError": "Impossible d’envoyer l’invitation",
+  "teamMembersSectionTitle": "MEMBRES DE L’ÉQUIPE",
+  "teamMembersCount": "{count, plural, =1{1 membre} other{{count} membres}}",
+  "@teamMembersCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "teamMembersSeatsUsed": "Sièges utilisés",
+  "teamMembersStatusActive": "Actif",
+  "teamMembersStatusPending": "En attente",
+
+  "teamInvitationTitle": "Invitation équipe",
+  "teamInvitationMessage": "Vous avez été invité à rejoindre l’équipe {teamName}.",
+  "@teamInvitationMessage": {
+    "placeholders": {
+      "teamName": { "type": "String" }
+    }
+  },
+  "teamInvitationMessageWithInviter": "{inviterName} vous invite à rejoindre l’équipe {teamName}.",
+  "@teamInvitationMessageWithInviter": {
+    "placeholders": {
+      "inviterName": { "type": "String" },
+      "teamName": { "type": "String" }
+    }
+  },
+  "teamInvitationAccept": "Accepter",
+  "teamInvitationDecline": "Refuser",
+  "teamInvitationAccepted": "Vous avez rejoint {teamName}",
+  "@teamInvitationAccepted": {
+    "placeholders": {
+      "teamName": { "type": "String" }
+    }
+  },
+  "teamInvitationDeclined": "Invitation refusée",
+  "teamInvitationRespondError": "Impossible de répondre à l’invitation",
+
+  "setupTeamNameRequired": "Nom d’équipe requis",
+  "setupTeamNameLabel": "NOM DE L’ÉQUIPE",
+  "setupTeamNameHint": "Mega SN",
+  "setupTeamTitleCreate": "Configurez votre espace équipe",
+  "setupTeamTitleEdit": "Finalisez votre espace équipe",
+  "setupTeamSubtitleCreate": "Définissez le logo et la couleur des cartes de votre équipe.",
+  "setupTeamSubtitleEdit": "Reprennez la configuration de votre équipe ou passez à l’étape suivante.",
+  "setupTeamLogoLabel": "LOGO",
+  "setupTeamColorLabel": "COULEUR DES CARTES DE L’ÉQUIPE",
+  "setupTeamColorSubtitle": "Appliquée aux cartes de tous les membres de l’équipe.",
+  "setupTeamCreated": "Équipe « {name} » créée",
+  "@setupTeamCreated": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "setupTeamUpdated": "Équipe « {name} » mise à jour",
+  "@setupTeamUpdated": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "setupTeamCreateError": "Impossible de créer l’équipe",
+  "setupTeamAppRestart": "Relancez l’app complètement (arrêt + flutter run) puis réessayez.",
+
+  "proDesignsSubtitle": "30 modèles Premium prêts à l’emploi",
+  "proDesignsCardTypeSection": "TYPE DE CARTE",
+  "proDesignsConfiguringTeam": "Configuration de votre espace équipe…",
+  "proDesignsOpenTeamSetup": "Ouvrez la configuration équipe pour créer votre carte pro.",
+  "proDesignsTemplatesSection": "{count} MODÈLES · APERÇU EN TEMPS RÉEL",
+  "@proDesignsTemplatesSection": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "proDesignsCompanyColors": "Couleurs de l’entreprise",
+  "proDesignsCompanyColorsSubtitle": "Recolore les modèles compatibles avec votre charte",
+  "proDesignPreviewCompanyColorRequired": "Choisissez une couleur entreprise avant d’appliquer.",
+  "proDesignPreviewApplied": "Modèle {name} appliqué",
+  "@proDesignPreviewApplied": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "proDesignPreviewApplyError": "Impossible d’appliquer le modèle. Réessayez.",
+  "proDesignPreviewRecipientPreview": "Aperçu destinataire",
+  "proDesignPreviewUseTemplate": "Utiliser ce modèle"
+}
