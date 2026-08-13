@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:linkflutter/core/bootstrap/user_workspace_bootstrap.dart';
 import 'package:linkflutter/core/api/api_exception.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/core/l10n/l10n_extensions.dart';
+import 'package:linkflutter/core/media/image_pick_and_crop.dart';
 import 'package:linkflutter/l10n/app_localizations.dart';
 import 'package:linkflutter/core/utils/responsive.dart';
 import 'package:linkflutter/features/cards/widgets/brand_color_picker_sheet.dart';
@@ -35,7 +35,7 @@ class _SetupTeamScreenState extends State<SetupTeamScreen> {
     Color(0xFFBA68C8),
   ];
 
-  final _imagePicker = ImagePicker();
+  final _imagePickAndCrop = ImagePickAndCrop();
   final _colorScrollController = ScrollController();
   final _teamNameFocusNode = FocusNode();
   late final TextEditingController _teamNameController;
@@ -208,15 +208,11 @@ class _SetupTeamScreenState extends State<SetupTeamScreen> {
 
   Future<void> _pickLogo() async {
     try {
-      final picked = await _imagePicker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 88,
-        requestFullMetadata: false,
+      final path = await _imagePickAndCrop.pickAndCrop(
+        kind: ImageCropKind.logo,
       );
-      if (picked == null || !mounted) return;
-      setState(() => _logoFilePath = picked.path);
+      if (path == null || !mounted) return;
+      setState(() => _logoFilePath = path);
     } on PlatformException catch (error) {
       if (!mounted) return;
       final l10n = context.l10n;

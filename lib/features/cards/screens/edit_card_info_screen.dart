@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:linkflutter/config/routes/app_navigation.dart';
 import 'package:linkflutter/core/api/api_exception.dart';
 import 'package:linkflutter/core/bootstrap/user_workspace_bootstrap.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/core/l10n/l10n_extensions.dart';
+import 'package:linkflutter/core/media/image_pick_and_crop.dart';
 import 'package:linkflutter/core/utils/responsive.dart';
 import 'package:linkflutter/features/cards/models/business_card.dart';
 import 'package:linkflutter/features/cards/models/card_draft.dart';
@@ -19,6 +19,7 @@ import 'package:linkflutter/features/cards/services/cards_api_service.dart';
 import 'package:linkflutter/features/cards/widgets/create_card_avatar_picker.dart';
 import 'package:linkflutter/features/cards/widgets/social_network_tile.dart';
 import 'package:linkflutter/features/uploads/services/uploads_api_service.dart';
+import 'package:linkflutter/features/subscriptions/widgets/premium_unlock_banner.dart';
 import 'package:linkflutter/providers/auth_provider.dart';
 import 'package:linkflutter/providers/cards_provider.dart';
 import 'package:linkflutter/providers/subscriptions_provider.dart';
@@ -52,7 +53,7 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
   String? _avatarFilePath;
   String? _existingAvatarUrl;
   var _avatarRemoved = false;
-  final _imagePicker = ImagePicker();
+  final _imagePickAndCrop = ImagePickAndCrop();
   final _socialControllers = <CardSocialPlatform, TextEditingController>{};
   List<SocialLinkDraft> _socialLinks = SocialLinkDraft.initialDefaults();
   List<SocialLinkDraft> _initialSocialLinks = SocialLinkDraft.initialDefaults();
@@ -395,16 +396,12 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
 
   Future<void> _pickAvatar() async {
     try {
-      final picked = await _imagePicker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 88,
-        requestFullMetadata: false,
+      final path = await _imagePickAndCrop.pickAndCrop(
+        kind: ImageCropKind.avatar,
       );
-      if (picked == null || !mounted) return;
+      if (path == null || !mounted) return;
       setState(() {
-        _avatarFilePath = picked.path;
+        _avatarFilePath = path;
         _avatarRemoved = false;
       });
     } on PlatformException catch (error) {
@@ -428,16 +425,12 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
 
   Future<void> _pickLogo() async {
     try {
-      final picked = await _imagePicker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 88,
-        requestFullMetadata: false,
+      final path = await _imagePickAndCrop.pickAndCrop(
+        kind: ImageCropKind.logo,
       );
-      if (picked == null || !mounted) return;
+      if (path == null || !mounted) return;
       setState(() {
-        _logoFilePath = picked.path;
+        _logoFilePath = path;
         _logoRemoved = false;
       });
     } on PlatformException catch (error) {
@@ -716,40 +709,10 @@ class _SocialPremiumLock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: AppColors.inputFill,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.premiumFeatureSocial,
-            style: TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: context.rs(AppFontSize.md),
-              fontWeight: AppFontWeight.semiBold,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            l10n.premiumSeeOffers,
-            style: TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: context.rs(AppFontSize.sm),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          LinkPrimaryButton(
-            label: l10n.premiumStart,
-            onPressed: onUnlock,
-          ),
-        ],
-      ),
+    return PremiumUnlockBanner(
+      title: l10n.premiumSocialUnlock,
+      subtitle: l10n.premiumSeeOffers,
+      onTap: onUnlock,
     );
   }
 }

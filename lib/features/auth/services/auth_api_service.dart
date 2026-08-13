@@ -31,10 +31,7 @@ class AuthApiService {
   }) async {
     final response = await _apiClient.post(
       '/auth/login',
-      body: {
-        'email': email,
-        'password': password,
-      },
+      body: {'email': email, 'password': password},
     );
 
     return _parseAuthResponse(response);

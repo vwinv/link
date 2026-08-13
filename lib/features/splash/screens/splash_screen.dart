@@ -26,6 +26,16 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _init() async {
+    try {
+      await _boot().timeout(const Duration(seconds: 18));
+    } catch (_) {
+      // Ne jamais rester bloqué sur le splash (simulateur iOS, API down, etc.).
+    }
+    if (!mounted) return;
+    _goNext();
+  }
+
+  Future<void> _boot() async {
     final auth = context.read<AuthProvider>();
     final onboarding = context.read<OnboardingProvider>();
     final accountType = context.read<AccountTypeProvider>();
@@ -39,20 +49,28 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (!mounted) return;
 
-    await context.read<DeepLinkService>().ensureReady();
-    final pendingSlug = context.read<DeepLinkService>().consumePendingSlug();
-    if (pendingSlug != null) {
-      if (auth.isAuthenticated) {
-        await ensureUserWorkspaceLoaded(context);
-      }
-      if (!mounted) return;
-      context.go('${RoutePaths.publicCard}/$pendingSlug');
-      return;
-    }
+    await context.read<DeepLinkService>().ensureReady().timeout(
+      const Duration(seconds: 3),
+      onTimeout: () {},
+    );
+    if (!mounted) return;
 
     if (auth.isAuthenticated) {
       await bootstrapUserWorkspace(context);
-      if (!mounted) return;
+    }
+  }
+
+  void _goNext() {
+    final auth = context.read<AuthProvider>();
+    final onboarding = context.read<OnboardingProvider>();
+    final accountType = context.read<AccountTypeProvider>();
+    final pendingSlug = context.read<DeepLinkService>().consumePendingSlug();
+
+    if (pendingSlug != null) {
+      context.go('${RoutePaths.publicCard}/$pendingSlug');
+      return;
+    }
+    if (auth.isAuthenticated) {
       context.go(RoutePaths.home);
     } else if (!onboarding.hasCompletedOnboarding) {
       context.go(RoutePaths.onboarding);

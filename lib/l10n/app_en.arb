@@ -12,6 +12,11 @@
   "profileSectionSettings": "SETTINGS",
   "profileTeamSpace": "Team space",
   "profileManageWallet": "Manage Wallet",
+  "profileNotifications": "Notifications",
+  "notificationsTitle": "Notifications",
+  "notificationsEmpty": "No notifications yet",
+  "notificationsLoadError": "Unable to load notifications",
+  "notificationsMarkAllRead": "Mark all read",
   "profileMyCards": "My cards",
   "profilePrivacy": "Privacy",
   "privacyPolicyTitle": "Privacy",
@@ -406,6 +411,21 @@
   "shareCardQrHint": "Have this code scanned — no app required for your contacts.",
   "shareOptionMessage": "Message",
   "shareOptionAirDrop": "AirDrop",
+  "shareQuotaReached": "Share quota of {max} reached.",
+  "@shareQuotaReached": {
+    "placeholders": {
+      "max": { "type": "int" }
+    }
+  },
+  "shareQuotaUsed": "{used} / {max} shares",
+  "@shareQuotaUsed": {
+    "placeholders": {
+      "used": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "shareSeePremium": "Upgrade to Premium",
+  "shareBlockedHint": "Upgrade to Premium for unlimited sharing.",
 
   "scanQuotaReached": "Quota of {max} AI scans reached for this period.",
   "scanContactAdded": "Contact added from AI scan",
@@ -435,10 +455,43 @@
   "premiumFeatureAnalytics": "Analytics",
   "premiumFeatureVisitors": "Detailed visitors",
   "premiumFeatureSocial": "Social networks",
+  "premiumSocialUnlock": "Add your social networks with Premium",
+  "premiumSocialSubtitle": "LinkedIn, Instagram, WhatsApp and more.",
   "premiumNoPricing": "No pricing configured",
   "premiumAudienceTeam": "Team",
   "premiumAudiencePersonal": "Personal",
   "premiumTeamMembers": "Up to {count} members",
+  "@premiumTeamMembers": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "premiumSeatsFrom": "From {min} users",
+  "@premiumSeatsFrom": {
+    "placeholders": {
+      "min": { "type": "int" }
+    }
+  },
+  "premiumSeatsRange": "From {min} to {max} users",
+  "@premiumSeatsRange": {
+    "placeholders": {
+      "min": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "premiumSeatsPickerTitle": "Number of users",
+  "premiumSeatsIncludedHint": "{count} included — cannot decrease",
+  "@premiumSeatsIncludedHint": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "premiumSeatsTotal": "Total: {amount}",
+  "@premiumSeatsTotal": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
   "premiumScansPerPeriod": "{count} / period",
   "premiumOneUser": "1 user",
   "premiumBadge": "Premium",

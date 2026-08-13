@@ -39,6 +39,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileManageWallet => 'Manage Wallet';
 
   @override
+  String get profileNotifications => 'Notifications';
+
+  @override
+  String get notificationsTitle => 'Notifications';
+
+  @override
+  String get notificationsEmpty => 'No notifications yet';
+
+  @override
+  String get notificationsLoadError => 'Unable to load notifications';
+
+  @override
+  String get notificationsMarkAllRead => 'Mark all read';
+
+  @override
   String get profileMyCards => 'My cards';
 
   @override
@@ -1080,6 +1095,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareOptionAirDrop => 'AirDrop';
 
   @override
+  String shareQuotaReached(int max) {
+    return 'Share quota of $max reached.';
+  }
+
+  @override
+  String shareQuotaUsed(int used, int max) {
+    return '$used / $max shares';
+  }
+
+  @override
+  String get shareSeePremium => 'Upgrade to Premium';
+
+  @override
+  String get shareBlockedHint => 'Upgrade to Premium for unlimited sharing.';
+
+  @override
   String scanQuotaReached(int max) {
     return 'Quota of $max AI scans reached for this period.';
   }
@@ -1168,6 +1199,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get premiumFeatureSocial => 'Social networks';
 
   @override
+  String get premiumSocialUnlock => 'Add your social networks with Premium';
+
+  @override
+  String get premiumSocialSubtitle => 'LinkedIn, Instagram, WhatsApp and more.';
+
+  @override
   String get premiumNoPricing => 'No pricing configured';
 
   @override
@@ -1179,6 +1216,29 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String premiumTeamMembers(int count) {
     return 'Up to $count members';
+  }
+
+  @override
+  String premiumSeatsFrom(int min) {
+    return 'From $min users';
+  }
+
+  @override
+  String premiumSeatsRange(int min, int max) {
+    return 'From $min to $max users';
+  }
+
+  @override
+  String get premiumSeatsPickerTitle => 'Number of users';
+
+  @override
+  String premiumSeatsIncludedHint(int count) {
+    return '$count included — cannot decrease';
+  }
+
+  @override
+  String premiumSeatsTotal(String amount) {
+    return 'Total: $amount';
   }
 
   @override

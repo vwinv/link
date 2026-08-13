@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:linkflutter/core/api/api_exception.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/core/l10n/l10n_extensions.dart';
+import 'package:linkflutter/core/media/image_pick_and_crop.dart';
 import 'package:linkflutter/core/utils/responsive.dart';
 import 'package:linkflutter/features/teams/models/team.dart';
 import 'package:linkflutter/features/teams/models/team_member.dart';
@@ -34,7 +34,7 @@ class _AddTeamMemberScreenState extends State<AddTeamMemberScreen> {
   final _fullNameController = TextEditingController();
   final _jobTitleController = TextEditingController();
   final _emailController = TextEditingController();
-  final _imagePicker = ImagePicker();
+  final _imagePickAndCrop = ImagePickAndCrop();
 
   String? _avatarFilePath;
   var _isAdmin = false;
@@ -82,15 +82,11 @@ class _AddTeamMemberScreenState extends State<AddTeamMemberScreen> {
 
   Future<void> _pickAvatar() async {
     try {
-      final picked = await _imagePicker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 88,
-        requestFullMetadata: false,
+      final path = await _imagePickAndCrop.pickAndCrop(
+        kind: ImageCropKind.avatar,
       );
-      if (picked == null || !mounted) return;
-      setState(() => _avatarFilePath = picked.path);
+      if (path == null || !mounted) return;
+      setState(() => _avatarFilePath = path);
     } on PlatformException catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

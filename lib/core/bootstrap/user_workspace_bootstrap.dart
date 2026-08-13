@@ -5,6 +5,7 @@ import 'package:linkflutter/providers/cards_provider.dart';
 import 'package:linkflutter/providers/contacts_provider.dart';
 import 'package:linkflutter/providers/create_card_provider.dart';
 import 'package:linkflutter/providers/subscriptions_provider.dart';
+import 'package:linkflutter/providers/notifications_provider.dart';
 import 'package:linkflutter/providers/teams_provider.dart';
 import 'package:linkflutter/providers/workspace_mode_provider.dart';
 import 'package:provider/provider.dart';
@@ -40,6 +41,7 @@ void resetUserWorkspace(BuildContext context) {
     workspace: context.read<WorkspaceModeProvider>(),
   );
   context.read<SubscriptionsProvider>().clear();
+  context.read<NotificationsProvider>().clear();
 }
 
 /// Charge l'espace utilisateur sans réinitialiser l'état en mémoire.

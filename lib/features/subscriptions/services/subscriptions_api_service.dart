@@ -38,6 +38,7 @@ class SubscriptionsApiService {
     required String offerSlug,
     required String billingType,
     String? teamId,
+    int? seats,
   }) async {
     final response = await _apiClient.post(
       '/subscriptions/subscribe',
@@ -46,6 +47,7 @@ class SubscriptionsApiService {
         'offerSlug': offerSlug,
         'billingType': billingType,
         if (teamId != null) 'teamId': teamId,
+        if (seats != null) 'seats': seats,
       },
     );
     return UserSubscription.fromJson(response);
@@ -55,6 +57,7 @@ class SubscriptionsApiService {
     required String offerSlug,
     required String billingType,
     String? teamId,
+    int? seats,
   }) async {
     final response = await _apiClient.post(
       '/subscriptions/checkout',
@@ -63,8 +66,59 @@ class SubscriptionsApiService {
         'offerSlug': offerSlug,
         'billingType': billingType,
         if (teamId != null) 'teamId': teamId,
+        if (seats != null) 'seats': seats,
       },
     );
     return CheckoutSession.fromJson(response);
+  }
+
+  Future<SoftPayResult> softPay({
+    required String offerSlug,
+    required String billingType,
+    required String invoiceToken,
+    required String method,
+    required String prenom,
+    required String nom,
+    required String telephone,
+    String? email,
+    String? teamId,
+    int? seats,
+  }) async {
+    final response = await _apiClient.post(
+      '/subscriptions/softpay',
+      authenticated: true,
+      body: {
+        'offerSlug': offerSlug,
+        'billingType': billingType,
+        'invoiceToken': invoiceToken,
+        'method': method,
+        'prenom': prenom,
+        'nom': nom,
+        'telephone': telephone,
+        if (email != null && email.isNotEmpty) 'email': email,
+        if (teamId != null) 'teamId': teamId,
+        if (seats != null) 'seats': seats,
+      },
+    );
+    return SoftPayResult.fromJson(response);
+  }
+
+  Future<({bool paid, UserSubscription? subscription})> confirmPaydunya({
+    required String invoiceToken,
+  }) async {
+    final encoded = Uri.encodeQueryComponent(invoiceToken);
+    final response = await _apiClient.get(
+      '/subscriptions/paydunya/confirm?invoiceToken=$encoded',
+      authenticated: true,
+    );
+    final paid = response['paid'] == true;
+    UserSubscription? subscription;
+    final raw = response['subscription'];
+    if (raw is Map<String, dynamic>) {
+      subscription = UserSubscription.fromJson(raw);
+    } else if (raw is Map) {
+      subscription = UserSubscription.fromJson(Map<String, dynamic>.from(raw));
+    }
+    return (paid: paid, subscription: subscription);
   }
 }

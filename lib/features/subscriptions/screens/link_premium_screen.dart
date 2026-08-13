@@ -11,10 +11,12 @@ import 'package:linkflutter/features/subscriptions/models/offer_entitlements.dar
 import 'package:linkflutter/features/subscriptions/models/premium_offer.dart';
 import 'package:linkflutter/features/subscriptions/models/premium_offer_price.dart';
 import 'package:linkflutter/features/subscriptions/services/subscriptions_api_service.dart';
+import 'package:linkflutter/features/subscriptions/widgets/payment_billing_picker_sheet.dart';
+import 'package:linkflutter/features/subscriptions/widgets/soft_pay_sheet.dart';
+import 'package:linkflutter/providers/auth_provider.dart';
 import 'package:linkflutter/providers/subscriptions_provider.dart';
 import 'package:linkflutter/providers/teams_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class LinkPremiumScreen extends StatefulWidget {
   const LinkPremiumScreen({
@@ -33,10 +35,11 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
   List<PremiumOffer> _offers = [];
   String? _selectedOfferId;
   String? _selectedPriceId;
+  final Map<String, String> _priceByOfferId = {};
   bool _isLoading = true;
   bool _isSubscribing = false;
   bool _loadFailed = false;
-  bool _useStripeCheckout = false;
+  bool _usePaydunyaSoftPay = false;
 
   @override
   void initState() {
@@ -83,12 +86,22 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
         }
       }
       selectedOffer ??= offers.isNotEmpty ? offers.first : null;
+      final initialPrice = selectedOffer?.preferredPrice;
 
       setState(() {
         _offers = offers;
+        _priceByOfferId
+          ..clear()
+          ..addEntries(
+            offers
+                .where((offer) => offer.preferredPrice != null)
+                .map(
+                  (offer) => MapEntry(offer.id, offer.preferredPrice!.id),
+                ),
+          );
         _selectedOfferId = selectedOffer?.id;
-        _selectedPriceId = selectedOffer?.popularPrice?.id;
-        _useStripeCheckout = PaymentsConfig.useStripeCheckout(paymentsEnabled);
+        _selectedPriceId = initialPrice?.id;
+        _usePaydunyaSoftPay = PaymentsConfig.usePaydunyaSoftPay(paymentsEnabled);
         _isLoading = false;
       });
     } catch (_) {
@@ -98,6 +111,17 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
         _loadFailed = true;
       });
     }
+  }
+
+  PremiumOfferPrice? _priceForOffer(PremiumOffer offer) {
+    final rememberedId = _priceByOfferId[offer.id];
+    if (rememberedId != null) {
+      for (final price in offer.prices) {
+        if (price.id == rememberedId) return price;
+      }
+    }
+    return offer.preferredPrice ??
+        (offer.prices.isNotEmpty ? offer.prices.first : null);
   }
 
   PremiumOffer? get _selectedOffer {
@@ -126,46 +150,98 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
     final teamId = selectedOffer.audience.isTeam
         ? context.read<TeamsProvider>().myTeam?.id
         : null;
+    final seats = selectedOffer.hasPerSeatPricing && selectedPrice.isPerSeat
+        ? selectedOffer.minSeats
+        : null;
+
+    final billingChoices = PaymentBillingChoice.forOffer(
+      offer: selectedOffer,
+      selectedPrice: selectedPrice,
+      seats: seats ?? selectedOffer.minSeats,
+    );
+    final billingChoice = await PaymentBillingPickerSheet.show(
+      context: context,
+      offerTitle: selectedOffer.title,
+      choices: billingChoices,
+    );
+    if (!mounted || billingChoice == null) return;
 
     setState(() => _isSubscribing = true);
 
     try {
-      if (_useStripeCheckout) {
-        final session = await context
-            .read<SubscriptionsApiService>()
-            .createCheckoutSession(
-              offerSlug: selectedOffer.slug,
-              billingType: selectedPrice.billingType,
-              teamId: teamId,
-            );
-        if (!mounted) return;
+      final checkoutPrice = billingChoice.sourcePrice;
+      final billingType = billingChoice.billingType;
+      final seatCount = seats ?? selectedOffer.minSeats;
+      final baseAmount = checkoutPrice.totalForSeats(
+        seatCount,
+        includedSeats: selectedOffer.minSeats,
+      );
+      final amount = billingType.toUpperCase() == 'YEARLY' &&
+              checkoutPrice.billingType.toUpperCase() == 'MONTHLY'
+          ? baseAmount * 12
+          : baseAmount;
+      final isFree = amount <= 0;
+      final montantLabel = billingChoice.amountLabel;
 
-        final checkoutUri = Uri.parse(session.checkoutUrl);
-        final launched = await launchUrl(
-          checkoutUri,
-          mode: LaunchMode.externalApplication,
-        );
-        if (!mounted) return;
+      // Offre payante → bottom sheet SoftPay (Wave / OM / Free)
+      if (!isFree) {
+        final api = context.read<SubscriptionsApiService>();
+        final auth = context.read<AuthProvider>();
+        final user = auth.user;
 
-        if (!launched) {
-          messenger.showSnackBar(
-            SnackBar(content: Text(context.l10n.premiumCheckoutLaunchError)),
+        String? invoiceToken;
+        if (_usePaydunyaSoftPay) {
+          final session = await api.createCheckoutSession(
+            offerSlug: selectedOffer.slug,
+            billingType: billingType,
+            teamId: teamId,
+            seats: seats,
           );
-          return;
+          if (!mounted) return;
+          invoiceToken = session.invoiceToken;
         }
 
-        context.pop();
-        messenger.showSnackBar(
-          SnackBar(content: Text(context.l10n.premiumCheckoutRedirect)),
+        if (!mounted) return;
+        final paid = await SoftPaySheet.show(
+          context,
+          offerSlug: selectedOffer.slug,
+          billingType: billingType,
+          montantLabel: montantLabel,
+          api: api,
+          initialPrenom: user?.firstName ?? '',
+          initialNom: user?.lastName ?? '',
+          initialTelephone: user?.phone ?? '',
+          email: user?.email,
+          teamId: teamId,
+          seats: seats,
+          invoiceToken: invoiceToken,
         );
+        if (!mounted) return;
+
+        if (paid == true) {
+          await context.read<SubscriptionsProvider>().refresh();
+          if (!mounted) return;
+          context.pop();
+          messenger.showSnackBar(
+            SnackBar(
+              content: Text(
+                context.l10n.premiumActivated(
+                  selectedOffer.title,
+                  billingChoice.title,
+                ),
+              ),
+            ),
+          );
+        }
         return;
       }
 
       final subscription =
           await context.read<SubscriptionsApiService>().subscribe(
                 offerSlug: selectedOffer.slug,
-                billingType: selectedPrice.billingType,
+                billingType: billingType,
                 teamId: teamId,
+                seats: seats,
               );
       if (!mounted) return;
 
@@ -176,7 +252,7 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
           content: Text(
             context.l10n.premiumActivated(
               selectedOffer.title,
-              selectedPrice.title,
+              billingChoice.title,
             ),
           ),
         ),
@@ -244,19 +320,20 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
                               selectedOfferId: _selectedOfferId,
                               selectedPriceId: _selectedPriceId,
                               onOfferChanged: (offer) {
-                                final price = offer.popularPrice ??
-                                    (offer.prices.isNotEmpty
-                                        ? offer.prices.first
-                                        : null);
+                                final selected = _priceForOffer(offer);
                                 setState(() {
                                   _selectedOfferId = offer.id;
-                                  _selectedPriceId = price?.id;
+                                  _selectedPriceId = selected?.id;
+                                  if (selected != null) {
+                                    _priceByOfferId[offer.id] = selected.id;
+                                  }
                                 });
                               },
                               onPriceSelected: (offer, price) {
                                 setState(() {
                                   _selectedOfferId = offer.id;
                                   _selectedPriceId = price.id;
+                                  _priceByOfferId[offer.id] = price.id;
                                 });
                               },
                             ),
@@ -300,7 +377,7 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
                                 ),
                               )
                             : Text(
-                                _useStripeCheckout
+                                _usePaydunyaSoftPay
                                     ? l10n.premiumProceedToPayment
                                     : l10n.premiumStart,
                                 style: const TextStyle(
@@ -518,6 +595,7 @@ class _OfferPackageCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final orderedPrices = offer.pricesYearlyFirst;
 
     return Container(
       height: double.infinity,
@@ -639,13 +717,14 @@ class _OfferPackageCard extends StatelessWidget {
                       ),
                     )
                   else
-                    for (var index = 0; index < offer.prices.length; index++) ...[
+                    for (var index = 0; index < orderedPrices.length; index++) ...[
                       if (index > 0) const SizedBox(height: AppSpacing.sm),
                       _PremiumPriceRow(
-                        price: offer.prices[index],
+                        price: orderedPrices[index],
+                        includedSeats: offer.minSeats,
                         isSelected: isOfferSelected &&
-                            offer.prices[index].id == selectedPriceId,
-                        onTap: () => onPriceSelected(offer.prices[index]),
+                            orderedPrices[index].id == selectedPriceId,
+                        onTap: () => onPriceSelected(orderedPrices[index]),
                       ),
                     ],
                 ],
@@ -671,6 +750,12 @@ class _OfferPackageCard extends StatelessWidget {
 
   static String _usersLabel(AppLocalizations l10n, PremiumOffer offer) {
     if (offer.audience.isTeam) {
+      if (offer.hasPerSeatPricing) {
+        if (offer.maxTeamMembers < 0) {
+          return l10n.premiumSeatsFrom(offer.minSeats);
+        }
+        return l10n.premiumSeatsRange(offer.minSeats, offer.maxTeamMembers);
+      }
       if (offer.maxTeamMembers < 0) return l10n.commonUnlimited;
       return l10n.premiumTeamMembers(offer.maxTeamMembers);
     }
@@ -726,20 +811,29 @@ class _PremiumPriceRow extends StatelessWidget {
     required this.price,
     required this.isSelected,
     required this.onTap,
+    this.includedSeats = 1,
   });
 
   final PremiumOfferPrice price;
   final bool isSelected;
   final VoidCallback onTap;
+  final int includedSeats;
 
-  String get _detailLine {
-    if (price.priceLabel != null && price.priceLabel!.isNotEmpty) {
-      return price.displayPrice;
+  String get _amountLabel {
+    if (price.isPerSeat) {
+      return price.displayTotal(includedSeats, includedSeats: includedSeats);
     }
-    if (price.subtitle != null && price.subtitle!.isNotEmpty) {
-      return price.subtitle!;
-    }
-    return price.displayPrice;
+    return '${PremiumOfferPrice.formatAmount(price.priceAmount)} ${price.currency}';
+  }
+
+  String? get _extraLine {
+    if (!price.isPerSeat) return price.subtitle;
+    final parts = <String>[
+      if (price.subtitle != null && price.subtitle!.isNotEmpty) price.subtitle!,
+      '$includedSeats inclus',
+      price.extraSeatLabel(),
+    ];
+    return parts.join(' · ');
   }
 
   @override
@@ -772,12 +866,14 @@ class _PremiumPriceRow extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Text(
-                          price.title,
-                          style: TextStyle(
-                            color: AppColors.onPrimary,
-                            fontSize: context.rs(AppFontSize.lg),
-                            fontWeight: AppFontWeight.bold,
+                        Flexible(
+                          child: Text(
+                            price.title,
+                            style: TextStyle(
+                              color: AppColors.onPrimary,
+                              fontSize: context.rs(AppFontSize.lg),
+                              fontWeight: AppFontWeight.bold,
+                            ),
                           ),
                         ),
                         if (price.badgeLabel != null) ...[
@@ -804,14 +900,25 @@ class _PremiumPriceRow extends StatelessWidget {
                         ],
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Text(
-                      _detailLine,
+                      _amountLabel,
                       style: TextStyle(
-                        color: AppColors.onPrimary.withValues(alpha: 0.5),
-                        fontSize: context.rs(AppFontSize.sm),
+                        color: AppColors.or,
+                        fontSize: context.rs(AppFontSize.md),
+                        fontWeight: AppFontWeight.bold,
                       ),
                     ),
+                    if (_extraLine != null && _extraLine!.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        _extraLine!,
+                        style: TextStyle(
+                          color: AppColors.onPrimary.withValues(alpha: 0.5),
+                          fontSize: context.rs(AppFontSize.sm),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

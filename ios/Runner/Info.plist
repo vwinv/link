@@ -19,7 +19,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -42,14 +42,26 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>$(MARKETING_VERSION)</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
 	<key>GIDClientID</key>
 	<string>$(GOOGLE_IOS_CLIENT_ID)</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>whatsapp</string>
 		<string>whatsapp-api</string>
+		<string>wave</string>
+		<string>wavemoney</string>
+		<string>orangemoney</string>
+		<string>om</string>
+		<string>maxit</string>
 	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
@@ -57,7 +69,7 @@
 	<key>NSContactsUsageDescription</key>
 	<string>DropOne enregistre les cartes scannées dans vos contacts.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>DropOne a besoin d’accéder à vos photos pour importer le logo de votre équipe.</string>
+	<string>DropOne a besoin d’accéder à vos photos pour importer et recadrer votre photo de profil ou le logo de votre équipe.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -76,6 +88,10 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
 	</array>
 </dict>
 </plist>

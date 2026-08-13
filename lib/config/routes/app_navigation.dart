@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkflutter/config/routes/app_router.dart';
@@ -433,20 +435,11 @@ Future<void> openEditCardInfo(BuildContext context, {BusinessCard? card}) {
       Future<void>.value();
 }
 
-/// Ouvre l’écran de personnalisation de carte.
+/// Ouvre l’écran de personnalisation de carte (styles / couleurs : gratuit).
 Future<void> openCustomizeCard(BuildContext context, BusinessCard card) async {
   final subscriptionsProvider = context.read<SubscriptionsProvider>();
-  await subscriptionsProvider.refresh();
-  if (!context.mounted) return;
-
-  final team = _teamForCard(context, card);
-  if (!await ensureOfferCapability(
-    context,
-    allowed: subscriptionsProvider.canCustomizeCard(card, team: team),
-  )) {
-    return;
-  }
-  if (!context.mounted) return;
+  // Rafraîchir les droits pour le bandeau designs pro, sans bloquer l’écran.
+  unawaited(subscriptionsProvider.refresh());
 
   final cardsApi = context.read<CardsApiService>();
   final cardsProvider = context.read<CardsProvider>();

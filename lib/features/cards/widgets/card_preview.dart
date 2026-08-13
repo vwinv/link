@@ -54,8 +54,8 @@ class CardPreview extends StatelessWidget {
       style.lightTheme ? AppColors.textPrimary : AppColors.onPrimary;
 
   Color get _secondaryText => style.lightTheme
-      ? AppColors.textSecondary
-      : AppColors.textTertiaire;
+      ? const Color.fromARGB(255, 79, 79, 80)
+      : const Color.fromARGB(255, 221, 221, 221);
 
   @override
   Widget build(BuildContext context) {
@@ -307,10 +307,7 @@ class _ContactRow extends StatelessWidget {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: textColor,
-              fontSize: AppFontSize.sm,
-            ),
+            style: TextStyle(color: textColor, fontSize: AppFontSize.sm),
           ),
         ),
       ],

@@ -39,6 +39,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get profileManageWallet => 'Gérer le Wallet';
 
   @override
+  String get profileNotifications => 'Notifications';
+
+  @override
+  String get notificationsTitle => 'Notifications';
+
+  @override
+  String get notificationsEmpty => 'Aucune notification pour le moment';
+
+  @override
+  String get notificationsLoadError =>
+      'Impossible de charger les notifications';
+
+  @override
+  String get notificationsMarkAllRead => 'Tout lu';
+
+  @override
   String get profileMyCards => 'Mes cartes';
 
   @override
@@ -1093,6 +1109,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get shareOptionAirDrop => 'AirDrop';
 
   @override
+  String shareQuotaReached(int max) {
+    return 'Quota de $max partages atteint.';
+  }
+
+  @override
+  String shareQuotaUsed(int used, int max) {
+    return '$used / $max partages';
+  }
+
+  @override
+  String get shareSeePremium => 'Passer à Premium';
+
+  @override
+  String get shareBlockedHint => 'Passez à Premium pour partager sans limite.';
+
+  @override
   String scanQuotaReached(int max) {
     return 'Quota de $max scans IA atteint pour cette période.';
   }
@@ -1183,6 +1215,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get premiumFeatureSocial => 'Réseaux sociaux';
 
   @override
+  String get premiumSocialUnlock => 'Ajoutez vos réseaux sociaux avec Premium';
+
+  @override
+  String get premiumSocialSubtitle =>
+      'LinkedIn, Instagram, WhatsApp et plus encore.';
+
+  @override
   String get premiumNoPricing => 'Aucun tarif configuré';
 
   @override
@@ -1194,6 +1233,29 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String premiumTeamMembers(int count) {
     return 'Jusqu\'à $count membres';
+  }
+
+  @override
+  String premiumSeatsFrom(int min) {
+    return 'À partir de $min utilisateurs';
+  }
+
+  @override
+  String premiumSeatsRange(int min, int max) {
+    return 'De $min à $max utilisateurs';
+  }
+
+  @override
+  String get premiumSeatsPickerTitle => 'Nombre d\'utilisateurs';
+
+  @override
+  String premiumSeatsIncludedHint(int count) {
+    return '$count inclus — non diminuable';
+  }
+
+  @override
+  String premiumSeatsTotal(String amount) {
+    return 'Total : $amount';
   }
 
   @override

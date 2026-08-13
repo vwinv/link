@@ -2,68 +2,177 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:linkflutter/config/routes/app_navigation.dart';
+import 'package:linkflutter/core/api/api_exception.dart';
 import 'package:linkflutter/core/constants/app_assets.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/core/l10n/l10n_extensions.dart';
 import 'package:linkflutter/core/utils/responsive.dart';
 import 'package:linkflutter/features/cards/models/business_card.dart';
 import 'package:linkflutter/features/cards/widgets/card_qr_display.dart';
+import 'package:linkflutter/features/sharing/models/share_quota.dart';
 import 'package:linkflutter/features/sharing/services/share_platform_service.dart';
 import 'package:linkflutter/features/sharing/services/sharing_api_service.dart';
 import 'package:linkflutter/features/sharing/share_card_helper.dart';
 import 'package:linkflutter/providers/card_analytics_refresh_notifier.dart';
 import 'package:provider/provider.dart';
 
-class ShareCardScreen extends StatelessWidget {
+class ShareCardScreen extends StatefulWidget {
   const ShareCardScreen({required this.card, super.key});
 
   final BusinessCard card;
 
-  Future<void> _recordShare(BuildContext context, String method) async {
-    await context.read<SharingApiService>().recordShare(
-      cardId: card.id,
-      method: method,
-    );
-    if (!context.mounted) return;
-    context.read<CardAnalyticsRefreshNotifier>().requestRefresh(sharesDelta: 1);
+  @override
+  State<ShareCardScreen> createState() => _ShareCardScreenState();
+}
+
+class _ShareCardScreenState extends State<ShareCardScreen> {
+  ShareQuota _quota = ShareQuota.empty;
+  bool _quotaLoaded = false;
+  bool _sharing = false;
+
+  BusinessCard get card => widget.card;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadQuota());
   }
 
-  Future<void> _shareWithSheet(
-    BuildContext context, {
+  Future<void> _loadQuota() async {
+    try {
+      final quota = await context.read<SharingApiService>().fetchQuota();
+      if (!mounted) return;
+      setState(() {
+        _quota = quota;
+        _quotaLoaded = true;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        // En cas d’erreur réseau, on laisse tenter le partage (le serveur tranche).
+        _quota = const ShareQuota(
+          used: 0,
+          max: -1,
+          canShare: true,
+          isUnlimited: true,
+        );
+        _quotaLoaded = true;
+      });
+    }
+  }
+
+  Future<bool> _ensureCanShare() async {
+    if (!_quotaLoaded) await _loadQuota();
+    if (!mounted) return false;
+
+    if (!_quota.canShare) {
+      await openLinkPremium(context);
+      return false;
+    }
+    return true;
+  }
+
+  Future<bool> _recordShare(String method) async {
+    try {
+      final updated = await context.read<SharingApiService>().recordShare(
+            cardId: card.id,
+            method: method,
+          );
+      if (!mounted) return false;
+      if (updated != null) {
+        setState(() => _quota = updated);
+      }
+      context
+          .read<CardAnalyticsRefreshNotifier>()
+          .requestRefresh(sharesDelta: 1);
+      return true;
+    } on ApiException catch (error) {
+      if (!mounted) return false;
+      if (error.statusCode == 403) {
+        setState(
+          () => _quota = ShareQuota(
+            used: _quota.max > 0 ? _quota.max : _quota.used,
+            max: _quota.max,
+            canShare: false,
+            isUnlimited: false,
+          ),
+        );
+        await openLinkPremium(context);
+        return false;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.message)),
+      );
+      return false;
+    }
+  }
+
+  Future<void> _shareWithSheet({
     required String method,
     String? subject,
   }) async {
-    await _recordShare(context, method);
-    if (!context.mounted) return;
-    await SharePlatformService.shareRichLink(
-      context,
-      uri: ShareCardHelper.linkShareUri(card),
-      subject: subject ?? ShareCardHelper.linkShareTitle(card),
-    );
+    if (_sharing) return;
+    if (!await _ensureCanShare()) return;
+    if (!mounted) return;
+
+    setState(() => _sharing = true);
+    try {
+      final recorded = await _recordShare(method);
+      if (!mounted || !recorded) return;
+      await SharePlatformService.shareRichLink(
+        context,
+        uri: ShareCardHelper.linkShareUri(card),
+        subject: subject ?? ShareCardHelper.linkShareTitle(card),
+      );
+    } finally {
+      if (mounted) setState(() => _sharing = false);
+    }
   }
 
-  Future<void> _shareWhatsApp(BuildContext context) async {
-    final shared = await SharePlatformService.shareWhatsApp(
-      context,
-      url: ShareCardHelper.linkShareUrl(card),
-    );
-    if (!context.mounted || !shared) return;
-    await _recordShare(context, 'WHATSAPP');
+  Future<void> _shareWhatsApp() async {
+    if (_sharing) return;
+    if (!await _ensureCanShare()) return;
+    if (!mounted) return;
+
+    setState(() => _sharing = true);
+    try {
+      final recorded = await _recordShare('WHATSAPP');
+      if (!mounted || !recorded) return;
+      await SharePlatformService.shareWhatsApp(
+        context,
+        url: ShareCardHelper.linkShareUrl(card),
+      );
+    } finally {
+      if (mounted) setState(() => _sharing = false);
+    }
   }
 
-  Future<void> _shareLink(BuildContext context) async {
-    final copied = await SharePlatformService.copyLink(
-      context,
-      url: ShareCardHelper.publicUrl(card.slug),
-    );
-    if (!context.mounted || !copied) return;
-    await _recordShare(context, 'LINK');
+  Future<void> _shareLink() async {
+    if (_sharing) return;
+    if (!await _ensureCanShare()) return;
+    if (!mounted) return;
+
+    setState(() => _sharing = true);
+    try {
+      final recorded = await _recordShare('LINK');
+      if (!mounted || !recorded) return;
+      await SharePlatformService.copyLink(
+        context,
+        url: ShareCardHelper.publicUrl(card.slug),
+      );
+    } finally {
+      if (mounted) setState(() => _sharing = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final showAirDrop = !kIsWeb && Platform.isIOS;
+    final blocked = _quotaLoaded && !_quota.canShare;
+    final showQuotaChip =
+        _quotaLoaded && !_quota.isUnlimited && _quota.max > 0;
 
     return Scaffold(
       backgroundColor: const Color(0xFF0C0D10),
@@ -97,6 +206,33 @@ class ShareCardScreen extends StatelessWidget {
                 ],
               ),
             ),
+            if (showQuotaChip || blocked)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.screenHorizontal,
+                  AppSpacing.md,
+                  AppSpacing.screenHorizontal,
+                  0,
+                ),
+                child: blocked
+                    ? _QuotaBlockedBanner(
+                        message: _quota.max > 0
+                            ? l10n.shareQuotaReached(_quota.max)
+                            : l10n.shareBlockedHint,
+                        ctaLabel: l10n.shareSeePremium,
+                        onUpgrade: () => openLinkPremium(context),
+                      )
+                    : Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          l10n.shareQuotaUsed(_quota.used, _quota.max),
+                          style: TextStyle(
+                            color: AppColors.onPrimary.withValues(alpha: 0.55),
+                            fontSize: context.rs(AppFontSize.sm),
+                          ),
+                        ),
+                      ),
+              ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -159,43 +295,94 @@ class ShareCardScreen extends StatelessWidget {
                 AppSpacing.screenHorizontal,
                 AppSpacing.xl,
               ),
-              child: Row(
-                children: [
-                  if (showAirDrop)
-                    Expanded(
-                      child: _ShareOption(
-                        label: l10n.shareOptionAirDrop,
-                        backgroundColor: AppColors.bleu_primaire,
-                        assetPath: AppAssets.onboardingAirdrop,
-                        onTap: () =>
-                            _shareWithSheet(context, method: 'AIRDROP'),
+              child: Opacity(
+                opacity: blocked || _sharing ? 0.4 : 1,
+                child: IgnorePointer(
+                  ignoring: blocked || _sharing,
+                  child: Row(
+                    children: [
+                      if (showAirDrop)
+                        Expanded(
+                          child: _ShareOption(
+                            label: l10n.shareOptionAirDrop,
+                            backgroundColor: AppColors.bleu_primaire,
+                            assetPath: AppAssets.onboardingAirdrop,
+                            onTap: () => _shareWithSheet(method: 'AIRDROP'),
+                          ),
+                        ),
+                      Expanded(
+                        child: _ShareOption(
+                          label: l10n.shareOptionMessage,
+                          backgroundColor: const Color(0xFF2DBE8C),
+                          icon: Icons.mail_outline_rounded,
+                          onTap: () => _shareWithSheet(method: 'EMAIL'),
+                        ),
                       ),
-                    ),
-                  Expanded(
-                    child: _ShareOption(
-                      label: l10n.shareOptionMessage,
-                      backgroundColor: const Color(0xFF2DBE8C),
-                      icon: Icons.mail_outline_rounded,
-                      onTap: () => _shareWithSheet(context, method: 'EMAIL'),
-                    ),
+                      Expanded(
+                        child: _ShareOption(
+                          label: l10n.socialWhatsApp,
+                          backgroundColor: const Color(0xFF25D366),
+                          assetPath: AppAssets.whatsapp,
+                          onTap: _shareWhatsApp,
+                        ),
+                      ),
+                      Expanded(
+                        child: _ShareOption(
+                          label: ShareCardHelper.brandName,
+                          assetPath: AppAssets.icone,
+                          onTap: _shareLink,
+                        ),
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: _ShareOption(
-                      label: l10n.socialWhatsApp,
-                      backgroundColor: const Color(0xFF25D366),
-                      assetPath: AppAssets.whatsapp,
-                      onTap: () => _shareWhatsApp(context),
-                    ),
-                  ),
-                  Expanded(
-                    child: _ShareOption(
-                      label: ShareCardHelper.brandName,
-                      assetPath: AppAssets.icone,
-                      onTap: () => _shareLink(context),
-                    ),
-                  ),
-                ],
+                ),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuotaBlockedBanner extends StatelessWidget {
+  const _QuotaBlockedBanner({
+    required this.message,
+    required this.ctaLabel,
+    required this.onUpgrade,
+  });
+
+  final String message;
+  final String ctaLabel;
+  final VoidCallback onUpgrade;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: const Color(0xFF1A1C22),
+      borderRadius: BorderRadius.circular(AppRadius.lg),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.md,
+          AppSpacing.sm,
+          AppSpacing.md,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(
+                  color: AppColors.onPrimary.withValues(alpha: 0.9),
+                  fontSize: context.rs(AppFontSize.sm),
+                  height: 1.35,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: onUpgrade,
+              child: Text(ctaLabel),
             ),
           ],
         ),

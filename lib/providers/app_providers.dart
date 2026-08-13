@@ -10,6 +10,8 @@ import 'package:linkflutter/features/scan/services/scans_api_service.dart';
 import 'package:linkflutter/features/subscriptions/services/subscriptions_api_service.dart';
 import 'package:linkflutter/features/wallet/services/wallet_api_service.dart';
 import 'package:linkflutter/features/wallet/services/wallet_platform_service.dart';
+import 'package:linkflutter/features/notifications/services/notifications_api_service.dart';
+import 'package:linkflutter/features/notifications/services/push_notifications_service.dart';
 import 'package:linkflutter/providers/account_type_provider.dart';
 import 'package:linkflutter/providers/auth_provider.dart';
 import 'package:linkflutter/providers/cards_provider.dart';
@@ -17,6 +19,7 @@ import 'package:linkflutter/providers/contacts_provider.dart';
 import 'package:linkflutter/providers/create_card_provider.dart';
 import 'package:linkflutter/providers/subscriptions_provider.dart';
 import 'package:linkflutter/providers/teams_provider.dart';
+import 'package:linkflutter/providers/notifications_provider.dart';
 import 'package:linkflutter/providers/card_analytics_refresh_notifier.dart';
 import 'package:linkflutter/core/deep_link/deep_link_service.dart';
 import 'package:linkflutter/providers/locale_provider.dart';
@@ -44,6 +47,11 @@ abstract final class AppProviders {
     Provider(create: (_) => ContactsApiService(_apiClient)),
     Provider(create: (_) => SharingApiService(_apiClient)),
     Provider(create: (_) => WalletApiService(_apiClient)),
+    Provider(create: (_) => NotificationsApiService(_apiClient)),
+    Provider(
+      create: (context) =>
+          PushNotificationsService(context.read<NotificationsApiService>()),
+    ),
     Provider(
       create: (context) =>
           WalletPlatformService(context.read<WalletApiService>()),
@@ -76,6 +84,11 @@ abstract final class AppProviders {
     ChangeNotifierProvider(
       create: (context) =>
           ContactsProvider(contactsApi: context.read<ContactsApiService>()),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => NotificationsProvider(
+        api: context.read<NotificationsApiService>(),
+      ),
     ),
     ChangeNotifierProvider(
       create: (context) =>

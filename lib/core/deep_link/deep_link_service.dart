@@ -63,9 +63,15 @@ class DeepLinkService {
     await _loadDismissedSlug();
 
     try {
-      final initialUri = await _appLinks.getInitialLink();
+      final initialUri = await _appLinks.getInitialLink().timeout(
+        const Duration(seconds: 2),
+        onTimeout: () => null,
+      );
       final initialSlug = parseCardSlugFromUri(initialUri);
-      if (initialSlug != null && !isPublicCardDismissed(initialSlug)) {
+      if (initialSlug != null) {
+        // Une ouverture via deep link doit toujours pouvoir réafficher la carte
+        // (même si l’utilisateur l’avait fermée précédemment).
+        await _clearDismissedSlug();
         _pendingSlug = initialSlug;
       }
 

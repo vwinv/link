@@ -21,4 +21,5 @@ abstract final class RoutePaths {
   static const portfolio = '/portfolio';
   static const premium = '/premium';
   static const publicCard = '/public-card';
+  static const notifications = '/notifications';
 }

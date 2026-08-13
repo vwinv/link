@@ -28,6 +28,7 @@ class OfferEntitlements {
     required this.hasVisitorInsights,
     required this.hasSocialLinks,
     required this.maxAiScans,
+    required this.maxShares,
   });
 
   factory OfferEntitlements.fromJson(Map<String, dynamic> json) {
@@ -41,6 +42,7 @@ class OfferEntitlements {
       hasVisitorInsights: json['hasVisitorInsights'] as bool? ?? false,
       hasSocialLinks: json['hasSocialLinks'] as bool? ?? false,
       maxAiScans: json['maxAiScans'] as int? ?? 0,
+      maxShares: json['maxShares'] as int? ?? 0,
     );
   }
 
@@ -54,6 +56,7 @@ class OfferEntitlements {
     hasVisitorInsights: false,
     hasSocialLinks: false,
     maxAiScans: 0,
+    maxShares: 0,
   );
 
   final OfferAudience audience;
@@ -65,8 +68,10 @@ class OfferEntitlements {
   final bool hasVisitorInsights;
   final bool hasSocialLinks;
   final int maxAiScans;
+  final int maxShares;
 
   bool get hasUnlimitedAiScans => maxAiScans < 0;
+  bool get hasUnlimitedShares => maxShares < 0;
   bool get hasUnlimitedTeamSeats => maxTeamMembers < 0;
   bool get hasTeamAccess => audience.isTeam && maxTeamMembers != 0;
 
@@ -80,5 +85,6 @@ class OfferEntitlements {
         'hasVisitorInsights': hasVisitorInsights,
         'hasSocialLinks': hasSocialLinks,
         'maxAiScans': maxAiScans,
+        'maxShares': maxShares,
       };
 }

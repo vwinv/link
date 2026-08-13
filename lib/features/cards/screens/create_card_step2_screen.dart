@@ -10,6 +10,7 @@ import 'package:linkflutter/features/cards/models/social_link_draft.dart';
 import 'package:linkflutter/features/cards/widgets/create_card_header.dart';
 import 'package:linkflutter/features/cards/widgets/create_card_step_indicator.dart';
 import 'package:linkflutter/features/cards/widgets/social_network_tile.dart';
+import 'package:linkflutter/features/subscriptions/widgets/premium_unlock_banner.dart';
 import 'package:linkflutter/providers/create_card_provider.dart';
 import 'package:linkflutter/providers/subscriptions_provider.dart';
 import 'package:linkflutter/shared/widgets/link_primary_button.dart';
@@ -157,60 +158,71 @@ class _CreateCardStep2ScreenState extends State<CreateCardStep2Screen> {
                           tablet: AppSpacing.xxxl,
                         ),
                       ),
-                      Text(
-                        l10n.createCardYourNetworksTitle,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineSmall
-                            ?.copyWith(
-                              fontSize: context.rs(AppFontSize.xl),
-                              fontWeight: AppFontWeight.bold,
-                              color: AppColors.textPrimary,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              l10n.createCardYourNetworksTitle,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.copyWith(
+                                    fontSize: context.rs(AppFontSize.xl),
+                                    fontWeight: AppFontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                             ),
+                          ),
+                          if (!canEditSocial) ...[
+                            const SizedBox(width: AppSpacing.md),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.md,
+                                vertical: AppSpacing.xs,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.or_fonce,
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.full),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.workspace_premium_rounded,
+                                    size: 14,
+                                    color: AppColors.or,
+                                  ),
+                                  const SizedBox(width: AppSpacing.xs),
+                                  Text(
+                                    l10n.premiumBadge,
+                                    style: const TextStyle(
+                                      color: AppColors.or,
+                                      fontSize: AppFontSize.sm,
+                                      fontWeight: AppFontWeight.semiBold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       Text(
-                        l10n.editCardSocialSubtitle,
+                        canEditSocial
+                            ? l10n.editCardSocialSubtitle
+                            : l10n.premiumSocialSubtitle,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               color: AppColors.textSecondary,
                             ),
                       ),
                       const SizedBox(height: AppSpacing.xxl),
                       if (!canEditSocial)
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(AppSpacing.lg),
-                          decoration: BoxDecoration(
-                            color: AppColors.inputFill,
-                            borderRadius: BorderRadius.circular(AppRadius.lg),
-                            border: Border.all(color: AppColors.border),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                l10n.premiumFeatureSocial,
-                                style: TextStyle(
-                                  color: AppColors.textPrimary,
-                                  fontSize: context.rs(AppFontSize.md),
-                                  fontWeight: AppFontWeight.semiBold,
-                                ),
-                              ),
-                              const SizedBox(height: AppSpacing.sm),
-                              Text(
-                                l10n.premiumSeeOffers,
-                                style: TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: context.rs(AppFontSize.sm),
-                                ),
-                              ),
-                              const SizedBox(height: AppSpacing.md),
-                              LinkPrimaryButton(
-                                label: l10n.premiumStart,
-                                onPressed: () => openLinkPremium(context),
-                              ),
-                            ],
-                          ),
+                        PremiumUnlockBanner(
+                          title: l10n.premiumSocialUnlock,
+                          onTap: () => openLinkPremium(context),
                         )
                       else
                         ...socialLinks.map((link) {

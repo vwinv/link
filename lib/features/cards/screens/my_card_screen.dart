@@ -10,6 +10,7 @@ import 'package:linkflutter/features/cards/models/card_social_platform.dart';
 import 'package:linkflutter/features/cards/services/cards_api_service.dart';
 import 'package:linkflutter/features/cards/widgets/card_preview.dart';
 import 'package:linkflutter/features/sharing/share_card_helper.dart';
+import 'package:linkflutter/features/subscriptions/widgets/premium_unlock_banner.dart';
 import 'package:linkflutter/providers/cards_provider.dart';
 import 'package:linkflutter/providers/subscriptions_provider.dart';
 import 'package:linkflutter/providers/teams_provider.dart';
@@ -104,6 +105,8 @@ class _MyCardScreenState extends State<MyCardScreen> {
     final card = _card;
     final team = context.watch<TeamsProvider>().myTeam;
     final hasPortfolio = context.watch<SubscriptionsProvider>().hasPortfolioAccess;
+    final hasSocialLinks =
+        context.watch<SubscriptionsProvider>().hasSocialLinksAccess;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -232,7 +235,12 @@ class _MyCardScreenState extends State<MyCardScreen> {
                   const SizedBox(height: AppSpacing.xxl),
                   _SectionLabel(l10n.myCardSocialNetworks),
                   const SizedBox(height: AppSpacing.md),
-                  if (_isLoadingSocial)
+                  if (!hasSocialLinks)
+                    PremiumUnlockBanner(
+                      title: l10n.premiumSocialUnlock,
+                      onTap: () => openLinkPremium(context),
+                    )
+                  else if (_isLoadingSocial)
                     const Center(
                       child: Padding(
                         padding: EdgeInsets.all(AppSpacing.lg),
@@ -290,8 +298,8 @@ class _MyCardScreenState extends State<MyCardScreen> {
                       ),
                     )
                   else
-                    _PortfolioPremiumBanner(
-                      message: l10n.myCardPortfolioPremium,
+                    PremiumUnlockBanner(
+                      title: l10n.myCardPortfolioPremium,
                       onTap: () => openLinkPremium(context),
                     ),
                 ],
@@ -365,52 +373,6 @@ class _SocialNetworkIcon extends StatelessWidget {
                   opacity: isConfigured ? 1 : 0.35,
                   child: Image.asset(asset, fit: BoxFit.contain),
                 ),
-        ),
-      ),
-    );
-  }
-}
-
-class _PortfolioPremiumBanner extends StatelessWidget {
-  const _PortfolioPremiumBanner({
-    required this.message,
-    required this.onTap,
-  });
-
-  final String message;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.iconBgMuted,
-      borderRadius: BorderRadius.circular(AppRadius.lg),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Row(
-            children: [
-              const Icon(
-                Icons.workspace_premium_rounded,
-                color: AppColors.or,
-                size: 22,
-              ),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Text(
-                  message,
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: context.rs(AppFontSize.md),
-                    fontWeight: AppFontWeight.medium,
-                    height: 1.35,
-                  ),
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );

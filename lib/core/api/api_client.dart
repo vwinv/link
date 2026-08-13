@@ -10,6 +10,8 @@ import 'package:mime/mime.dart';
 class ApiClient {
   ApiClient({http.Client? client}) : _client = client ?? http.Client();
 
+  static const _timeout = Duration(seconds: 12);
+
   final http.Client _client;
   String? _accessToken;
   void Function()? onUnauthorized;
@@ -24,9 +26,11 @@ class ApiClient {
     String path, {
     bool authenticated = false,
   }) async {
-    final response = await _client.get(
-      Uri.parse('${ApiConfig.baseUrl}$path'),
-      headers: _headers(authenticated: authenticated),
+    final response = await _timed(
+      _client.get(
+        Uri.parse('${ApiConfig.baseUrl}$path'),
+        headers: _headers(authenticated: authenticated),
+      ),
     );
     final data = _handleResponse(response);
     if (data is Map<String, dynamic>) return data;
@@ -41,10 +45,12 @@ class ApiClient {
     Map<String, dynamic>? body,
     bool authenticated = false,
   }) async {
-    final response = await _client.post(
-      Uri.parse('${ApiConfig.baseUrl}$path'),
-      headers: _headers(authenticated: authenticated),
-      body: body == null ? null : jsonEncode(body),
+    final response = await _timed(
+      _client.post(
+        Uri.parse('${ApiConfig.baseUrl}$path'),
+        headers: _headers(authenticated: authenticated),
+        body: body == null ? null : jsonEncode(body),
+      ),
     );
     final data = _handleResponse(response);
     if (data is Map<String, dynamic>) return data;
@@ -59,10 +65,12 @@ class ApiClient {
     Map<String, dynamic>? body,
     bool authenticated = false,
   }) async {
-    final response = await _client.put(
-      Uri.parse('${ApiConfig.baseUrl}$path'),
-      headers: _headers(authenticated: authenticated),
-      body: body == null ? null : jsonEncode(body),
+    final response = await _timed(
+      _client.put(
+        Uri.parse('${ApiConfig.baseUrl}$path'),
+        headers: _headers(authenticated: authenticated),
+        body: body == null ? null : jsonEncode(body),
+      ),
     );
     return _handleResponse(response);
   }
@@ -72,10 +80,12 @@ class ApiClient {
     Map<String, dynamic>? body,
     bool authenticated = false,
   }) async {
-    final response = await _client.patch(
-      Uri.parse('${ApiConfig.baseUrl}$path'),
-      headers: _headers(authenticated: authenticated),
-      body: body == null ? null : jsonEncode(body),
+    final response = await _timed(
+      _client.patch(
+        Uri.parse('${ApiConfig.baseUrl}$path'),
+        headers: _headers(authenticated: authenticated),
+        body: body == null ? null : jsonEncode(body),
+      ),
     );
     final data = _handleResponse(response);
     if (data is Map<String, dynamic>) return data;
@@ -86,20 +96,40 @@ class ApiClient {
   }
 
   Future<void> delete(String path, {bool authenticated = false}) async {
-    final response = await _client.delete(
-      Uri.parse('${ApiConfig.baseUrl}$path'),
-      headers: _headers(authenticated: authenticated),
+    final response = await _timed(
+      _client.delete(
+        Uri.parse('${ApiConfig.baseUrl}$path'),
+        headers: _headers(authenticated: authenticated),
+      ),
     );
     _handleResponse(response);
+  }
+
+  Future<void> deleteWithBody(
+    String path, {
+    Map<String, dynamic>? body,
+    bool authenticated = false,
+  }) async {
+    final response = await _client
+        .send(
+          http.Request('DELETE', Uri.parse('${ApiConfig.baseUrl}$path'))
+            ..headers.addAll(_headers(authenticated: authenticated))
+            ..body = body == null ? '' : jsonEncode(body),
+        )
+        .timeout(_timeout);
+    final streamed = await http.Response.fromStream(response);
+    _handleResponse(streamed);
   }
 
   Future<List<dynamic>> getList(
     String path, {
     bool authenticated = false,
   }) async {
-    final response = await _client.get(
-      Uri.parse('${ApiConfig.baseUrl}$path'),
-      headers: _headers(authenticated: authenticated),
+    final response = await _timed(
+      _client.get(
+        Uri.parse('${ApiConfig.baseUrl}$path'),
+        headers: _headers(authenticated: authenticated),
+      ),
     );
     final data = _handleResponse(response);
     if (data is List<dynamic>) return data;
@@ -134,13 +164,22 @@ class ApiClient {
       ),
     );
 
-    final streamed = await _client.send(request);
+    final streamed = await _client.send(request).timeout(_timeout);
     final response = await http.Response.fromStream(streamed);
     final data = _handleResponse(response);
     if (data is Map<String, dynamic>) return data;
     throw ApiException(
       'Réponse serveur invalide',
       statusCode: response.statusCode,
+    );
+  }
+
+  Future<http.Response> _timed(Future<http.Response> request) {
+    return request.timeout(
+      _timeout,
+      onTimeout: () {
+        throw ApiException('Serveur injoignable', statusCode: 0);
+      },
     );
   }
 

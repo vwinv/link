@@ -18,6 +18,7 @@ import 'package:linkflutter/providers/cards_provider.dart';
 import 'package:linkflutter/providers/create_card_provider.dart';
 import 'package:linkflutter/features/home/screens/home_screen.dart';
 import 'package:linkflutter/features/profile/screens/profile_screen.dart';
+import 'package:linkflutter/features/notifications/screens/notifications_screen.dart';
 import 'package:linkflutter/features/onboarding/screens/onboarding_screen.dart';
 import 'package:linkflutter/features/scan/screens/scan_screen.dart';
 import 'package:linkflutter/features/subscriptions/models/offer_entitlements.dart';
@@ -172,6 +173,11 @@ class AppRouter {
           parentNavigatorKey: rootNavigatorKey,
           path: RoutePaths.createProfessionalTeam,
           builder: (context, state) => const SetupTeamScreen(),
+        ),
+        GoRoute(
+          parentNavigatorKey: rootNavigatorKey,
+          path: RoutePaths.notifications,
+          builder: (context, state) => const NotificationsScreen(),
         ),
         ShellRoute(
           builder: (context, state, child) => HomeScreen(child: child),

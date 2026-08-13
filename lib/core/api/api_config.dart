@@ -6,9 +6,15 @@ abstract final class ApiConfig {
   static const _port = 3000;
   static const _apiPrefix = '/api/v1';
 
-  /// URL publique du backend déployé (API + liens partagés).
-  static const defaultPublicBaseUrl = 'https://dropone.pro';
-  //static const defaultPublicBaseUrl = 'http://0.0.0.0:3000';
+  /// URL publique des cartes partagées (QR, WhatsApp, Universal Links).
+  /// Local API : `--dart-define=API_HOST=192.168.x.x` ou `API_BASE_URL=...`
+  static const defaultPublicBaseUrl = 'https://api.dropone.pro';
+  /*static String get defaultPublicBaseUrl {
+    if (kIsWeb) return 'http://localhost:$_port';
+    if (Platform.isAndroid) return 'http://10.0.2.2:$_port';
+    // iOS simulator : 10.0.2.2 n’existe pas, et `localhost` peut résoudre en IPv6.
+    return 'http://0.0.0.0:$_port';
+  }*/
 
   /// Backend local uniquement si tu passes :
   /// `flutter run --dart-define=API_HOST=192.168.1.42`
@@ -72,7 +78,9 @@ abstract final class ApiConfig {
     return '$_apiOrigin$path';
   }
 
-  /// Lien public partagé : `https://dropone.pro/cards/{slug}`
+  /// Lien public partagé : `https://api.dropone.pro/cards/{slug}`
+  /// Le host doit correspondre aux Associated Domains (iOS) et à l’intent-filter
+  /// (Android), sinon le lien s’ouvre dans le navigateur au lieu de l’app.
   static String publicUrl(String slug) => '$publicBaseUrl/cards/$slug';
 
   /// App Store — à remplir après déploiement iOS.

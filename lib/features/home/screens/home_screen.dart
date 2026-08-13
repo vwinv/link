@@ -5,6 +5,7 @@ import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/core/l10n/l10n_extensions.dart';
 import 'package:linkflutter/core/bootstrap/user_workspace_bootstrap.dart';
 import 'package:linkflutter/providers/cards_provider.dart';
+import 'package:linkflutter/providers/notifications_provider.dart';
 import 'package:linkflutter/providers/teams_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -38,6 +39,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final cards = context.watch<CardsProvider>();
     final teams = context.watch<TeamsProvider>();
+    final unread = context.watch<NotificationsProvider>().unreadCount;
     final workspaceReady = cards.hasLoaded && teams.hasLoaded;
     final showNavigation =
         workspaceReady && hasExistingWorkspace(cards, teams);
@@ -69,8 +71,16 @@ class HomeScreen extends StatelessWidget {
                   label: context.l10n.navContacts,
                 ),
                 NavigationDestination(
-                  icon: const Icon(Icons.person_outline),
-                  selectedIcon: const Icon(Icons.person),
+                  icon: Badge(
+                    isLabelVisible: unread > 0,
+                    label: Text(unread > 99 ? '99+' : '$unread'),
+                    child: const Icon(Icons.person_outline),
+                  ),
+                  selectedIcon: Badge(
+                    isLabelVisible: unread > 0,
+                    label: Text(unread > 99 ? '99+' : '$unread'),
+                    child: const Icon(Icons.person),
+                  ),
                   label: context.l10n.navProfile,
                 ),
               ],

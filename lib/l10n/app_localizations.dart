@@ -158,6 +158,36 @@ abstract class AppLocalizations {
   /// **'Gérer le Wallet'**
   String get profileManageWallet;
 
+  /// No description provided for @profileNotifications.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notifications'**
+  String get profileNotifications;
+
+  /// No description provided for @notificationsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notifications'**
+  String get notificationsTitle;
+
+  /// No description provided for @notificationsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune notification pour le moment'**
+  String get notificationsEmpty;
+
+  /// No description provided for @notificationsLoadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les notifications'**
+  String get notificationsLoadError;
+
+  /// No description provided for @notificationsMarkAllRead.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout lu'**
+  String get notificationsMarkAllRead;
+
   /// No description provided for @profileMyCards.
   ///
   /// In fr, this message translates to:
@@ -2100,6 +2130,30 @@ abstract class AppLocalizations {
   /// **'AirDrop'**
   String get shareOptionAirDrop;
 
+  /// No description provided for @shareQuotaReached.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quota de {max} partages atteint.'**
+  String shareQuotaReached(int max);
+
+  /// No description provided for @shareQuotaUsed.
+  ///
+  /// In fr, this message translates to:
+  /// **'{used} / {max} partages'**
+  String shareQuotaUsed(int used, int max);
+
+  /// No description provided for @shareSeePremium.
+  ///
+  /// In fr, this message translates to:
+  /// **'Passer à Premium'**
+  String get shareSeePremium;
+
+  /// No description provided for @shareBlockedHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Passez à Premium pour partager sans limite.'**
+  String get shareBlockedHint;
+
   /// No description provided for @scanQuotaReached.
   ///
   /// In fr, this message translates to:
@@ -2262,6 +2316,18 @@ abstract class AppLocalizations {
   /// **'Réseaux sociaux'**
   String get premiumFeatureSocial;
 
+  /// No description provided for @premiumSocialUnlock.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez vos réseaux sociaux avec Premium'**
+  String get premiumSocialUnlock;
+
+  /// No description provided for @premiumSocialSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'LinkedIn, Instagram, WhatsApp et plus encore.'**
+  String get premiumSocialSubtitle;
+
   /// No description provided for @premiumNoPricing.
   ///
   /// In fr, this message translates to:
@@ -2285,6 +2351,36 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Jusqu\'à {count} membres'**
   String premiumTeamMembers(int count);
+
+  /// No description provided for @premiumSeatsFrom.
+  ///
+  /// In fr, this message translates to:
+  /// **'À partir de {min} utilisateurs'**
+  String premiumSeatsFrom(int min);
+
+  /// No description provided for @premiumSeatsRange.
+  ///
+  /// In fr, this message translates to:
+  /// **'De {min} à {max} utilisateurs'**
+  String premiumSeatsRange(int min, int max);
+
+  /// No description provided for @premiumSeatsPickerTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nombre d\'utilisateurs'**
+  String get premiumSeatsPickerTitle;
+
+  /// No description provided for @premiumSeatsIncludedHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} inclus — non diminuable'**
+  String premiumSeatsIncludedHint(int count);
+
+  /// No description provided for @premiumSeatsTotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total : {amount}'**
+  String premiumSeatsTotal(String amount);
 
   /// No description provided for @premiumScansPerPeriod.
   ///

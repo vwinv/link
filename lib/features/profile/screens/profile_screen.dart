@@ -16,7 +16,9 @@ import 'package:linkflutter/providers/auth_provider.dart';
 import 'package:linkflutter/providers/cards_provider.dart';
 import 'package:linkflutter/providers/locale_provider.dart';
 import 'package:linkflutter/providers/subscriptions_provider.dart';
+import 'package:linkflutter/providers/notifications_provider.dart';
 import 'package:linkflutter/providers/teams_provider.dart';
+import 'package:linkflutter/features/notifications/services/push_notifications_service.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -62,9 +64,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _logout() async {
+    final push = context.read<PushNotificationsService>();
+    try {
+      await push.stop();
+    } catch (_) {}
+    if (!mounted) return;
     resetUserWorkspace(context);
     await context.read<AuthProvider>().logout();
-    if (!context.mounted) return;
+    if (!mounted) return;
     context.go(RoutePaths.login);
   }
 
@@ -171,6 +178,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: Icons.account_balance_wallet_outlined,
               title: l10n.profileManageWallet,
               onTap: () => _openWallet(context, cards),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _ProfileMenuTile(
+              icon: Icons.notifications_outlined,
+              title: l10n.profileNotifications,
+              badgeCount: context.watch<NotificationsProvider>().unreadCount,
+              onTap: () => context.push(RoutePaths.notifications),
             ),
             const SizedBox(height: AppSpacing.sm),
             _ProfileMenuTile(
@@ -578,6 +592,7 @@ class _ProfileMenuTile extends StatelessWidget {
     required this.title,
     required this.onTap,
     this.subtitle,
+    this.badgeCount = 0,
     this.isDestructive = false,
     this.showChevron = true,
   });
@@ -585,6 +600,7 @@ class _ProfileMenuTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String? subtitle;
+  final int badgeCount;
   final VoidCallback onTap;
   final bool isDestructive;
   final bool showChevron;
@@ -650,6 +666,25 @@ class _ProfileMenuTile extends StatelessWidget {
                   ],
                 ),
               ),
+              if (badgeCount > 0) ...[
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.or,
+                    borderRadius: BorderRadius.circular(AppRadius.full),
+                  ),
+                  child: Text(
+                    badgeCount > 99 ? '99+' : '$badgeCount',
+                    style: const TextStyle(
+                      color: AppColors.or_fonce,
+                      fontSize: 11,
+                      fontWeight: AppFontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+              ],
               if (showChevron)
                 Icon(
                   Icons.chevron_right_rounded,

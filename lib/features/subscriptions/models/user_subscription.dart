@@ -11,6 +11,7 @@ class UserSubscription {
     required this.offerSlug,
     this.billingType,
     required this.entitlements,
+    this.purchasedSeats,
     this.currentPeriodEnd,
   });
 
@@ -29,6 +30,7 @@ class UserSubscription {
               Map<String, dynamic>.from(json['entitlements'] as Map),
             )
           : OfferEntitlements.none,
+      purchasedSeats: json['purchasedSeats'] as int?,
       currentPeriodEnd: json['currentPeriodEnd'] as String?,
     );
   }
@@ -42,6 +44,7 @@ class UserSubscription {
   final String offerSlug;
   final String? billingType;
   final OfferEntitlements entitlements;
+  final int? purchasedSeats;
   final String? currentPeriodEnd;
 
   OfferAudience get audience => entitlements.audience;
@@ -49,6 +52,7 @@ class UserSubscription {
   int get maxTeamMembers => entitlements.maxTeamMembers;
   bool get hasPortfolio => entitlements.hasPortfolio;
   int get maxAiScans => entitlements.maxAiScans;
+  int get maxShares => entitlements.maxShares;
   bool get hasTeamAccess => entitlements.hasTeamAccess;
 
   bool get isActive {
@@ -70,6 +74,7 @@ class UserSubscription {
         'offerSlug': offerSlug,
         'billingType': billingType,
         'entitlements': entitlements.toJson(),
+        'purchasedSeats': purchasedSeats,
         'currentPeriodEnd': currentPeriodEnd,
       };
 }
