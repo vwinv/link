@@ -477,7 +477,7 @@
   "shareSeePremium": "Passer à Premium",
   "shareBlockedHint": "Passez à Premium pour partager sans limite.",
 
-  "scanQuotaReached": "Quota de {max} scans IA atteint pour cette période.",
+  "scanQuotaReached": "Quota de {max} scans IA atteint pour ce mois.",
   "@scanQuotaReached": {
     "placeholders": {
       "max": { "type": "int" }
@@ -489,7 +489,7 @@
   "scanSeePremium": "Voir les offres Premium",
   "scanUnlimited": "Scans illimités",
   "scanNotIncluded": "Scan IA non inclus",
-  "scanUsedCount": "{used} / {max} scans utilisés",
+  "scanUsedCount": "{used} / {max} scans utilisés par mois",
   "@scanUsedCount": {
     "placeholders": {
       "used": { "type": "int" },
@@ -559,7 +559,7 @@
       "amount": { "type": "String" }
     }
   },
-  "premiumScansPerPeriod": "{count} / période",
+  "premiumScansPerPeriod": "{count} / mois",
   "@premiumScansPerPeriod": {
     "placeholders": {
       "count": { "type": "int" }

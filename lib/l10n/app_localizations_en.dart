@@ -1142,7 +1142,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String scanQuotaReached(int max) {
-    return 'Quota of $max AI scans reached for this period.';
+    return 'Quota of $max AI scans reached for this month.';
   }
 
   @override
@@ -1165,7 +1165,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String scanUsedCount(int used, int max) {
-    return '$used / $max scans used';
+    return '$used / $max scans used this month';
   }
 
   @override
@@ -1273,7 +1273,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String premiumScansPerPeriod(int count) {
-    return '$count / period';
+    return '$count / month';
   }
 
   @override

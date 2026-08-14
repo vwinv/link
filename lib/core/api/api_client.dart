@@ -166,7 +166,9 @@ class ApiClient {
       ),
     );
 
-    final streamed = await _client.send(request).timeout(_timeout);
+    final streamed = await _client.send(request).timeout(
+      const Duration(seconds: 30),
+    );
     final response = await http.Response.fromStream(streamed);
     final data = _handleResponse(response);
     if (data is Map<String, dynamic>) return data;

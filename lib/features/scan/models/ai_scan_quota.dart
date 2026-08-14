@@ -30,6 +30,6 @@ class AiScanQuota {
   String get displayLabel {
     if (isUnlimited) return 'Scans illimités';
     if (max <= 0) return 'Scan IA non inclus';
-    return '$used / $max scans utilisés';
+    return '$used / $max scans utilisés par mois';
   }
 }

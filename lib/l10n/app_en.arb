@@ -441,14 +441,14 @@
   "shareSeePremium": "Upgrade to Premium",
   "shareBlockedHint": "Upgrade to Premium for unlimited sharing.",
 
-  "scanQuotaReached": "Quota of {max} AI scans reached for this period.",
+  "scanQuotaReached": "Quota of {max} AI scans reached for this month.",
   "scanContactAdded": "Contact added from AI scan",
   "scanRecordError": "Unable to record scan",
   "scanStart": "Start a scan",
   "scanSeePremium": "See Premium offers",
   "scanUnlimited": "Unlimited scans",
   "scanNotIncluded": "AI scan not included",
-  "scanUsedCount": "{used} / {max} scans used",
+  "scanUsedCount": "{used} / {max} scans used this month",
 
   "premiumTitle": "DropOne Premium",
   "premiumStart": "Start Premium",
@@ -506,7 +506,7 @@
       "amount": { "type": "String" }
     }
   },
-  "premiumScansPerPeriod": "{count} / period",
+  "premiumScansPerPeriod": "{count} / month",
   "premiumOneUser": "1 user",
   "premiumBadge": "Premium",
   "premiumPortfolioLinked": "Portfolio linked to card",

@@ -2211,7 +2211,7 @@ abstract class AppLocalizations {
   /// No description provided for @scanQuotaReached.
   ///
   /// In fr, this message translates to:
-  /// **'Quota de {max} scans IA atteint pour cette période.'**
+  /// **'Quota de {max} scans IA atteint pour ce mois.'**
   String scanQuotaReached(int max);
 
   /// No description provided for @scanContactAdded.
@@ -2253,7 +2253,7 @@ abstract class AppLocalizations {
   /// No description provided for @scanUsedCount.
   ///
   /// In fr, this message translates to:
-  /// **'{used} / {max} scans utilisés'**
+  /// **'{used} / {max} scans utilisés par mois'**
   String scanUsedCount(int used, int max);
 
   /// No description provided for @premiumTitle.
@@ -2439,7 +2439,7 @@ abstract class AppLocalizations {
   /// No description provided for @premiumScansPerPeriod.
   ///
   /// In fr, this message translates to:
-  /// **'{count} / période'**
+  /// **'{count} / mois'**
   String premiumScansPerPeriod(int count);
 
   /// No description provided for @premiumOneUser.
