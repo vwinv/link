@@ -65,8 +65,11 @@ class _CreateCardStep3ScreenState extends State<CreateCardStep3Screen> {
 
     final cardsProvider = context.read<CardsProvider>();
     cardsProvider.replaceCard(card);
-    await cardsProvider.load();
     await persistUserWorkspace(context);
+    await cardsProvider.load(force: true);
+    if (context.mounted) {
+      await persistUserWorkspace(context);
+    }
     if (!mounted) return;
 
     createCard.reset();

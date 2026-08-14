@@ -14,6 +14,7 @@ class ProDesignGridCard extends StatelessWidget {
     required this.initials,
     required this.subtitle,
     required this.companyName,
+    this.address,
     required this.onOpen,
     this.avatarUrl,
     this.logoUrl,
@@ -26,6 +27,7 @@ class ProDesignGridCard extends StatelessWidget {
   final String initials;
   final String subtitle;
   final String companyName;
+  final String? address;
   final String? avatarUrl;
   final String? logoUrl;
   final VoidCallback onOpen;
@@ -73,6 +75,7 @@ class ProDesignGridCard extends StatelessWidget {
                       initials: initials,
                       subtitle: subtitle,
                       companyName: companyName,
+                      address: address,
                       avatarUrl: avatarUrl,
                       logoUrl: logoUrl,
                     ),

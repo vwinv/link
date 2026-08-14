@@ -1,7 +1,7 @@
 /// Contenu officiel de la Politique de confidentialité DropOne.
 abstract final class PrivacyPolicyContent {
   static const lastUpdatedLabel = 'Dernière mise à jour : 21 juillet 2026';
-  static const title = 'Politique de confidentialité – DropOne';
+  static const title = 'Politique de confidentialité - DropOne';
 
   static const sections = <PrivacyPolicySection>[
     PrivacyPolicySection(

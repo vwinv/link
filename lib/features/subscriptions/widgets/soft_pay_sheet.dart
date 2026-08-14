@@ -566,7 +566,7 @@ class _SoftPaySheetState extends State<SoftPaySheet> {
                               color: Colors.white,
                             ),
                           )
-                        : const Text('J’ai payé — Terminer'),
+                        : const Text('J’ai payé - Terminer'),
                   ),
                 ],
               ],

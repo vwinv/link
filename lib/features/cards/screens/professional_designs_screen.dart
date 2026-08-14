@@ -415,6 +415,7 @@ class _ProfessionalDesignsScreenState extends State<ProfessionalDesignsScreen> {
                                 ? card.subtitle
                                 : companyName,
                             companyName: companyName,
+                            address: card.address?.trim(),
                             avatarUrl: avatarUrl,
                             logoUrl: logoUrl,
                             isActiveDesign: _isActiveDesign(
@@ -819,6 +820,7 @@ class _ProDesignGridTile extends StatelessWidget {
     required this.initials,
     required this.subtitle,
     required this.companyName,
+    this.address,
     required this.isActiveDesign,
     required this.onOpen,
     this.avatarUrl,
@@ -831,6 +833,7 @@ class _ProDesignGridTile extends StatelessWidget {
   final String initials;
   final String subtitle;
   final String companyName;
+  final String? address;
   final String? avatarUrl;
   final String? logoUrl;
   final bool isActiveDesign;
@@ -844,6 +847,7 @@ class _ProDesignGridTile extends StatelessWidget {
       initials: initials,
       subtitle: subtitle,
       companyName: companyName,
+      address: address,
       avatarUrl: avatarUrl,
       logoUrl: logoUrl,
       isActiveDesign: isActiveDesign,

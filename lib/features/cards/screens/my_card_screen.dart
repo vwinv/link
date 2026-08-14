@@ -27,11 +27,17 @@ class MyCardScreen extends StatefulWidget {
 }
 
 class _MyCardScreenState extends State<MyCardScreen> {
-  static const _displayedPlatforms = [
-    CardSocialPlatform.linkedin,
-    CardSocialPlatform.instagram,
-    CardSocialPlatform.whatsapp,
-  ];
+  List<CardSocialPlatform> get _displayedPlatforms {
+    const base = [
+      CardSocialPlatform.linkedin,
+      CardSocialPlatform.instagram,
+      CardSocialPlatform.whatsapp,
+    ];
+    if (_card.kind.isTeamLinked) {
+      return [...base, CardSocialPlatform.website];
+    }
+    return base;
+  }
 
   List<CardSocialLink> _socialLinks = [];
   var _isLoadingSocial = true;
@@ -73,6 +79,10 @@ class _MyCardScreenState extends State<MyCardScreen> {
       if (link.platform == platform && link.isConfigured) {
         return link.url;
       }
+    }
+    if (platform == CardSocialPlatform.website) {
+      final site = _card.website?.trim() ?? '';
+      if (site.isNotEmpty) return site;
     }
     return null;
   }
@@ -179,6 +189,7 @@ class _MyCardScreenState extends State<MyCardScreen> {
                     avatarUrl: card.avatarImageUrl,
                     email: card.email ?? '',
                     phone: card.phone,
+                    address: card.kind.isTeamLinked ? card.address : null,
                     subtitle: card.subtitle,
                     style: card.theme.style,
                     showQr: card.theme.showQrCode,
@@ -364,7 +375,9 @@ class _SocialNetworkIcon extends StatelessWidget {
           ),
           child: asset == null
               ? Icon(
-                  Icons.link_rounded,
+                  platform == CardSocialPlatform.website
+                      ? Icons.language_rounded
+                      : Icons.link_rounded,
                   color: isConfigured
                       ? platform.brandColor
                       : AppColors.textTertiaire,

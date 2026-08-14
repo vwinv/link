@@ -82,6 +82,10 @@ class CardsApiService {
     String? company,
     String? email,
     String? phone,
+    String? address,
+    bool includeAddress = false,
+    String? website,
+    bool includeWebsite = false,
     String? avatarUrl,
     bool includeAvatar = false,
     String? logoUrl,
@@ -95,6 +99,12 @@ class CardsApiService {
       'email': email ?? '',
       'phone': phone ?? '',
     };
+    if (includeAddress) {
+      body['address'] = address ?? '';
+    }
+    if (includeWebsite) {
+      body['website'] = website ?? '';
+    }
     if (includeAvatar) {
       body['avatarUrl'] = avatarUrl ?? '';
     }

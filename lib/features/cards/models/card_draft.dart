@@ -26,7 +26,7 @@ class CardDraft {
     if (job.isEmpty && org.isEmpty) return '';
     if (job.isEmpty) return org;
     if (org.isEmpty) return job;
-    return '$job · $org';
+    return '$job - $org';
   }
 
   ({String firstName, String lastName}) get splitName {

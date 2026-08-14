@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
 
-/// Avatar des designs pro — photo, logo d’équipe ou initiales.
+/// Avatar des designs pro - photo, logo d’équipe ou initiales.
 class ProDesignAvatar extends StatelessWidget {
   const ProDesignAvatar({
     required this.size,
@@ -27,8 +27,6 @@ class ProDesignAvatar extends StatelessWidget {
   String? get _resolvedImageUrl {
     final portrait = avatarUrl?.trim();
     if (portrait != null && portrait.isNotEmpty) return portrait;
-    final logo = logoUrl?.trim();
-    if (logo != null && logo.isNotEmpty) return logo;
     return null;
   }
 

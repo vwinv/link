@@ -570,6 +570,7 @@ class _CardTab extends StatelessWidget {
             avatarUrl: card!.avatarImageUrl,
             email: card!.email ?? '',
             phone: card!.phone,
+            address: card!.address,
             subtitle: card!.subtitle,
             style: card!.theme.style,
             showQr: card!.theme.showQrCode,
@@ -888,7 +889,7 @@ class _TeamTab extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${loading ? '—' : activeCount}',
+                    '${loading ? '-' : activeCount}',
                     style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: context.rs(28),
@@ -941,7 +942,7 @@ class _TeamTab extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Text(
-              '—',
+              '-',
               style: TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: context.rs(14),
@@ -994,7 +995,7 @@ class _TeamTab extends StatelessWidget {
                           ),
                           Text(
                             member.isPendingInvite
-                                ? '${member.subtitle} · ${member.status.label}'
+                                ? '${member.subtitle} - ${member.status.label}'
                                 : member.subtitle,
                             style: TextStyle(
                               color: AppColors.textSecondary,

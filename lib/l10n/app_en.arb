@@ -27,7 +27,7 @@
   "profilePremiumTitle": "Upgrade to Premium",
   "profilePremiumSubtitle": "Portfolio, pro designs, colors…",
   "profileTeamConfigure": "Set up your team",
-  "profileTeamMembers": "{teamName} · {count} members",
+  "profileTeamMembers": "{teamName} - {count} members",
   "profileCardsCount": "{count, plural, =1{1 card} other{{count} cards}}",
   "profilePrivacySoon": "Privacy settings coming soon",
   "profileDeleteAccountTitle": "Delete account",
@@ -102,10 +102,11 @@
   "editCardCompany": "Company",
   "editCardEmail": "Email",
   "editCardPhone": "Phone",
+  "editCardAddress": "Company address",
   "editCardCompanyLogo": "COMPANY LOGO",
   "editCardChangeLogo": "Change logo",
   "editCardImportLogo": "Import a logo",
-  "editCardLogoHint": "JPG, PNG · max 5 MB",
+  "editCardLogoHint": "JPG, PNG - max 5 MB",
   "editCardRemoveLogo": "Remove logo",
   "editCardRemovePhoto": "Remove photo",
   "editCardSocialTitle": "SOCIAL NETWORKS",
@@ -144,7 +145,7 @@
   "contactDetailAddedAt": "Added on",
   "contactDetailSourceExchange": "Drop One exchange",
   "contactDetailSourceScan": "AI Scan",
-  "contactDetailUnavailable": "—",
+  "contactDetailUnavailable": "-",
   "contactDetailActionsTitle": "Actions",
   "contactDetailCall": "Call",
   "contactDetailSendEmail": "Send email",
@@ -257,7 +258,7 @@
   "cardVisitorDetailShared": "Shared your card",
   "cardVisitorDetailYes": "Yes",
   "cardVisitorDetailNo": "No",
-  "cardVisitorDetailUnavailable": "—",
+  "cardVisitorDetailUnavailable": "-",
   "cardVisitorDetailMethodQr": "QR Code",
   "cardVisitorDetailMethodNfc": "NFC",
   "cardVisitorDetailMethodShare": "Direct share",
@@ -338,6 +339,7 @@
   "socialWhatsApp": "WhatsApp",
   "socialX": "X",
   "socialFacebook": "Facebook",
+  "socialWebsite": "Website",
 
   "commonSkip": "Skip",
   "commonStart": "Get started",
@@ -360,7 +362,19 @@
   "authPassword": "Password",
   "authPasswordRequired": "Password required",
   "authForgotPassword": "Forgot password?",
-  "authForgotPasswordSoon": "Password reset coming soon",
+  "authForgotPasswordTitle": "Forgot password",
+  "authForgotPasswordLead": "Enter the email of your account. We’ll send you a link to choose a new password.",
+  "authForgotPasswordSubmit": "Send reset link",
+  "authForgotPasswordSending": "Sending…",
+  "authForgotPasswordSent": "An email was sent to {email} with the reset link.",
+  "@authForgotPasswordSent": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "authForgotPasswordEmailRequired": "Email required",
+  "authForgotPasswordEmailInvalid": "Invalid email",
+  "authForgotPasswordBackToLogin": "Back to sign in",
   "authSignIn": "Sign in",
   "authContinueApple": "Continue with Apple",
   "authContinueGoogle": "Continue with Google",
@@ -387,7 +401,7 @@
   "onboardingPage1Title": "Your business card,\nalways with you",
   "onboardingPage1Description": "Create an elegant digital identity card in under 2 minutes.",
   "onboardingPage2Title": "Share in an instant",
-  "onboardingPage2Description": "QR code, AirDrop or link — no app required for your contacts.",
+  "onboardingPage2Description": "QR code, AirDrop or link - no app required for your contacts.",
   "onboardingPage3Title": "Keep it in your Wallet",
   "onboardingPage3Description": "Add your card to Apple Wallet and access it from the lock screen.",
 
@@ -408,7 +422,7 @@
   "walletAddedGeneric": "Card added to your Wallet.",
 
   "shareCardTitle": "Share my card",
-  "shareCardQrHint": "Have this code scanned — no app required for your contacts.",
+  "shareCardQrHint": "Have this code scanned - no app required for your contacts.",
   "shareOptionMessage": "Message",
   "shareOptionAirDrop": "AirDrop",
   "shareQuotaReached": "Share quota of {max} reached.",
@@ -480,7 +494,7 @@
     }
   },
   "premiumSeatsPickerTitle": "Number of users",
-  "premiumSeatsIncludedHint": "{count} included — cannot decrease",
+  "premiumSeatsIncludedHint": "{count} included - cannot decrease",
   "@premiumSeatsIncludedHint": {
     "placeholders": {
       "count": { "type": "int" }
@@ -592,7 +606,7 @@
   "proDesignsCardTypeSection": "CARD TYPE",
   "proDesignsConfiguringTeam": "Setting up your team space…",
   "proDesignsOpenTeamSetup": "Open team setup to create your pro card.",
-  "proDesignsTemplatesSection": "{count} TEMPLATES · LIVE PREVIEW",
+  "proDesignsTemplatesSection": "{count} TEMPLATES - LIVE PREVIEW",
   "proDesignsCompanyColors": "Company colors",
   "proDesignsCompanyColorsSubtitle": "Recolors compatible templates with your brand",
   "proDesignPreviewCompanyColorRequired": "Choose a company color before applying.",

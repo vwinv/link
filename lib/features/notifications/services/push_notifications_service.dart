@@ -83,7 +83,7 @@ class PushNotificationsService {
           canSyncToken = false;
           debugPrint(
             'Notifications: pas de token APNs. '
-            'Le push système ne marche pas sur simulateur iOS — '
+            'Le push système ne marche pas sur simulateur iOS - '
             'utilise un iPhone réel. L’inbox in-app reste disponible.',
           );
         }

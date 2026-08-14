@@ -87,7 +87,7 @@ class WalletPlatformService {
           .whereType<Object>()
           .map((e) => e.toString().trim())
           .where((e) => e.isNotEmpty)
-          .join(' — ');
+          .join(' - ');
       throw ApiException(
         detail.isEmpty
             ? 'Apple Wallet a refusé la carte (code ${error.code}).'

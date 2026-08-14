@@ -14,7 +14,7 @@ import 'package:linkflutter/providers/teams_provider.dart';
 import 'package:linkflutter/providers/workspace_mode_provider.dart';
 import 'package:provider/provider.dart';
 
-/// Résultat de l’écran d’invitation — non utilisé hors navigation.
+/// Résultat de l’écran d’invitation - non utilisé hors navigation.
 class TeamInviteScreen extends StatefulWidget {
   const TeamInviteScreen({super.key, required this.invitation});
 

@@ -39,10 +39,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _bootstrap() async {
+    if (!mounted) return;
     await Future.wait([
       _loadTeamMemberCount(),
       context.read<SubscriptionsProvider>().refresh(),
+      context.read<CardsProvider>().load(force: true),
+      context.read<TeamsProvider>().load(),
     ]);
+    if (!mounted) return;
+    await persistUserWorkspace(context);
   }
 
   Future<void> _loadTeamMemberCount() async {
@@ -254,13 +259,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     final owned = teams.ownedTeam ?? team;
     if (owned == null) {
-      await openSetupTeam(context);
+      final created = await openSetupTeam(context);
       if (!mounted) return;
+      if (created != null) {
+        try {
+          await context.read<CardsProvider>().ensureProfessionalCardForTeam(
+            created,
+            owner: context.read<AuthProvider>().user,
+          );
+        } on ApiException catch (error) {
+          if (mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(error.message)));
+          }
+        }
+        if (!mounted) return;
+        await persistUserWorkspace(context);
+      }
       await _loadTeamMemberCount();
       return;
     }
 
     await openTeamMembers(context, team: owned);
+    if (!mounted) return;
+    try {
+      await context.read<CardsProvider>().ensureProfessionalCardForTeam(
+        owned,
+        owner: context.read<AuthProvider>().user,
+      );
+      if (!mounted) return;
+      await persistUserWorkspace(context);
+    } on ApiException catch (_) {}
     if (!mounted) return;
     await _loadTeamMemberCount();
   }
@@ -269,32 +299,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
     BuildContext context,
     List<BusinessCard> cards,
   ) async {
-    if (cards.isEmpty) {
+    await context.read<CardsProvider>().load(force: true);
+    if (!context.mounted) return;
+    final latest = context.read<CardsProvider>().cards;
+    final source = latest.isNotEmpty ? latest : cards;
+
+    if (source.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.profileCreateCardFirst)),
       );
       return;
     }
 
-    final card = cards.length == 1
-        ? cards.first
-        : await _pickCard(context, cards);
+    final card = source.length == 1
+        ? source.first
+        : await _pickCard(context, source);
 
     if (card == null || !context.mounted) return;
     openMyCardScreen(context, card);
   }
 
   Future<void> _openWallet(BuildContext context, List<BusinessCard> cards) async {
-    if (cards.isEmpty) {
+    await context.read<CardsProvider>().load(force: true);
+    if (!context.mounted) return;
+    final latest = context.read<CardsProvider>().cards;
+    final source = latest.isNotEmpty ? latest : cards;
+
+    if (source.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.profileCreateCardForWallet)),
       );
       return;
     }
 
-    final card = cards.length == 1
-        ? cards.first
-        : await _pickCard(context, cards);
+    final card = source.length == 1
+        ? source.first
+        : await _pickCard(context, source);
 
     if (card == null || !context.mounted) return;
     openWalletScreen(context, card);

@@ -110,7 +110,7 @@ abstract final class SharePlatformService {
         }
       }
     } on MissingPluginException {
-      // Plugin natif pas chargé — repli presse-papiers ci-dessous.
+      // Plugin natif pas chargé - repli presse-papiers ci-dessous.
     }
 
     if (!context.mounted) return false;
@@ -118,7 +118,7 @@ abstract final class SharePlatformService {
     await _copyToClipboard(
       context,
       url,
-      'WhatsApp non disponible — lien DropOne copié, collez-le dans WhatsApp',
+      'WhatsApp non disponible - lien DropOne copié, collez-le dans WhatsApp',
     );
     return false;
   }

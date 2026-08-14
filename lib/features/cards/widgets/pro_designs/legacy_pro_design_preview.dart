@@ -11,6 +11,7 @@ class LegacyProDesignPreview extends StatelessWidget {
     required this.initials,
     required this.subtitle,
     required this.companyName,
+    this.address,
     this.tagLabel = '',
     this.compact = false,
     this.logoUrl,
@@ -23,6 +24,7 @@ class LegacyProDesignPreview extends StatelessWidget {
   final String initials;
   final String subtitle;
   final String companyName;
+  final String? address;
   final String tagLabel;
   final bool compact;
   final String? avatarUrl;
@@ -64,6 +66,19 @@ class LegacyProDesignPreview extends StatelessWidget {
                 size: headerIconSize,
               ),
               const SizedBox(width: 4),
+              if (logoUrl != null && logoUrl!.trim().isNotEmpty) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: Image.network(
+                    logoUrl!,
+                    width: compact ? 14 : 18,
+                    height: compact ? 14 : 18,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                  ),
+                ),
+                const SizedBox(width: 6),
+              ],
               Expanded(
                 child: Text(
                   companyName,
@@ -116,6 +131,20 @@ class LegacyProDesignPreview extends StatelessWidget {
               height: 1.3,
             ),
           ),
+          if ((address ?? '').trim().isNotEmpty) ...[
+            const SizedBox(height: 2),
+            Text(
+              address!.trim(),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: AppColors.onPrimary.withValues(alpha: 0.7),
+                fontSize: subtitleSize,
+                height: 1.3,
+              ),
+            ),
+          ],
           const Spacer(),
           _PreviewActionButton(
             label: 'Échanger mes coordonnées',

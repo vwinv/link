@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linkflutter/core/utils/responsive.dart';
 
-/// Tailles de référence des designs pro — mises à l’échelle via [BuildContext.rs].
+/// Tailles de référence des designs pro - mises à l’échelle via [BuildContext.rs].
 abstract final class ProDesignMetrics {
   static const baseHeroAvatarSize = 136.0;
   static const baseProfileAvatarSize = 88.0;

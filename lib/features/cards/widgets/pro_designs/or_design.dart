@@ -4,14 +4,17 @@ import 'package:linkflutter/core/utils/responsive.dart';
 import 'package:linkflutter/features/cards/models/pro_design_template.dart';
 import 'package:linkflutter/features/cards/widgets/pro_designs/pro_design_avatar.dart';
 import 'package:linkflutter/features/cards/widgets/pro_designs/pro_design_metrics.dart';
+import 'package:linkflutter/features/cards/widgets/pro_designs/pro_design_team_line.dart';
 
-/// Modèle Or — fond noir fixe ; seul l’accent (avatar + 1er bouton) est variable.
+/// Modèle Or - fond noir fixe ; seul l’accent (avatar + 1er bouton) est variable.
 class OrDesign extends StatelessWidget {
   const OrDesign({
     required this.template,
     required this.fullName,
     required this.initials,
     required this.subtitle,
+    this.companyName,
+    this.address,
     this.logoUrl,
     this.avatarUrl,
     super.key,
@@ -21,6 +24,8 @@ class OrDesign extends StatelessWidget {
   final String fullName;
   final String initials;
   final String subtitle;
+  final String? companyName;
+  final String? address;
   final String? avatarUrl;
   final String? logoUrl;
 
@@ -84,15 +89,20 @@ class OrDesign extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
-        Text(
-          subtitle,
-          textAlign: TextAlign.center,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
+        ProDesignTeamLine(
+          jobTitle: subtitle,
+          companyName: companyName,
+          address: address,
+          logoUrl: logoUrl,
+          jobStyle: TextStyle(
             color: AppColors.onPrimary.withValues(alpha: 0.72),
             fontSize: context.rs(15),
             height: 1.35,
+          ),
+          companyStyle: TextStyle(
+            color: AppColors.onPrimary,
+            fontSize: context.rs(15),
+            fontWeight: AppFontWeight.bold,
           ),
         ),
         const SizedBox(height: AppSpacing.lg),

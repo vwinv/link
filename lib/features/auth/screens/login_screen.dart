@@ -65,9 +65,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _onForgotPassword() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(context.l10n.authForgotPasswordSoon)),
-    );
+    final email = _emailController.text.trim();
+    final path = email.isEmpty
+        ? RoutePaths.forgotPassword
+        : '${RoutePaths.forgotPassword}?email=${Uri.encodeQueryComponent(email)}';
+    context.push(path);
   }
 
   @override

@@ -28,6 +28,8 @@ extension CardSocialPlatformL10n on CardSocialPlatform {
         return l10n.socialX;
       case CardSocialPlatform.facebook:
         return l10n.socialFacebook;
+      case CardSocialPlatform.website:
+        return l10n.socialWebsite;
     }
   }
 }

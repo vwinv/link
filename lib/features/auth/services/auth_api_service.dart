@@ -72,6 +72,14 @@ class AuthApiService {
     await _apiClient.delete('/users/me', authenticated: true);
   }
 
+  Future<void> requestPasswordReset({required String email}) async {
+    await _apiClient.post(
+      '/auth/forgot-password',
+      body: {'email': email},
+      timeout: const Duration(seconds: 25),
+    );
+  }
+
   ({String accessToken, User user}) _parseAuthResponse(
     Map<String, dynamic> response,
   ) {

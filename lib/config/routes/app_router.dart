@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:linkflutter/config/routes/route_paths.dart';
 import 'package:linkflutter/features/auth/screens/account_type_screen.dart';
 import 'package:linkflutter/features/auth/screens/login_screen.dart';
+import 'package:linkflutter/features/auth/screens/forgot_password_screen.dart';
 import 'package:linkflutter/features/auth/screens/register_screen.dart';
 import 'package:linkflutter/features/contacts/screens/contacts_screen.dart';
 import 'package:linkflutter/features/cards/screens/my_cards_screen.dart';
@@ -64,7 +65,8 @@ class AppRouter {
         final isAuthenticated = authProvider.isAuthenticated;
         final isAuthRoute =
             state.matchedLocation == RoutePaths.login ||
-            state.matchedLocation == RoutePaths.register;
+            state.matchedLocation == RoutePaths.register ||
+            state.matchedLocation == RoutePaths.forgotPassword;
         final isSplash = state.matchedLocation == RoutePaths.splash;
         final isOnboarding = state.matchedLocation == RoutePaths.onboarding;
         final isAccountType = state.matchedLocation == RoutePaths.accountType;
@@ -114,6 +116,12 @@ class AppRouter {
         GoRoute(
           path: RoutePaths.login,
           builder: (context, state) => const LoginScreen(),
+        ),
+        GoRoute(
+          path: RoutePaths.forgotPassword,
+          builder: (context, state) => ForgotPasswordScreen(
+            initialEmail: state.uri.queryParameters['email'],
+          ),
         ),
         GoRoute(
           path: RoutePaths.register,

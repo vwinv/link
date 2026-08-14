@@ -174,7 +174,7 @@ class _SoftPayCheckoutScreenState extends State<SoftPayCheckoutScreen> {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: const Text('J’ai payé — Retour'),
+                child: const Text('J’ai payé - Retour'),
               ),
             ),
           ),

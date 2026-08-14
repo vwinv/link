@@ -51,7 +51,7 @@ class SharingApiService {
         authenticated: true,
       );
     } catch (_) {
-      // Stat analytics — ne bloque pas l’enregistrement contact.
+      // Stat analytics - ne bloque pas l’enregistrement contact.
     }
   }
 }

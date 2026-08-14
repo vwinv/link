@@ -186,14 +186,12 @@ class _ProDesignPreviewScreenState extends State<ProDesignPreviewScreen> {
   }
 
   String? _logoUrl(BuildContext context, BusinessCard card) {
-    if (!card.isProfessional) return null;
+    if (!card.kind.isTeamLinked) return null;
     return card.companyLogoImageUrl(context.read<TeamsProvider>().myTeam);
   }
 
-  String _avatarInitials(BuildContext context, BusinessCard card) {
-    if (!card.isProfessional) return card.initials;
-    final team = context.read<TeamsProvider>().myTeam;
-    return team?.initials ?? card.companyInitials ?? card.initials;
+  String _avatarInitials(BusinessCard card) {
+    return card.initials;
   }
 
   Widget _buildBody(
@@ -211,7 +209,7 @@ class _ProDesignPreviewScreenState extends State<ProDesignPreviewScreen> {
     final isArc = template.usesArcLayout;
     final logoUrl = _logoUrl(context, card);
     final avatarUrl = card.avatarImageUrl;
-    final avatarInitials = _avatarInitials(context, card);
+    final avatarInitials = _avatarInitials(card);
 
     if (isBubble) {
       return Column(
@@ -258,6 +256,8 @@ class _ProDesignPreviewScreenState extends State<ProDesignPreviewScreen> {
                               fullName: card.fullName,
                               initials: avatarInitials,
                               subtitle: _subtitle,
+                              companyName: card.company?.trim(),
+                              address: card.address?.trim(),
                               avatarUrl: avatarUrl,
                               logoUrl: logoUrl,
                               showHeader: false,
@@ -291,6 +291,8 @@ class _ProDesignPreviewScreenState extends State<ProDesignPreviewScreen> {
                   fullName: card.fullName,
                   initials: avatarInitials,
                   subtitle: _subtitle,
+                  companyName: card.company?.trim(),
+                  address: card.address?.trim(),
                   avatarUrl: avatarUrl,
                   logoUrl: logoUrl,
                   topInset: MediaQuery.paddingOf(context).top,
@@ -420,6 +422,7 @@ class _ProDesignPreviewScreenState extends State<ProDesignPreviewScreen> {
                           companyName: card.company?.trim().isNotEmpty == true
                               ? card.company!.trim()
                               : l10n.setupTeamNameHint,
+                          address: card.address?.trim(),
                           avatarUrl: avatarUrl,
                           logoUrl: logoUrl,
                         ),

@@ -11,7 +11,7 @@ import 'package:linkflutter/features/cards/widgets/pro_designs/legacy_pro_design
 import 'package:linkflutter/features/cards/widgets/pro_designs/nuit_design.dart';
 import 'package:linkflutter/features/cards/widgets/pro_designs/or_design.dart';
 
-/// Contenu de la carte — partagé entre l’aperçu plein écran et la grille.
+/// Contenu de la carte - partagé entre l’aperçu plein écran et la grille.
 class ProDesignBody extends StatelessWidget {
   const ProDesignBody({
     required this.template,
@@ -19,6 +19,7 @@ class ProDesignBody extends StatelessWidget {
     required this.initials,
     required this.subtitle,
     this.companyName = 'Mega SN',
+    this.address,
     this.avatarUrl,
     this.logoUrl,
     super.key,
@@ -29,6 +30,7 @@ class ProDesignBody extends StatelessWidget {
   final String initials;
   final String subtitle;
   final String companyName;
+  final String? address;
   final String? avatarUrl;
   final String? logoUrl;
 
@@ -41,6 +43,8 @@ class ProDesignBody extends StatelessWidget {
           fullName: fullName,
           initials: initials,
           subtitle: subtitle,
+          companyName: companyName,
+          address: address,
           avatarUrl: avatarUrl,
           logoUrl: logoUrl,
         );
@@ -50,6 +54,8 @@ class ProDesignBody extends StatelessWidget {
           fullName: fullName,
           initials: initials,
           subtitle: subtitle,
+          companyName: companyName,
+          address: address,
           avatarUrl: avatarUrl,
           logoUrl: logoUrl,
         );
@@ -59,6 +65,8 @@ class ProDesignBody extends StatelessWidget {
           fullName: fullName,
           initials: initials,
           subtitle: subtitle,
+          companyName: companyName,
+          address: address,
           avatarUrl: avatarUrl,
           logoUrl: logoUrl,
         );
@@ -68,6 +76,8 @@ class ProDesignBody extends StatelessWidget {
           fullName: fullName,
           initials: initials,
           subtitle: subtitle,
+          companyName: companyName,
+          address: address,
           avatarUrl: avatarUrl,
           logoUrl: logoUrl,
         );
@@ -77,6 +87,8 @@ class ProDesignBody extends StatelessWidget {
           fullName: fullName,
           initials: initials,
           subtitle: subtitle,
+          companyName: companyName,
+          address: address,
           avatarUrl: avatarUrl,
           logoUrl: logoUrl,
         );
@@ -86,6 +98,8 @@ class ProDesignBody extends StatelessWidget {
           fullName: fullName,
           initials: initials,
           subtitle: subtitle,
+          companyName: companyName,
+          address: address,
           avatarUrl: avatarUrl,
           logoUrl: logoUrl,
         );
@@ -95,6 +109,8 @@ class ProDesignBody extends StatelessWidget {
           fullName: fullName,
           initials: initials,
           subtitle: subtitle,
+          companyName: companyName,
+          address: address,
           avatarUrl: avatarUrl,
           logoUrl: logoUrl,
         );
@@ -104,6 +120,8 @@ class ProDesignBody extends StatelessWidget {
           fullName: fullName,
           initials: initials,
           subtitle: subtitle,
+          companyName: companyName,
+          address: address,
           avatarUrl: avatarUrl,
           logoUrl: logoUrl,
         );
@@ -114,6 +132,7 @@ class ProDesignBody extends StatelessWidget {
           initials: initials,
           subtitle: subtitle,
           companyName: companyName,
+          address: address,
           compact: false,
           avatarUrl: avatarUrl,
           logoUrl: logoUrl,

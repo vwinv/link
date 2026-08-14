@@ -44,6 +44,7 @@ class ApiClient {
     String path, {
     Map<String, dynamic>? body,
     bool authenticated = false,
+    Duration? timeout,
   }) async {
     final response = await _timed(
       _client.post(
@@ -51,6 +52,7 @@ class ApiClient {
         headers: _headers(authenticated: authenticated),
         body: body == null ? null : jsonEncode(body),
       ),
+      timeout: timeout,
     );
     final data = _handleResponse(response);
     if (data is Map<String, dynamic>) return data;
@@ -174,9 +176,12 @@ class ApiClient {
     );
   }
 
-  Future<http.Response> _timed(Future<http.Response> request) {
+  Future<http.Response> _timed(
+    Future<http.Response> request, {
+    Duration? timeout,
+  }) {
     return request.timeout(
-      _timeout,
+      timeout ?? _timeout,
       onTimeout: () {
         throw ApiException('Serveur injoignable', statusCode: 0);
       },

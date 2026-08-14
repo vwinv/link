@@ -118,3 +118,27 @@ Future<void> persistUserWorkspace(BuildContext context) async {
     teams: context.read<TeamsProvider>(),
   );
 }
+
+/// Recharge les cartes et crée la carte pro manquante (sans relancer l'app).
+Future<void> syncOwnedCardsForEditing(BuildContext context) async {
+  final cards = context.read<CardsProvider>();
+  final teams = context.read<TeamsProvider>();
+  final user = context.read<AuthProvider>().user;
+
+  await Future.wait([
+    cards.load(force: true),
+    teams.load(),
+  ]);
+  if (!context.mounted) return;
+
+  final team = teams.ownedTeam;
+  if (team != null && !cards.hasProfessionalCard && user != null) {
+    try {
+      await cards.ensureProfessionalCardForTeam(team, owner: user);
+    } catch (_) {}
+  }
+
+  if (context.mounted) {
+    await persistUserWorkspace(context);
+  }
+}

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:linkflutter/core/constants/app_assets.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/features/cards/models/card_badge_type.dart';
 import 'package:linkflutter/features/cards/models/card_style.dart';
@@ -12,6 +13,7 @@ class CardPreview extends StatelessWidget {
     super.key,
     this.subtitle,
     this.phone,
+    this.address,
     this.tagLabel = 'Carte perso',
     this.borderRadius = AppRadius.xl,
     this.style = CardStyle.noir,
@@ -20,6 +22,9 @@ class CardPreview extends StatelessWidget {
     this.avatarUrl,
     this.companyLogoUrl,
     this.cardBadge = CardBadgeType.personalTag,
+    this.avatarOnRight = false,
+    this.avatarSize = 48,
+    this.showDropOneLogo = false,
   });
 
   static const _placeholder = 'xxxxxxx';
@@ -29,6 +34,7 @@ class CardPreview extends StatelessWidget {
   final String email;
   final String? subtitle;
   final String? phone;
+  final String? address;
   final String tagLabel;
   final double borderRadius;
   final CardStyle style;
@@ -37,6 +43,9 @@ class CardPreview extends StatelessWidget {
   final String? avatarUrl;
   final String? companyLogoUrl;
   final CardBadgeType cardBadge;
+  final bool avatarOnRight;
+  final double avatarSize;
+  final bool showDropOneLogo;
 
   bool get _showsCompanyLogo => cardBadge == CardBadgeType.companyLogo;
 
@@ -82,16 +91,16 @@ class CardPreview extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipOval(
-                child: Container(
-                  width: 48,
-                  height: 48,
-                  color: style.accent,
-                  alignment: Alignment.center,
-                  child: _buildAvatar(),
+              if (avatarOnRight) ...[
+                _LeadingBrandMark(
+                  logoUrl: companyLogoUrl,
+                  useDropOne: showDropOneLogo,
                 ),
-              ),
-              const SizedBox(width: AppSpacing.md),
+                const SizedBox(width: AppSpacing.md),
+              ] else ...[
+                _avatarChip(),
+                const SizedBox(width: AppSpacing.md),
+              ],
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,10 +125,25 @@ class CardPreview extends StatelessWidget {
                         fontSize: AppFontSize.sm,
                       ),
                     ),
+                    if ((address ?? '').trim().isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        address!.trim(),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: _secondaryText,
+                          fontSize: AppFontSize.sm,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
-              if (_showsCompanyLogo) ...[
+              if (avatarOnRight) ...[
+                const SizedBox(width: AppSpacing.sm),
+                _avatarChip(),
+              ] else if (_showsCompanyLogo) ...[
                 const SizedBox(width: AppSpacing.sm),
                 _CompanyLogoMark(logoUrl: companyLogoUrl),
               ] else ...[
@@ -161,6 +185,16 @@ class CardPreview extends StatelessWidget {
                       color: _secondaryText,
                       textColor: _primaryText,
                     ),
+                    if ((address ?? '').trim().isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      _ContactRow(
+                        icon: Icons.location_on_outlined,
+                        label: address!.trim(),
+                        color: _secondaryText,
+                        textColor: _primaryText,
+                        maxLines: 2,
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -183,13 +217,25 @@ class CardPreview extends StatelessWidget {
     );
   }
 
+  Widget _avatarChip() {
+    return ClipOval(
+      child: Container(
+        width: avatarSize,
+        height: avatarSize,
+        color: style.accent,
+        alignment: Alignment.center,
+        child: _buildAvatar(),
+      ),
+    );
+  }
+
   Widget _buildAvatar() {
     final url = avatarUrl?.trim();
     if (url != null && url.isNotEmpty) {
       return Image.network(
         url,
-        width: 48,
-        height: 48,
+        width: avatarSize,
+        height: avatarSize,
         fit: BoxFit.cover,
         errorBuilder: (_, _, _) => _initialsAvatar(),
       );
@@ -205,6 +251,59 @@ class CardPreview extends StatelessWidget {
         fontSize: AppFontSize.sm,
         fontWeight: AppFontWeight.bold,
       ),
+    );
+  }
+}
+
+class _LeadingBrandMark extends StatelessWidget {
+  const _LeadingBrandMark({
+    this.logoUrl,
+    this.useDropOne = false,
+  });
+
+  final String? logoUrl;
+  final bool useDropOne;
+
+  @override
+  Widget build(BuildContext context) {
+    final url = logoUrl?.trim();
+    final hasNetwork = url != null && url.isNotEmpty;
+
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: AppColors.onPrimary,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      clipBehavior: Clip.antiAlias,
+      alignment: Alignment.center,
+      child: hasNetwork
+          ? Image.network(
+              url,
+              width: 40,
+              height: 40,
+              fit: BoxFit.cover,
+              errorBuilder: (_, _, _) => useDropOne
+                  ? Image.asset(AppAssets.icone, width: 40, height: 40)
+                  : const Icon(
+                      Icons.business_rounded,
+                      size: 20,
+                      color: AppColors.textTertiaire,
+                    ),
+            )
+          : useDropOne
+              ? Image.asset(
+                  AppAssets.icone,
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover,
+                )
+              : const Icon(
+                  Icons.business_rounded,
+                  size: 20,
+                  color: AppColors.textTertiaire,
+                ),
     );
   }
 }
@@ -289,23 +388,27 @@ class _ContactRow extends StatelessWidget {
     required this.label,
     required this.color,
     required this.textColor,
+    this.maxLines = 1,
   });
 
   final IconData icon;
   final String label;
   final Color color;
   final Color textColor;
+  final int maxLines;
 
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment:
+          maxLines > 1 ? CrossAxisAlignment.start : CrossAxisAlignment.center,
       children: [
         Icon(icon, size: 16, color: color),
         const SizedBox(width: AppSpacing.sm),
         Flexible(
           child: Text(
             label,
-            maxLines: 1,
+            maxLines: maxLines,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(color: textColor, fontSize: AppFontSize.sm),
           ),

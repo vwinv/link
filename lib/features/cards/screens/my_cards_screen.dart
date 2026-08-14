@@ -219,6 +219,9 @@ class _MyCardsScreenState extends State<MyCardsScreen>
     final card = await openSetupProfessionalTeam(context);
     if (!mounted || card == null) return;
     await persistUserWorkspace(context);
+    await context.read<CardsProvider>().load(force: true);
+    if (!mounted) return;
+    await persistUserWorkspace(context);
     setState(() => _scope = _CardScope.professional);
   }
 
@@ -296,6 +299,7 @@ class _MyCardsScreenState extends State<MyCardsScreen>
                       avatarUrl: card.avatarImageUrl,
                       email: card.email ?? '',
                       phone: card.phone,
+                      address: card.kind.isTeamLinked ? card.address : null,
                       subtitle: card.subtitle,
                       style: card.theme.style,
                       showQr: card.theme.showQrCode,

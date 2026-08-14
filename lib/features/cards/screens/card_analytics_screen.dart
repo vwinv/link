@@ -117,7 +117,7 @@ class _CardAnalyticsScreenState extends State<CardAnalyticsScreen> {
       final visitors = await api.fetchCardVisitors(_card.id);
       viewDates = visitors.visitors.map((v) => v.viewedAt).toList();
     } catch (_) {
-      // Keep empty dates — still show a chart for the period.
+      // Keep empty dates - still show a chart for the period.
     }
 
     var series = CardAnalytics.buildSeries(
@@ -158,7 +158,7 @@ class _CardAnalyticsScreenState extends State<CardAnalyticsScreen> {
     if (_period == _AnalyticsPeriod.custom && _customRange != null) {
       final locale = Localizations.localeOf(context).toString();
       final fmt = DateFormat.MMMd(locale);
-      return '${fmt.format(_customRange!.start)} – ${fmt.format(_customRange!.end)}';
+      return '${fmt.format(_customRange!.start)} - ${fmt.format(_customRange!.end)}';
     }
     return switch (_period) {
       _AnalyticsPeriod.days7 => l10n.cardAnalyticsPeriod7,
@@ -813,7 +813,7 @@ class _ViewsLineChart extends StatelessWidget {
       child: points.isEmpty
           ? Center(
               child: Text(
-                '—',
+                '-',
                 style: TextStyle(
                   color: AppColors.textTertiaire,
                   fontSize: context.rs(14),
@@ -1188,7 +1188,7 @@ class _AnalyticsRangePopupState extends State<_AnalyticsRangePopup> {
   String _rangeLabel(BuildContext context) {
     final locale = Localizations.localeOf(context).toString();
     final fmt = DateFormat.yMMMd(locale);
-    return '${fmt.format(_start)} – ${fmt.format(_end)}';
+    return '${fmt.format(_start)} - ${fmt.format(_end)}';
   }
 
   @override

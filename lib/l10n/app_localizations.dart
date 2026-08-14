@@ -251,7 +251,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileTeamMembers.
   ///
   /// In fr, this message translates to:
-  /// **'{teamName} · {count} membres'**
+  /// **'{teamName} - {count} membres'**
   String profileTeamMembers(String teamName, int count);
 
   /// No description provided for @profileCardsCount.
@@ -656,6 +656,12 @@ abstract class AppLocalizations {
   /// **'Téléphone'**
   String get editCardPhone;
 
+  /// No description provided for @editCardAddress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse de l’entreprise'**
+  String get editCardAddress;
+
   /// No description provided for @editCardCompanyLogo.
   ///
   /// In fr, this message translates to:
@@ -677,7 +683,7 @@ abstract class AppLocalizations {
   /// No description provided for @editCardLogoHint.
   ///
   /// In fr, this message translates to:
-  /// **'JPG, PNG · max 5 Mo'**
+  /// **'JPG, PNG - max 5 Mo'**
   String get editCardLogoHint;
 
   /// No description provided for @editCardRemoveLogo.
@@ -899,7 +905,7 @@ abstract class AppLocalizations {
   /// No description provided for @contactDetailUnavailable.
   ///
   /// In fr, this message translates to:
-  /// **'—'**
+  /// **'-'**
   String get contactDetailUnavailable;
 
   /// No description provided for @contactDetailActionsTitle.
@@ -1487,7 +1493,7 @@ abstract class AppLocalizations {
   /// No description provided for @cardVisitorDetailUnavailable.
   ///
   /// In fr, this message translates to:
-  /// **'—'**
+  /// **'-'**
   String get cardVisitorDetailUnavailable;
 
   /// No description provided for @cardVisitorDetailMethodQr.
@@ -1728,6 +1734,12 @@ abstract class AppLocalizations {
   /// **'Facebook'**
   String get socialFacebook;
 
+  /// No description provided for @socialWebsite.
+  ///
+  /// In fr, this message translates to:
+  /// **'Site web'**
+  String get socialWebsite;
+
   /// No description provided for @commonSkip.
   ///
   /// In fr, this message translates to:
@@ -1848,11 +1860,53 @@ abstract class AppLocalizations {
   /// **'Mot de passe oublié ?'**
   String get authForgotPassword;
 
-  /// No description provided for @authForgotPasswordSoon.
+  /// No description provided for @authForgotPasswordTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Réinitialisation du mot de passe bientôt disponible'**
-  String get authForgotPasswordSoon;
+  /// **'Mot de passe oublié'**
+  String get authForgotPasswordTitle;
+
+  /// No description provided for @authForgotPasswordLead.
+  ///
+  /// In fr, this message translates to:
+  /// **'Indiquez l’e-mail de votre compte. Nous vous enverrons un lien pour choisir un nouveau mot de passe.'**
+  String get authForgotPasswordLead;
+
+  /// No description provided for @authForgotPasswordSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer le lien'**
+  String get authForgotPasswordSubmit;
+
+  /// No description provided for @authForgotPasswordSending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoi…'**
+  String get authForgotPasswordSending;
+
+  /// No description provided for @authForgotPasswordSent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un e-mail a été envoyé à {email} avec le lien de réinitialisation.'**
+  String authForgotPasswordSent(String email);
+
+  /// No description provided for @authForgotPasswordEmailRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'E-mail requis'**
+  String get authForgotPasswordEmailRequired;
+
+  /// No description provided for @authForgotPasswordEmailInvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'E-mail invalide'**
+  String get authForgotPasswordEmailInvalid;
+
+  /// No description provided for @authForgotPasswordBackToLogin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour à la connexion'**
+  String get authForgotPasswordBackToLogin;
 
   /// No description provided for @authSignIn.
   ///
@@ -2001,7 +2055,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingPage2Description.
   ///
   /// In fr, this message translates to:
-  /// **'QR code, AirDrop ou lien — sans application pour vos contacts.'**
+  /// **'QR code, AirDrop ou lien - sans application pour vos contacts.'**
   String get onboardingPage2Description;
 
   /// No description provided for @onboardingPage3Title.
@@ -2115,7 +2169,7 @@ abstract class AppLocalizations {
   /// No description provided for @shareCardQrHint.
   ///
   /// In fr, this message translates to:
-  /// **'Faites scanner ce code — aucune app requise pour vos contacts.'**
+  /// **'Faites scanner ce code - aucune app requise pour vos contacts.'**
   String get shareCardQrHint;
 
   /// No description provided for @shareOptionMessage.
@@ -2373,7 +2427,7 @@ abstract class AppLocalizations {
   /// No description provided for @premiumSeatsIncludedHint.
   ///
   /// In fr, this message translates to:
-  /// **'{count} inclus — non diminuable'**
+  /// **'{count} inclus - non diminuable'**
   String premiumSeatsIncludedHint(int count);
 
   /// No description provided for @premiumSeatsTotal.
@@ -2799,7 +2853,7 @@ abstract class AppLocalizations {
   /// No description provided for @proDesignsTemplatesSection.
   ///
   /// In fr, this message translates to:
-  /// **'{count} MODÈLES · APERÇU EN TEMPS RÉEL'**
+  /// **'{count} MODÈLES - APERÇU EN TEMPS RÉEL'**
   String proDesignsTemplatesSection(int count);
 
   /// No description provided for @proDesignsCompanyColors.

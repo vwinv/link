@@ -1,13 +1,13 @@
 /// Configuration OAuth 2.0 / OpenID Connect (Google + Apple).
 ///
-/// Option 1 — fichier local (recommandé en dev) :
+/// Option 1 - fichier local (recommandé en dev) :
 /// ```bash
 /// cp oauth.env.json.example oauth.env.json
 /// # puis remplir les IDs Google Cloud
 /// flutter run --dart-define-from-file=oauth.env.json
 /// ```
 ///
-/// Option 2 — variables individuelles :
+/// Option 2 - variables individuelles :
 /// ```bash
 /// flutter run \
 ///   --dart-define=GOOGLE_WEB_CLIENT_ID=xxx.apps.googleusercontent.com \
@@ -31,7 +31,7 @@ abstract final class OAuthConfig {
         '880526404169-oupm39ivodrfs20324kskvc84nffm7rj.apps.googleusercontent.com',
   );
 
-  /// Bundle ID iOS — doit correspondre à `APPLE_CLIENT_ID` côté backend.
+  /// Bundle ID iOS - doit correspondre à `APPLE_CLIENT_ID` côté backend.
   static const appleClientId = String.fromEnvironment(
     'APPLE_CLIENT_ID',
     defaultValue: 'com.mega.dropone',

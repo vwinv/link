@@ -27,7 +27,7 @@
   "profilePremiumTitle": "Passer à Premium",
   "profilePremiumSubtitle": "Portfolio, designs pro, couleurs…",
   "profileTeamConfigure": "Configurer votre équipe",
-  "profileTeamMembers": "{teamName} · {count} membres",
+  "profileTeamMembers": "{teamName} - {count} membres",
   "@profileTeamMembers": {
     "placeholders": {
       "teamName": { "type": "String" },
@@ -128,10 +128,11 @@
   "editCardCompany": "Entreprise",
   "editCardEmail": "E-mail",
   "editCardPhone": "Téléphone",
+  "editCardAddress": "Adresse de l’entreprise",
   "editCardCompanyLogo": "LOGO ENTREPRISE",
   "editCardChangeLogo": "Changer le logo",
   "editCardImportLogo": "Importer un logo",
-  "editCardLogoHint": "JPG, PNG · max 5 Mo",
+  "editCardLogoHint": "JPG, PNG - max 5 Mo",
   "editCardRemoveLogo": "Supprimer le logo",
   "editCardRemovePhoto": "Supprimer la photo",
   "editCardSocialTitle": "RÉSEAUX SOCIAUX",
@@ -180,7 +181,7 @@
   "contactDetailAddedAt": "Ajouté le",
   "contactDetailSourceExchange": "Échange Drop One",
   "contactDetailSourceScan": "Scan IA",
-  "contactDetailUnavailable": "—",
+  "contactDetailUnavailable": "-",
   "contactDetailActionsTitle": "Actions",
   "contactDetailCall": "Appeler",
   "contactDetailSendEmail": "Envoyer un email",
@@ -293,7 +294,7 @@
   "cardVisitorDetailShared": "A partagé votre carte",
   "cardVisitorDetailYes": "Oui",
   "cardVisitorDetailNo": "Non",
-  "cardVisitorDetailUnavailable": "—",
+  "cardVisitorDetailUnavailable": "-",
   "cardVisitorDetailMethodQr": "QR Code",
   "cardVisitorDetailMethodNfc": "NFC",
   "cardVisitorDetailMethodShare": "Partage direct",
@@ -374,6 +375,7 @@
   "socialWhatsApp": "WhatsApp",
   "socialX": "X",
   "socialFacebook": "Facebook",
+  "socialWebsite": "Site web",
 
   "commonSkip": "Passer",
   "commonStart": "Commencer",
@@ -396,7 +398,19 @@
   "authPassword": "Mot de passe",
   "authPasswordRequired": "Mot de passe requis",
   "authForgotPassword": "Mot de passe oublié ?",
-  "authForgotPasswordSoon": "Réinitialisation du mot de passe bientôt disponible",
+  "authForgotPasswordTitle": "Mot de passe oublié",
+  "authForgotPasswordLead": "Indiquez l’e-mail de votre compte. Nous vous enverrons un lien pour choisir un nouveau mot de passe.",
+  "authForgotPasswordSubmit": "Envoyer le lien",
+  "authForgotPasswordSending": "Envoi…",
+  "authForgotPasswordSent": "Un e-mail a été envoyé à {email} avec le lien de réinitialisation.",
+  "@authForgotPasswordSent": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "authForgotPasswordEmailRequired": "E-mail requis",
+  "authForgotPasswordEmailInvalid": "E-mail invalide",
+  "authForgotPasswordBackToLogin": "Retour à la connexion",
   "authSignIn": "Se connecter",
   "authContinueApple": "Continuer avec Apple",
   "authContinueGoogle": "Continuer avec Google",
@@ -423,7 +437,7 @@
   "onboardingPage1Title": "Votre carte de visite,\ntoujours sur vous",
   "onboardingPage1Description": "Créez une carte d'identité numérique élégante en moins de 2 minutes.",
   "onboardingPage2Title": "Partagez en un instant",
-  "onboardingPage2Description": "QR code, AirDrop ou lien — sans application pour vos contacts.",
+  "onboardingPage2Description": "QR code, AirDrop ou lien - sans application pour vos contacts.",
   "onboardingPage3Title": "Gardez-la dans votre Wallet",
   "onboardingPage3Description": "Ajoutez votre carte à Apple Wallet et accédez-y depuis l'écran verrouillé.",
 
@@ -444,7 +458,7 @@
   "walletAddedGeneric": "Carte ajoutée à votre Wallet.",
 
   "shareCardTitle": "Partager ma carte",
-  "shareCardQrHint": "Faites scanner ce code — aucune app requise pour vos contacts.",
+  "shareCardQrHint": "Faites scanner ce code - aucune app requise pour vos contacts.",
   "shareOptionMessage": "Message",
   "shareOptionAirDrop": "AirDrop",
   "shareQuotaReached": "Quota de {max} partages atteint.",
@@ -533,7 +547,7 @@
     }
   },
   "premiumSeatsPickerTitle": "Nombre d'utilisateurs",
-  "premiumSeatsIncludedHint": "{count} inclus — non diminuable",
+  "premiumSeatsIncludedHint": "{count} inclus - non diminuable",
   "@premiumSeatsIncludedHint": {
     "placeholders": {
       "count": { "type": "int" }
@@ -670,7 +684,7 @@
   "proDesignsCardTypeSection": "TYPE DE CARTE",
   "proDesignsConfiguringTeam": "Configuration de votre espace équipe…",
   "proDesignsOpenTeamSetup": "Ouvrez la configuration équipe pour créer votre carte pro.",
-  "proDesignsTemplatesSection": "{count} MODÈLES · APERÇU EN TEMPS RÉEL",
+  "proDesignsTemplatesSection": "{count} MODÈLES - APERÇU EN TEMPS RÉEL",
   "@proDesignsTemplatesSection": {
     "placeholders": {
       "count": { "type": "int" }

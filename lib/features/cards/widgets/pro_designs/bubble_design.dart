@@ -5,14 +5,17 @@ import 'package:linkflutter/features/cards/models/pro_design_template.dart';
 
 import 'package:linkflutter/features/cards/widgets/pro_designs/pro_design_avatar.dart';
 import 'package:linkflutter/features/cards/widgets/pro_designs/pro_design_metrics.dart';
+import 'package:linkflutter/features/cards/widgets/pro_designs/pro_design_team_line.dart';
 
-/// Modèle Bubble — header découpé + bulle blanche ; seul le thème est variable.
+/// Modèle Bubble - header découpé + bulle blanche ; seul le thème est variable.
 class BubbleDesign extends StatelessWidget {
   const BubbleDesign({
     required this.template,
     required this.fullName,
     required this.initials,
-    required     this.subtitle,
+    required this.subtitle,
+    this.companyName,
+    this.address,
     this.avatarUrl,
     this.logoUrl,
     this.showHeader = true,
@@ -23,6 +26,8 @@ class BubbleDesign extends StatelessWidget {
   final String fullName;
   final String initials;
   final String subtitle;
+  final String? companyName;
+  final String? address;
   final String? avatarUrl;
   final String? logoUrl;
   final bool showHeader;
@@ -79,15 +84,20 @@ class BubbleDesign extends StatelessWidget {
         ),
       ),
       const SizedBox(height: AppSpacing.sm),
-      Text(
-        subtitle,
-        textAlign: TextAlign.center,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
+      ProDesignTeamLine(
+        jobTitle: subtitle,
+        companyName: companyName,
+        address: address,
+        logoUrl: logoUrl,
+        jobStyle: TextStyle(
           color: AppColors.textSecondary,
           fontSize: context.rs(15),
           height: 1.35,
+        ),
+        companyStyle: TextStyle(
+          color: AppColors.textPrimary,
+          fontSize: context.rs(15),
+          fontWeight: AppFontWeight.bold,
         ),
       ),
       const SizedBox(height: AppSpacing.lg),

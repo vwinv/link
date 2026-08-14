@@ -1,3 +1,4 @@
+import 'package:linkflutter/features/cards/models/card_kind.dart';
 import 'package:linkflutter/features/cards/models/card_social_platform.dart';
 
 class SocialLinkDraft {
@@ -22,8 +23,13 @@ class SocialLinkDraft {
     );
   }
 
-  static List<SocialLinkDraft> initialDefaults() {
+  static List<SocialLinkDraft> initialDefaults({CardKind? kind}) {
+    final includeWebsite = kind?.isTeamLinked ?? false;
     return CardSocialPlatform.values
+        .where(
+          (platform) =>
+              includeWebsite || platform != CardSocialPlatform.website,
+        )
         .map((platform) => SocialLinkDraft(platform: platform))
         .toList();
   }

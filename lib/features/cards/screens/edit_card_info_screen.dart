@@ -45,6 +45,7 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
   late final TextEditingController _companyController;
   late final TextEditingController _emailController;
   late final TextEditingController _phoneController;
+  late final TextEditingController _addressController;
   late BusinessCard _card;
   var _isSaving = false;
   String? _logoFilePath;
@@ -55,8 +56,8 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
   var _avatarRemoved = false;
   final _imagePickAndCrop = ImagePickAndCrop();
   final _socialControllers = <CardSocialPlatform, TextEditingController>{};
-  List<SocialLinkDraft> _socialLinks = SocialLinkDraft.initialDefaults();
-  List<SocialLinkDraft> _initialSocialLinks = SocialLinkDraft.initialDefaults();
+  List<SocialLinkDraft> _socialLinks = const [];
+  List<SocialLinkDraft> _initialSocialLinks = const [];
   var _isLoadingSocial = true;
 
   @override
@@ -70,8 +71,19 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
     _companyController = TextEditingController(text: _card.company ?? '');
     _emailController = TextEditingController(text: _card.email ?? '');
     _phoneController = TextEditingController(text: _card.phone ?? '');
+    _addressController = TextEditingController(text: _card.address ?? '');
     _fullNameController.addListener(() => setState(() {}));
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadSocialLinks());
+    _addressController.addListener(() => setState(() {}));
+    _socialLinks = SocialLinkDraft.initialDefaults(kind: _card.kind);
+    _initialSocialLinks = SocialLinkDraft.initialDefaults(kind: _card.kind);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncCardsForTabs();
+      _loadSocialLinks();
+    });
+  }
+
+  Future<void> _syncCardsForTabs() async {
+    await syncOwnedCardsForEditing(context);
   }
 
   @override
@@ -81,6 +93,7 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
     _companyController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
+    _addressController.dispose();
     for (final controller in _socialControllers.values) {
       controller.dispose();
     }
@@ -98,17 +111,23 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
       _applySocialLinks(_socialLinksFromApi(links));
     } catch (_) {
       if (!mounted) return;
-      _applySocialLinks(SocialLinkDraft.initialDefaults());
+      _applySocialLinks(SocialLinkDraft.initialDefaults(kind: _card.kind));
     } finally {
       if (mounted) setState(() => _isLoadingSocial = false);
     }
   }
 
   List<SocialLinkDraft> _socialLinksFromApi(List<CardSocialLink> links) {
-    return SocialLinkDraft.initialDefaults().map((draft) {
+    return SocialLinkDraft.initialDefaults(kind: _card.kind).map((draft) {
       for (final saved in links) {
         if (saved.platform == draft.platform && saved.isConfigured) {
           return draft.copyWith(isSelected: true, value: saved.url);
+        }
+      }
+      if (draft.platform == CardSocialPlatform.website) {
+        final site = _card.website?.trim() ?? '';
+        if (site.isNotEmpty) {
+          return draft.copyWith(isSelected: true, value: site);
         }
       }
       return draft;
@@ -185,11 +204,23 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
         .map(
           (entry) => {
             'platform': entry.value.platform.apiValue,
-            'url': entry.value.value.trim(),
+            'url': entry.value.platform == CardSocialPlatform.website
+                ? CardSocialPlatformX.normalizeWebsiteUrl(entry.value.value)
+                : entry.value.value.trim(),
             'order': entry.key,
           },
         )
         .toList();
+  }
+
+  String? _websitePayload() {
+    if (!_card.kind.isTeamLinked) return null;
+    for (final link in _currentSocialLinks) {
+      if (link.platform != CardSocialPlatform.website) continue;
+      if (!link.isSelected || link.value.trim().isEmpty) return '';
+      return CardSocialPlatformX.normalizeWebsiteUrl(link.value);
+    }
+    return '';
   }
 
   String _initialsFromName(String fullName) {
@@ -268,6 +299,8 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
         draft.company.trim() != (_card.company?.trim() ?? '') ||
         draft.email.trim() != (_card.email?.trim() ?? '') ||
         draft.phone.trim() != (_card.phone?.trim() ?? '') ||
+        (_card.kind.isTeamLinked &&
+            _addressController.text.trim() != (_card.address?.trim() ?? '')) ||
         _hasAvatarChanges ||
         _hasLogoChanges ||
         (_canEditSocial &&
@@ -329,6 +362,12 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
             company: draft.company.isEmpty ? null : draft.company,
             email: draft.email.isEmpty ? null : draft.email,
             phone: draft.phone.isEmpty ? null : draft.phone,
+            address: _card.kind.isTeamLinked
+                ? _addressController.text.trim()
+                : null,
+            includeAddress: _card.kind.isTeamLinked,
+            website: _websitePayload(),
+            includeWebsite: _card.kind.isTeamLinked,
             avatarUrl: avatarUrl,
             includeAvatar: includeAvatar,
             logoUrl: logoUrl,
@@ -386,6 +425,7 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
       _companyController.text = next.company ?? '';
       _emailController.text = next.email ?? '';
       _phoneController.text = next.phone ?? '';
+      _addressController.text = next.address ?? '';
       _syncLogoFromCard(next);
       _syncAvatarFromCard(next);
       _isLoadingSocial = true;
@@ -457,15 +497,17 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
     final l10n = context.l10n;
     final cardsProvider = context.watch<CardsProvider>();
     final teamsProvider = context.watch<TeamsProvider>();
-    final hasPersonal = cardsProvider.hasPersonalCard;
-    final hasProfessional = cardsProvider.hasProfessionalCard;
-    final hasMember = teamsProvider.canAccessMemberSpace &&
-        cardsProvider.memberCard(teamId: teamsProvider.memberTeam?.id) != null;
-
+    final kindSet = <CardKind>{
+      for (final card in cardsProvider.cards) card.kind,
+      _card.kind,
+    };
     final availableKinds = <CardKind>[
-      if (hasPersonal) CardKind.personal,
-      if (hasProfessional) CardKind.professional,
-      if (hasMember) CardKind.member,
+      if (kindSet.contains(CardKind.personal)) CardKind.personal,
+      if (kindSet.contains(CardKind.professional)) CardKind.professional,
+      if (kindSet.contains(CardKind.member) &&
+          (teamsProvider.canAccessMemberSpace ||
+              cardsProvider.hasMemberCard))
+        CardKind.member,
     ];
     final showScopeToggle = availableKinds.length >= 2;
 
@@ -628,6 +670,14 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
                       ),
+                      if (_card.kind.isTeamLinked) ...[
+                        const SizedBox(height: AppSpacing.lg),
+                        LinkTextField(
+                          label: l10n.editCardAddress,
+                          controller: _addressController,
+                          keyboardType: TextInputType.streetAddress,
+                        ),
+                      ],
                       const SizedBox(height: AppSpacing.xxl),
                       Text(
                         l10n.editCardSocialTitle,

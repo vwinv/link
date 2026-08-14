@@ -41,7 +41,7 @@ class CreateCardStepIndicator extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         Text(
-          'Étape $currentStep/$totalSteps · $stepLabel',
+          'Étape $currentStep/$totalSteps - $stepLabel',
           style: const TextStyle(
             fontSize: AppFontSize.sm,
             fontWeight: AppFontWeight.semiBold,

@@ -132,7 +132,7 @@ class TeamMember {
     final title = jobTitle?.trim();
     final roleLabel = role.label;
     if (title != null && title.isNotEmpty) {
-      return '$title · $roleLabel';
+      return '$title - $roleLabel';
     }
     return roleLabel;
   }

@@ -86,7 +86,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String profileTeamMembers(String teamName, int count) {
-    return '$teamName · $count membres';
+    return '$teamName - $count membres';
   }
 
   @override
@@ -316,6 +316,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get editCardPhone => 'Téléphone';
 
   @override
+  String get editCardAddress => 'Adresse de l’entreprise';
+
+  @override
   String get editCardCompanyLogo => 'LOGO ENTREPRISE';
 
   @override
@@ -325,7 +328,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get editCardImportLogo => 'Importer un logo';
 
   @override
-  String get editCardLogoHint => 'JPG, PNG · max 5 Mo';
+  String get editCardLogoHint => 'JPG, PNG - max 5 Mo';
 
   @override
   String get editCardRemoveLogo => 'Supprimer le logo';
@@ -442,7 +445,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get contactDetailSourceScan => 'Scan IA';
 
   @override
-  String get contactDetailUnavailable => '—';
+  String get contactDetailUnavailable => '-';
 
   @override
   String get contactDetailActionsTitle => 'Actions';
@@ -750,7 +753,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cardVisitorDetailNo => 'Non';
 
   @override
-  String get cardVisitorDetailUnavailable => '—';
+  String get cardVisitorDetailUnavailable => '-';
 
   @override
   String get cardVisitorDetailMethodQr => 'QR Code';
@@ -894,6 +897,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get socialFacebook => 'Facebook';
 
   @override
+  String get socialWebsite => 'Site web';
+
+  @override
   String get commonSkip => 'Passer';
 
   @override
@@ -954,8 +960,31 @@ class AppLocalizationsFr extends AppLocalizations {
   String get authForgotPassword => 'Mot de passe oublié ?';
 
   @override
-  String get authForgotPasswordSoon =>
-      'Réinitialisation du mot de passe bientôt disponible';
+  String get authForgotPasswordTitle => 'Mot de passe oublié';
+
+  @override
+  String get authForgotPasswordLead =>
+      'Indiquez l’e-mail de votre compte. Nous vous enverrons un lien pour choisir un nouveau mot de passe.';
+
+  @override
+  String get authForgotPasswordSubmit => 'Envoyer le lien';
+
+  @override
+  String get authForgotPasswordSending => 'Envoi…';
+
+  @override
+  String authForgotPasswordSent(String email) {
+    return 'Un e-mail a été envoyé à $email avec le lien de réinitialisation.';
+  }
+
+  @override
+  String get authForgotPasswordEmailRequired => 'E-mail requis';
+
+  @override
+  String get authForgotPasswordEmailInvalid => 'E-mail invalide';
+
+  @override
+  String get authForgotPasswordBackToLogin => 'Retour à la connexion';
 
   @override
   String get authSignIn => 'Se connecter';
@@ -1038,7 +1067,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get onboardingPage2Description =>
-      'QR code, AirDrop ou lien — sans application pour vos contacts.';
+      'QR code, AirDrop ou lien - sans application pour vos contacts.';
 
   @override
   String get onboardingPage3Title => 'Gardez-la dans votre Wallet';
@@ -1100,7 +1129,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get shareCardQrHint =>
-      'Faites scanner ce code — aucune app requise pour vos contacts.';
+      'Faites scanner ce code - aucune app requise pour vos contacts.';
 
   @override
   String get shareOptionMessage => 'Message';
@@ -1250,7 +1279,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String premiumSeatsIncludedHint(int count) {
-    return '$count inclus — non diminuable';
+    return '$count inclus - non diminuable';
   }
 
   @override
@@ -1505,7 +1534,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String proDesignsTemplatesSection(int count) {
-    return '$count MODÈLES · APERÇU EN TEMPS RÉEL';
+    return '$count MODÈLES - APERÇU EN TEMPS RÉEL';
   }
 
   @override

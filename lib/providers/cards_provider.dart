@@ -84,8 +84,8 @@ class CardsProvider extends ChangeNotifier {
 
     try {
       final fetched = await _cardsApi.fetchMyCards();
-      _cards = fetched;
-      _hasCards = fetched.isNotEmpty;
+      _cards = _mergeCards(_cards, fetched);
+      _hasCards = _cards.isNotEmpty;
     } catch (_) {
       if (!_hasLoaded) {
         _cards = [];
@@ -96,6 +96,32 @@ class CardsProvider extends ChangeNotifier {
     _hasLoaded = true;
     _isLoading = false;
     notifyListeners();
+  }
+
+  List<BusinessCard> _mergeCards(
+    List<BusinessCard> local,
+    List<BusinessCard> remote,
+  ) {
+    if (local.isEmpty) return remote;
+
+    final byId = <String, BusinessCard>{
+      for (final card in local) card.id: card,
+    };
+    for (final card in remote) {
+      byId[card.id] = card;
+    }
+
+    final ordered = <BusinessCard>[];
+    final seen = <String>{};
+    for (final card in remote) {
+      final merged = byId[card.id];
+      if (merged == null || !seen.add(card.id)) continue;
+      ordered.add(merged);
+    }
+    for (final card in local) {
+      if (seen.add(card.id)) ordered.add(card);
+    }
+    return ordered;
   }
 
   void markCardCreated() {
@@ -149,7 +175,7 @@ class CardsProvider extends ChangeNotifier {
     return created;
   }
 
-  /// Carte membre (espace membre) — distincte de la carte pro.
+  /// Carte membre (espace membre) - distincte de la carte pro.
   Future<BusinessCard?> ensureMemberCardForTeam(
     Team team, {
     User? owner,

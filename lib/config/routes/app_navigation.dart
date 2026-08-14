@@ -286,14 +286,15 @@ Future<BusinessCard?> openSetupProfessionalTeam(BuildContext context) async {
     if (team == null || !context.mounted) return null;
   }
 
-  final membersCompleted = await openTeamMembers(context, team: team);
-  if (!membersCompleted || !context.mounted) return null;
-
+  BusinessCard? card;
   try {
-    return await context.read<CardsProvider>().ensureProfessionalCardForTeam(
+    card = await context.read<CardsProvider>().ensureProfessionalCardForTeam(
       team,
       owner: context.read<AuthProvider>().user,
     );
+    if (context.mounted) {
+      await persistUserWorkspace(context);
+    }
   } on ApiException catch (error) {
     if (context.mounted) {
       ScaffoldMessenger.of(
@@ -302,6 +303,10 @@ Future<BusinessCard?> openSetupProfessionalTeam(BuildContext context) async {
     }
     return null;
   }
+
+  if (!context.mounted) return card;
+  await openTeamMembers(context, team: team);
+  return card;
 }
 
 /// Ouvre l'écran des designs professionnels.
@@ -398,15 +403,31 @@ Future<void> openShareCard(BuildContext context, BusinessCard card) {
 }
 
 /// Ouvre l’écran de modification des informations de carte.
-Future<void> openEditCardInfo(BuildContext context, {BusinessCard? card}) {
+Future<void> openEditCardInfo(BuildContext context, {BusinessCard? card}) async {
+  await syncOwnedCardsForEditing(context);
+  if (!context.mounted) return;
   final cardsProvider = context.read<CardsProvider>();
-  final target = card ?? cardsProvider.primaryCard;
 
-  if (target == null) {
+  final requested = card;
+  BusinessCard? target;
+  if (requested != null) {
+    target = requested;
+    for (final item in cardsProvider.cards) {
+      if (item.id == requested.id) {
+        target = item;
+        break;
+      }
+    }
+  } else {
+    target = cardsProvider.primaryCard;
+  }
+
+  final selected = target;
+  if (selected == null) {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(context.l10n.editCardNoCard)));
-    return Future<void>.value();
+    return;
   }
 
   final cardsApi = context.read<CardsApiService>();
@@ -428,7 +449,7 @@ Future<void> openEditCardInfo(BuildContext context, {BusinessCard? card}) {
                 value: subscriptionsProvider,
               ),
             ],
-            child: EditCardInfoScreen(card: target),
+            child: EditCardInfoScreen(card: selected),
           ),
         ),
       ) ??

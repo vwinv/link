@@ -23,7 +23,7 @@ class CardReadyData {
       (true, true) => draft.subtitle,
       (true, false) => company,
       (false, true) => job,
-      (false, false) => '$job · $company',
+      (false, false) => '$job - $company',
     };
 
     return CardReadyData(

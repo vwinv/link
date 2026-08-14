@@ -785,7 +785,7 @@ class _OfferDetailRow extends StatelessWidget {
         ),
         const SizedBox(width: AppSpacing.sm),
         Text(
-          '$label · ',
+          '$label - ',
           style: TextStyle(
             color: AppColors.onPrimary.withValues(alpha: 0.45),
             fontSize: context.rs(12),
@@ -833,7 +833,7 @@ class _PremiumPriceRow extends StatelessWidget {
       '$includedSeats inclus',
       price.extraSeatLabel(),
     ];
-    return parts.join(' · ');
+    return parts.join(' - ');
   }
 
   @override

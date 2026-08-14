@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
+import 'package:linkflutter/core/l10n/card_kind_l10n.dart';
+import 'package:linkflutter/core/l10n/l10n_extensions.dart';
 import 'package:linkflutter/features/cards/models/card_social_platform.dart';
 import 'package:linkflutter/features/cards/models/social_link_draft.dart';
 
@@ -46,7 +48,7 @@ class SocialNetworkTile extends StatelessWidget {
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Text(
-                    platform.label,
+                    platform.labelL10n(context.l10n),
                     style: const TextStyle(
                       fontSize: AppFontSize.md,
                       fontWeight: AppFontWeight.semiBold,
@@ -122,6 +124,23 @@ class _PlatformIcon extends StatelessWidget {
           width: 36,
           height: 36,
           fit: BoxFit.cover,
+        ),
+      );
+    }
+
+    if (platform == CardSocialPlatform.website) {
+      return Container(
+        width: 36,
+        height: 36,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: platform.brandColor,
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+        ),
+        child: const Icon(
+          Icons.language_rounded,
+          color: AppColors.onPrimary,
+          size: 20,
         ),
       );
     }

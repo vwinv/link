@@ -15,6 +15,8 @@ class BusinessCard {
     this.company,
     this.email,
     this.phone,
+    this.address,
+    this.website,
     this.avatarUrl,
     this.logoUrl,
     this.theme = const CardThemeSettings(),
@@ -33,6 +35,8 @@ class BusinessCard {
       company: json['company'] as String?,
       email: json['email'] as String?,
       phone: json['phone'] as String?,
+      address: json['address'] as String?,
+      website: json['website'] as String?,
       avatarUrl: json['avatarUrl'] as String?,
       logoUrl: json['logoUrl'] as String?,
       theme: CardThemeSettings.fromJson(
@@ -52,6 +56,8 @@ class BusinessCard {
         'company': company,
         'email': email,
         'phone': phone,
+        'address': address,
+        'website': website,
         'avatarUrl': avatarUrl,
         'logoUrl': logoUrl,
         'theme': theme.toJson(),
@@ -67,6 +73,8 @@ class BusinessCard {
   final String? company;
   final String? email;
   final String? phone;
+  final String? address;
+  final String? website;
   final String? avatarUrl;
   final String? logoUrl;
   final CardThemeSettings theme;
@@ -108,7 +116,7 @@ class BusinessCard {
     if (job.isEmpty && org.isEmpty) return '';
     if (job.isEmpty) return org;
     if (org.isEmpty) return job;
-    return '$job · $org';
+    return '$job - $org';
   }
 
   BusinessCard copyWith({
@@ -119,6 +127,8 @@ class BusinessCard {
     String? company,
     String? email,
     String? phone,
+    String? address,
+    String? website,
     String? avatarUrl,
     String? logoUrl,
   }) {
@@ -133,6 +143,8 @@ class BusinessCard {
       company: company ?? this.company,
       email: email ?? this.email,
       phone: phone ?? this.phone,
+      address: address ?? this.address,
+      website: website ?? this.website,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       logoUrl: logoUrl ?? this.logoUrl,
       theme: theme ?? this.theme,

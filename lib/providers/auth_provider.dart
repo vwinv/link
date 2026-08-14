@@ -209,6 +209,29 @@ class AuthProvider extends ChangeNotifier {
     _isAuthenticated = true;
   }
 
+  Future<bool> requestPasswordReset({required String email}) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _authApi.requestPasswordReset(email: email.trim());
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } on ApiException catch (error) {
+      _errorMessage = error.message;
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    } catch (_) {
+      _errorMessage = 'Impossible d’envoyer l’e-mail de réinitialisation';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
   Future<void> logout() async {
     final userId = _user?.id;
     final prefs = await SharedPreferences.getInstance();

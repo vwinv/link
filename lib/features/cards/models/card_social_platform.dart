@@ -7,6 +7,7 @@ enum CardSocialPlatform {
   whatsapp,
   x,
   facebook,
+  website,
 }
 
 extension CardSocialPlatformX on CardSocialPlatform {
@@ -22,6 +23,8 @@ extension CardSocialPlatformX on CardSocialPlatform {
         return CardSocialPlatform.x;
       case 'FACEBOOK':
         return CardSocialPlatform.facebook;
+      case 'WEBSITE':
+        return CardSocialPlatform.website;
       default:
         return CardSocialPlatform.linkedin;
     }
@@ -39,6 +42,8 @@ extension CardSocialPlatformX on CardSocialPlatform {
         return 'X';
       case CardSocialPlatform.facebook:
         return 'Facebook';
+      case CardSocialPlatform.website:
+        return 'Site web';
     }
   }
 
@@ -54,6 +59,8 @@ extension CardSocialPlatformX on CardSocialPlatform {
         return 'TWITTER';
       case CardSocialPlatform.facebook:
         return 'FACEBOOK';
+      case CardSocialPlatform.website:
+        return 'WEBSITE';
     }
   }
 
@@ -69,6 +76,8 @@ extension CardSocialPlatformX on CardSocialPlatform {
         return 'Votre @ X';
       case CardSocialPlatform.facebook:
         return 'Votre URL Facebook';
+      case CardSocialPlatform.website:
+        return 'https://votre-site.com';
     }
   }
 
@@ -84,6 +93,8 @@ extension CardSocialPlatformX on CardSocialPlatform {
         return const Color(0xFF000000);
       case CardSocialPlatform.facebook:
         return const Color(0xFF1877F2);
+      case CardSocialPlatform.website:
+        return const Color(0xFF1B4DFF);
     }
   }
 
@@ -98,6 +109,7 @@ extension CardSocialPlatformX on CardSocialPlatform {
       case CardSocialPlatform.x:
         return AppAssets.twitter;
       case CardSocialPlatform.facebook:
+      case CardSocialPlatform.website:
         return null;
     }
   }
@@ -114,6 +126,8 @@ extension CardSocialPlatformX on CardSocialPlatform {
         return 'X';
       case CardSocialPlatform.facebook:
         return 'f';
+      case CardSocialPlatform.website:
+        return 'www';
     }
   }
 
@@ -123,9 +137,19 @@ extension CardSocialPlatformX on CardSocialPlatform {
         return TextInputType.phone;
       case CardSocialPlatform.linkedin:
       case CardSocialPlatform.facebook:
+      case CardSocialPlatform.website:
         return TextInputType.url;
       default:
         return TextInputType.text;
     }
+  }
+
+  static String normalizeWebsiteUrl(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return trimmed;
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return trimmed;
+    }
+    return 'https://$trimmed';
   }
 }

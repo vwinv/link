@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
 
-/// Palette style macOS — rangée primaire, niveaux de gris, spectre 12×10.
+/// Palette style macOS - rangée primaire, niveaux de gris, spectre 12×10.
 abstract final class BrandColorPalette {
   static const primaryRow = [
     Color(0xFFFF3B30),
