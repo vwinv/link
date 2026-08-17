@@ -24,11 +24,12 @@ class SubscriptionsProvider extends ChangeNotifier {
   bool _isLoading = false;
   Future<void>? _loadingFuture;
 
-  UserSubscription? get subscription => _subscription;
+  UserSubscription? get subscription =>
+      _subscription?.isActive == true ? _subscription : null;
   bool get isLoading => _isLoading;
-  bool get hasActiveSubscription => _subscription?.isActive ?? false;
+  bool get hasActiveSubscription => subscription != null;
   OfferEntitlements get entitlements =>
-      _subscription?.entitlements ?? OfferEntitlements.none;
+      subscription?.entitlements ?? OfferEntitlements.none;
   bool get hasTeamSubscription =>
       hasActiveSubscription && entitlements.hasTeamAccess;
   bool get canCustomizeCards => entitlements.canCustomize;
@@ -38,17 +39,25 @@ class SubscriptionsProvider extends ChangeNotifier {
   bool get hasVisitorInsightsAccess => entitlements.hasVisitorInsights;
   bool get hasSocialLinksAccess => entitlements.hasSocialLinks;
 
-  /// Droits effectifs pour une carte (offre équipe du owner si carte membre).
+  /// Droits effectifs pour une carte :
+  /// perso → offre perso ; pro / membre → uniquement une offre équipe.
   OfferEntitlements entitlementsForCard(
     BusinessCard card, {
     Team? team,
   }) {
     if (card.kind == CardKind.member) {
       final teamEntitlements = team?.entitlements;
-      if (teamEntitlements != null) {
+      if (teamEntitlements != null && teamEntitlements.hasTeamAccess) {
         return teamEntitlements;
       }
+      return OfferEntitlements.none;
     }
+
+    if (card.kind == CardKind.professional) {
+      if (!hasTeamSubscription) return OfferEntitlements.none;
+      return entitlements;
+    }
+
     return entitlements;
   }
 
@@ -66,6 +75,14 @@ class SubscriptionsProvider extends ChangeNotifier {
 
   bool canEditSocialLinksFor(BusinessCard card, {Team? team}) =>
       entitlementsForCard(card, team: team).hasSocialLinks;
+
+  /// Carte pro / membre : bloquée sans offre équipe valide.
+  bool canUseTeamLinkedCard(BusinessCard card, {Team? team}) {
+    if (card.kind != CardKind.professional && card.kind != CardKind.member) {
+      return true;
+    }
+    return entitlementsForCard(card, team: team).hasTeamAccess;
+  }
 
   Future<void> refresh() async {
     if (_loadingFuture != null) {

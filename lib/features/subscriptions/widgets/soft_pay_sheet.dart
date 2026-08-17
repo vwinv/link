@@ -1,12 +1,16 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:linkflutter/core/api/api_exception.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/features/subscriptions/models/payment_config.dart';
 import 'package:linkflutter/features/subscriptions/services/subscriptions_api_service.dart';
-import 'package:linkflutter/features/subscriptions/widgets/soft_pay_checkout_screen.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/// Bottom sheet SoftPay : prénom / nom / téléphone + Wave / OM / Free.
+/// Bottom sheet SoftPay : saisie → finalisation (QR + ouvrir Wave/Maxit).
 class SoftPaySheet extends StatefulWidget {
   const SoftPaySheet({
     super.key,
@@ -78,7 +82,8 @@ class SoftPaySheet extends StatefulWidget {
   State<SoftPaySheet> createState() => _SoftPaySheetState();
 }
 
-class _SoftPaySheetState extends State<SoftPaySheet> {
+class _SoftPaySheetState extends State<SoftPaySheet>
+    with WidgetsBindingObserver {
   static const _assetWave = 'assets/wave.png';
   static const _assetOm = 'assets/om.png';
   static const _assetFree = 'assets/free.png';
@@ -90,12 +95,18 @@ class _SoftPaySheetState extends State<SoftPaySheet> {
   String? _invoiceToken;
   String? _error;
   bool _loading = false;
-  bool _verifying = false;
+  bool _openingWallet = false;
   SoftPayResult? _result;
+  Timer? _pollTimer;
+  bool _pollInFlight = false;
+  bool _paid = false;
+
+  bool get _isFinalizing => _result != null;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _prenom = TextEditingController(text: widget.initialPrenom.trim());
     _nom = TextEditingController(text: widget.initialNom.trim());
     _tel = TextEditingController(text: widget.initialTelephone.trim());
@@ -104,40 +115,144 @@ class _SoftPaySheetState extends State<SoftPaySheet> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _pollTimer?.cancel();
     _prenom.dispose();
     _nom.dispose();
     _tel.dispose();
     super.dispose();
   }
 
-  Future<bool> _openUrl(String url, {String title = 'Paiement'}) async {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && _isFinalizing && !_paid) {
+      unawaited(_pollOnce());
+    }
+  }
+
+  String? _nonEmpty(String? value) {
+    final trimmed = value?.trim() ?? '';
+    return trimmed.isEmpty ? null : trimmed;
+  }
+
+  String? get _walletUrl {
+    switch (_method) {
+      case 'orange_money_sn':
+        return _nonEmpty(_result?.maxitUrl) ?? _nonEmpty(_result?.omUrl);
+      case 'wave_sn':
+        return _nonEmpty(_result?.url);
+      default:
+        return _nonEmpty(_result?.url) ??
+            _nonEmpty(_result?.maxitUrl) ??
+            _nonEmpty(_result?.omUrl);
+    }
+  }
+
+  /// PNG officiel Orange Money (`data[qrcode]`), pas l’URL PayDunya.
+  Uint8List? get _omQrPngBytes {
+    final raw =
+        _nonEmpty(_result?.qrImageBase64) ??
+        _qrPngFromPaydunyaUrl(_result?.url);
+    if (raw == null) return null;
+    try {
+      return base64Decode(raw);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String? _qrPngFromPaydunyaUrl(String? url) {
+    final parsed = Uri.tryParse(url ?? '');
+    if (parsed == null) return null;
+    final qr =
+        parsed.queryParameters['data[qrcode]'] ??
+        parsed.queryParameters['qrcode'];
+    if (qr == null || !qr.startsWith('iVBOR')) return null;
+    return qr.replaceAll(RegExp(r'\s'), '');
+  }
+
+  /// Contenu à encoder en QR (Wave = lien de paiement). OM = image PNG à part.
+  String? get _qrPayload {
+    if (_method == 'orange_money_sn') {
+      return _nonEmpty(_result?.maxitUrl) ?? _nonEmpty(_result?.omUrl);
+    }
+    return _nonEmpty(_result?.url) ?? _walletUrl;
+  }
+
+  bool _looksLikeImage(String url) {
+    final path = (Uri.tryParse(url)?.path ?? url).toLowerCase();
+    return path.endsWith('.png') ||
+        path.endsWith('.jpg') ||
+        path.endsWith('.jpeg') ||
+        path.endsWith('.gif') ||
+        path.endsWith('.webp') ||
+        path.endsWith('.svg');
+  }
+
+  String get _openButtonLabel {
+    switch (_method) {
+      case 'wave_sn':
+        return 'Ouvrir Wave';
+      case 'orange_money_sn':
+        return 'Ouvrir Maxit';
+      case 'free_money_sn':
+        return 'Ouvrir Free Money';
+      default:
+        return 'Ouvrir l’application';
+    }
+  }
+
+  String get _methodTitle {
+    switch (_method) {
+      case 'wave_sn':
+        return 'Wave';
+      case 'orange_money_sn':
+        return 'Orange Money';
+      case 'free_money_sn':
+        return 'Free Money';
+      default:
+        return 'paiement';
+    }
+  }
+
+  Future<void> _openWallet() async {
+    final url = _walletUrl;
+    if (url == null) {
+      _setError('Lien de paiement indisponible. Scannez le QR.');
+      return;
+    }
+
     final uri = Uri.tryParse(url);
     if (uri == null || !uri.hasScheme) {
-      _setError('Lien de paiement invalide.');
-      return false;
+      _setError('Lien de paiement invalide. Scannez le QR.');
+      return;
     }
 
-    // https → WebView in-app (évite l’erreur Safari deep link Wave sans app).
-    if (uri.scheme == 'http' || uri.scheme == 'https') {
-      if (!mounted) return false;
-      await SoftPayCheckoutScreen.open(context, url: url, title: title);
-      return true;
-    }
-
+    setState(() {
+      _openingWallet = true;
+      _error = null;
+    });
     try {
+      final https = uri.scheme == 'http' || uri.scheme == 'https';
       final ok = await launchUrl(
         uri,
-        mode: LaunchMode.externalNonBrowserApplication,
+        mode: https
+            ? LaunchMode.externalApplication
+            : LaunchMode.externalNonBrowserApplication,
       );
       if (!ok && mounted) {
-        _setError('Impossible d’ouvrir le lien de paiement.');
+        _setError(
+          'Impossible d’ouvrir $_methodTitle. Scannez le QR ci-dessous.',
+        );
       }
-      return ok;
     } catch (_) {
       if (mounted) {
-        _setError('Impossible d’ouvrir le lien de paiement.');
+        _setError(
+          'Impossible d’ouvrir $_methodTitle. Scannez le QR ci-dessous.',
+        );
       }
-      return false;
+    } finally {
+      if (mounted) setState(() => _openingWallet = false);
     }
   }
 
@@ -160,15 +275,44 @@ class _SoftPaySheetState extends State<SoftPaySheet> {
   }
 
   void _selectMethod(String method) {
-    if (_loading || _verifying) return;
+    if (_loading || _isFinalizing) return;
     setState(() {
       _method = method;
       _error = null;
     });
   }
 
+  void _startPolling() {
+    _pollTimer?.cancel();
+    unawaited(_pollOnce());
+    _pollTimer = Timer.periodic(const Duration(seconds: 2), (_) {
+      unawaited(_pollOnce());
+    });
+  }
+
+  Future<void> _pollOnce() async {
+    if (_paid || _pollInFlight || !mounted) return;
+    final token = _invoiceToken?.trim();
+    if (token == null || token.isEmpty) return;
+
+    _pollInFlight = true;
+    try {
+      final confirm = await widget.api.confirmPaydunya(invoiceToken: token);
+      if (!mounted || _paid) return;
+      if (confirm.paid) {
+        _paid = true;
+        _pollTimer?.cancel();
+        Navigator.of(context).pop(true);
+      }
+    } catch (_) {
+      // On continue de poller : l’IPN peut arriver un peu plus tard.
+    } finally {
+      _pollInFlight = false;
+    }
+  }
+
   Future<void> _onPay() async {
-    if (_loading || _verifying) return;
+    if (_loading || _isFinalizing) return;
 
     final method = _method;
     if (method == null || method.isEmpty) {
@@ -210,22 +354,7 @@ class _SoftPaySheetState extends State<SoftPaySheet> {
       );
       if (!mounted) return;
       setState(() => _result = result);
-
-      // Wave / Free : url principale.
-      // OM : privilégier Maxit / OM app, sinon page QR.
-      final primary = method == 'orange_money_sn'
-          ? (result.maxitUrl ?? result.omUrl ?? result.url)
-          : (result.url?.trim().isNotEmpty == true
-                ? result.url
-                : (result.omUrl ?? result.maxitUrl));
-      if (primary != null && primary.trim().isNotEmpty) {
-        final title = switch (method) {
-          'wave_sn' => 'Paiement Wave',
-          'orange_money_sn' => 'Paiement Orange Money',
-          _ => 'Paiement',
-        };
-        await _openUrl(primary.trim(), title: title);
-      }
+      _startPolling();
     } on ApiException catch (e) {
       if (!mounted) return;
       _setError(e.message);
@@ -234,35 +363,6 @@ class _SoftPaySheetState extends State<SoftPaySheet> {
       _setError('Paiement impossible. Vérifiez la connexion et réessayez.');
     } finally {
       if (mounted) setState(() => _loading = false);
-    }
-  }
-
-  Future<void> _terminer() async {
-    final token = _invoiceToken?.trim();
-    if (token == null || token.isEmpty) {
-      _setError('Aucun paiement en cours.');
-      return;
-    }
-
-    setState(() {
-      _verifying = true;
-      _error = null;
-    });
-    try {
-      final confirm = await widget.api.confirmPaydunya(invoiceToken: token);
-      if (!mounted) return;
-      if (confirm.paid) {
-        Navigator.of(context).pop(true);
-        return;
-      }
-      _setError(
-        'Paiement pas encore confirmé. Finalisez dans Wave / OM / Free puis réessayez.',
-      );
-    } catch (_) {
-      if (!mounted) return;
-      _setError('Vérification impossible pour le moment.');
-    } finally {
-      if (mounted) setState(() => _verifying = false);
     }
   }
 
@@ -300,7 +400,7 @@ class _SoftPaySheetState extends State<SoftPaySheet> {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(14),
-          onTap: (_loading || _verifying) ? null : () => _selectMethod(id),
+          onTap: _loading ? null : () => _selectMethod(id),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.fromLTRB(6, 14, 6, 12),
@@ -364,12 +464,271 @@ class _SoftPaySheetState extends State<SoftPaySheet> {
     );
   }
 
+  Widget _qrBlock() {
+    final png = _omQrPngBytes;
+    if (png != null) {
+      return Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: Image.memory(png, width: 200, height: 200, fit: BoxFit.contain),
+      );
+    }
+
+    final payload = _qrPayload;
+    if (payload == null) {
+      return Text(
+        'Validez le paiement dans $_methodTitle. L’abonnement s’activera tout seul.',
+        textAlign: TextAlign.center,
+        style: TextStyle(color: Colors.grey.shade700, height: 1.4),
+      );
+    }
+
+    if (_looksLikeImage(payload)) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Image.network(
+          payload,
+          width: 220,
+          height: 220,
+          fit: BoxFit.contain,
+          errorBuilder: (_, error, stackTrace) => _qrImage(payload),
+        ),
+      );
+    }
+
+    return _qrImage(payload);
+  }
+
+  Widget _qrImage(String data) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: QrImageView(
+        data: data,
+        size: 200,
+        backgroundColor: Colors.white,
+        errorCorrectionLevel: QrErrorCorrectLevel.M,
+      ),
+    );
+  }
+
+  List<Widget> _buildCheckoutForm() {
+    return [
+      Text(
+        'Payer ${widget.montantLabel}',
+        style: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
+          letterSpacing: -0.3,
+        ),
+      ),
+      const SizedBox(height: 6),
+      Text(
+        'Choisissez votre moyen de paiement',
+        style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+      ),
+      const SizedBox(height: 18),
+      TextField(
+        controller: _prenom,
+        decoration: _fieldDecoration('Prénom'),
+        textCapitalization: TextCapitalization.words,
+        textInputAction: TextInputAction.next,
+      ),
+      const SizedBox(height: 10),
+      TextField(
+        controller: _nom,
+        decoration: _fieldDecoration('Nom'),
+        textCapitalization: TextCapitalization.words,
+        textInputAction: TextInputAction.next,
+      ),
+      const SizedBox(height: 10),
+      TextField(
+        controller: _tel,
+        decoration: _fieldDecoration('Téléphone', hint: '77XXXXXXX'),
+        keyboardType: TextInputType.phone,
+        textInputAction: TextInputAction.done,
+      ),
+      const SizedBox(height: 20),
+      Text(
+        'Moyens de paiement',
+        style: TextStyle(
+          fontWeight: FontWeight.w700,
+          color: Colors.grey.shade800,
+        ),
+      ),
+      const SizedBox(height: 12),
+      Opacity(
+        opacity: _loading ? 0.55 : 1,
+        child: IgnorePointer(
+          ignoring: _loading,
+          child: Row(
+            children: [
+              _methodTile(id: 'wave_sn', label: 'Wave', assetPath: _assetWave),
+              const SizedBox(width: 10),
+              _methodTile(
+                id: 'orange_money_sn',
+                label: 'OM',
+                assetPath: _assetOm,
+              ),
+              const SizedBox(width: 10),
+              _methodTile(
+                id: 'free_money_sn',
+                label: 'Free',
+                assetPath: _assetFree,
+              ),
+            ],
+          ),
+        ),
+      ),
+      if (_error != null) ...[
+        const SizedBox(height: 14),
+        _errorBanner(_error!),
+      ],
+      const SizedBox(height: 20),
+      FilledButton(
+        onPressed: _loading ? null : _onPay,
+        style: FilledButton.styleFrom(
+          backgroundColor: AppColors.bleu_primaire,
+          disabledBackgroundColor: AppColors.bleu_primaire.withValues(
+            alpha: 0.45,
+          ),
+          minimumSize: const Size.fromHeight(50),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+        child: _loading
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            : const Text('Payer'),
+      ),
+    ];
+  }
+
+  List<Widget> _buildFinalization() {
+    return [
+      const Text(
+        'Finalisez le paiement',
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
+          letterSpacing: -0.3,
+        ),
+      ),
+      const SizedBox(height: 6),
+      Text(
+        'Ouvrez $_methodTitle ou scannez le QR. L’abonnement s’activera automatiquement.',
+        style: TextStyle(
+          color: Colors.grey.shade600,
+          fontSize: 14,
+          height: 1.4,
+        ),
+      ),
+      const SizedBox(height: 20),
+      Center(child: _qrBlock()),
+      const SizedBox(height: 10),
+      Text(
+        'Scannez avec $_methodTitle',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: Colors.grey.shade600,
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      if (_error != null) ...[
+        const SizedBox(height: 14),
+        _errorBanner(_error!),
+      ],
+      if (_walletUrl != null) ...[
+        const SizedBox(height: 18),
+        FilledButton(
+          onPressed: _openingWallet ? null : _openWallet,
+          style: FilledButton.styleFrom(
+            backgroundColor: AppColors.bleu_primaire,
+            disabledBackgroundColor: AppColors.bleu_primaire.withValues(
+              alpha: 0.45,
+            ),
+            minimumSize: const Size.fromHeight(50),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
+          child: _openingWallet
+              ? const SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : Text(_openButtonLabel),
+        ),
+      ],
+      const SizedBox(height: 16),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+          const SizedBox(width: 10),
+          Text(
+            'En attente de la confirmation…',
+            style: TextStyle(
+              color: Colors.grey.shade700,
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
+        ],
+      ),
+    ];
+  }
+
+  Widget _errorBanner(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFEBEE),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Color(0xFFB71C1C),
+          height: 1.35,
+          fontSize: 13.5,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.viewInsetsOf(context).bottom;
+    final maxHeight = MediaQuery.sizeOf(context).height * 0.92;
     return Padding(
       padding: EdgeInsets.only(bottom: bottom),
       child: Container(
+        constraints: BoxConstraints(maxHeight: maxHeight),
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: SoftPaySheet.topBorderRadius,
@@ -392,183 +751,9 @@ class _SoftPaySheetState extends State<SoftPaySheet> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  'Payer ${widget.montantLabel}',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Choisissez votre moyen de paiement',
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
-                ),
-                const SizedBox(height: 18),
-                TextField(
-                  controller: _prenom,
-                  decoration: _fieldDecoration('Prénom'),
-                  textCapitalization: TextCapitalization.words,
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: _nom,
-                  decoration: _fieldDecoration('Nom'),
-                  textCapitalization: TextCapitalization.words,
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: _tel,
-                  decoration: _fieldDecoration('Téléphone', hint: '77XXXXXXX'),
-                  keyboardType: TextInputType.phone,
-                  textInputAction: TextInputAction.done,
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Moyens de paiement',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Opacity(
-                  opacity: _loading ? 0.55 : 1,
-                  child: IgnorePointer(
-                    ignoring: _loading || _verifying,
-                    child: Row(
-                      children: [
-                        _methodTile(
-                          id: 'wave_sn',
-                          label: 'Wave',
-                          assetPath: _assetWave,
-                        ),
-                        const SizedBox(width: 10),
-                        _methodTile(
-                          id: 'orange_money_sn',
-                          label: 'OM',
-                          assetPath: _assetOm,
-                        ),
-                        const SizedBox(width: 10),
-                        _methodTile(
-                          id: 'free_money_sn',
-                          label: 'Free',
-                          assetPath: _assetFree,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                if (_error != null) ...[
-                  const SizedBox(height: 14),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFEBEE),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      _error!,
-                      style: const TextStyle(
-                        color: Color(0xFFB71C1C),
-                        height: 1.35,
-                        fontSize: 13.5,
-                      ),
-                    ),
-                  ),
-                ],
-                if (_result == null) ...[
-                  const SizedBox(height: 20),
-                  FilledButton(
-                    onPressed: (_loading || _verifying) ? null : _onPay,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.bleu_primaire,
-                      disabledBackgroundColor: AppColors.bleu_primaire
-                          .withValues(alpha: 0.45),
-                      minimumSize: const Size.fromHeight(50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: _loading
-                        ? const SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Text('Payer'),
-                  ),
-                ] else ...[
-                  const SizedBox(height: 18),
-                  Text(
-                    _result!.message,
-                    style: TextStyle(color: Colors.grey.shade700, height: 1.4),
-                  ),
-                  if (_result!.hasLaunchableUrl) ...[
-                    const SizedBox(height: 10),
-                    if (_method == 'orange_money_sn') ...[
-                      if ((_result!.maxitUrl ?? '').isNotEmpty)
-                        OutlinedButton(
-                          onPressed: () => _openUrl(_result!.maxitUrl!),
-                          child: const Text('Ouvrir Maxit'),
-                        ),
-                      if ((_result!.omUrl ?? '').isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        OutlinedButton(
-                          onPressed: () => _openUrl(_result!.omUrl!),
-                          child: const Text('Ouvrir Orange Money'),
-                        ),
-                      ],
-                      if ((_result!.url ?? '').isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        OutlinedButton(
-                          onPressed: () => _openUrl(_result!.url!),
-                          child: const Text('Voir le QR code'),
-                        ),
-                      ],
-                    ] else
-                      OutlinedButton(
-                        onPressed: () {
-                          final u =
-                              _result!.url ??
-                              _result!.omUrl ??
-                              _result!.maxitUrl;
-                          if (u != null) _openUrl(u);
-                        },
-                        child: const Text('Rouvrir le lien de paiement'),
-                      ),
-                  ],
-                  const SizedBox(height: 10),
-                  FilledButton(
-                    onPressed: _verifying ? null : _terminer,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.bleu_primaire,
-                      minimumSize: const Size.fromHeight(50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: _verifying
-                        ? const SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Text('J’ai payé - Terminer'),
-                  ),
-                ],
+                ...(_isFinalizing
+                    ? _buildFinalization()
+                    : _buildCheckoutForm()),
               ],
             ),
           ),

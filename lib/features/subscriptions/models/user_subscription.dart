@@ -56,7 +56,8 @@ class UserSubscription {
   bool get hasTeamAccess => entitlements.hasTeamAccess;
 
   bool get isActive {
-    if (status != 'ACTIVE' && status != 'TRIAL') return false;
+    final live = status == 'ACTIVE' || status == 'TRIAL' || status == 'PAST_DUE';
+    if (!live) return false;
     if (currentPeriodEnd == null) return true;
 
     final end = DateTime.tryParse(currentPeriodEnd!);

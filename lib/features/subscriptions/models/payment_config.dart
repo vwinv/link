@@ -50,6 +50,7 @@ class SoftPayResult {
     this.url,
     this.omUrl,
     this.maxitUrl,
+    this.qrImageBase64,
     this.returnUrl,
     this.fees,
     this.currency,
@@ -58,12 +59,12 @@ class SoftPayResult {
   factory SoftPayResult.fromJson(Map<String, dynamic> json) {
     final sp = json['softPay'];
     final map = sp is Map ? Map<String, dynamic>.from(sp) : json;
-    String? om;
-    String? mx;
-    final ou = map['other_url'];
+    String? om = map['om_url']?.toString();
+    String? mx = map['maxit_url']?.toString();
+    final ou = map['other_url'] ?? map['otherUrl'];
     if (ou is Map) {
-      om = ou['om_url']?.toString();
-      mx = ou['maxit_url']?.toString();
+      om ??= ou['om_url']?.toString() ?? ou['omUrl']?.toString();
+      mx ??= ou['maxit_url']?.toString() ?? ou['maxitUrl']?.toString();
     }
     return SoftPayResult(
       message: map['message']?.toString() ??
@@ -71,7 +72,9 @@ class SoftPayResult {
       url: map['url']?.toString(),
       omUrl: om,
       maxitUrl: mx,
-      returnUrl: map['return_url']?.toString(),
+      qrImageBase64: map['qr_image_base64']?.toString() ??
+          map['qrImageBase64']?.toString(),
+      returnUrl: map['return_url']?.toString() ?? map['returnUrl']?.toString(),
       fees: map['fees'] is num ? map['fees'] as num : null,
       currency: map['currency']?.toString(),
     );
@@ -81,12 +84,14 @@ class SoftPayResult {
   final String? url;
   final String? omUrl;
   final String? maxitUrl;
+  /// PNG Orange Money (base64) fourni par PayDunya dans `data[qrcode]`.
+  final String? qrImageBase64;
   final String? returnUrl;
   final num? fees;
   final String? currency;
 
   bool get hasLaunchableUrl =>
-      (url?.trim().isNotEmpty ?? false) ||
       (omUrl?.trim().isNotEmpty ?? false) ||
-      (maxitUrl?.trim().isNotEmpty ?? false);
+      (maxitUrl?.trim().isNotEmpty ?? false) ||
+      (url?.trim().isNotEmpty ?? false);
 }

@@ -512,6 +512,8 @@
   "premiumPortfolioLinked": "Portfolio linked to card",
   "premiumSeeOffers": "See Premium offers",
   "premiumPortfolioSubtitle": "Link your projects and work to your card.",
+  "cardOfferExpired": "Renew your subscription to reactivate this card",
+  "cardOfferExpiredSubtitle": "Without a valid plan, this card can no longer be shared.",
 
   "customizeTitle": "Customize",
   "customizeStyleSection": "CARD STYLE",
@@ -602,7 +604,12 @@
   "setupTeamCreateError": "Could not create the team",
   "setupTeamAppRestart": "Fully restart the app (stop + flutter run) then try again.",
 
-  "proDesignsSubtitle": "30 Premium ready-to-use templates",
+  "proDesignsSubtitle": "{count} Premium ready-to-use templates",
+  "@proDesignsSubtitle": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "proDesignsCardTypeSection": "CARD TYPE",
   "proDesignsConfiguringTeam": "Setting up your team space…",
   "proDesignsOpenTeamSetup": "Open team setup to create your pro card.",

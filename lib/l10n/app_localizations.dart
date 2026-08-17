@@ -2472,6 +2472,18 @@ abstract class AppLocalizations {
   /// **'Reliez vos projets et réalisations à votre carte.'**
   String get premiumPortfolioSubtitle;
 
+  /// No description provided for @cardOfferExpired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Renouvelez votre abonnement pour réactiver cette carte'**
+  String get cardOfferExpired;
+
+  /// No description provided for @cardOfferExpiredSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans offre valide, la carte n’est plus partageable.'**
+  String get cardOfferExpiredSubtitle;
+
   /// No description provided for @customizeTitle.
   ///
   /// In fr, this message translates to:
@@ -2829,8 +2841,8 @@ abstract class AppLocalizations {
   /// No description provided for @proDesignsSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'30 modèles Premium prêts à l’emploi'**
-  String get proDesignsSubtitle;
+  /// **'{count} modèles Premium prêts à l’emploi'**
+  String proDesignsSubtitle(int count);
 
   /// No description provided for @proDesignsCardTypeSection.
   ///

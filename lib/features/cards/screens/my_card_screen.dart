@@ -113,10 +113,12 @@ class _MyCardScreenState extends State<MyCardScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final card = _card;
-    final team = context.watch<TeamsProvider>().myTeam;
-    final hasPortfolio = context.watch<SubscriptionsProvider>().hasPortfolioAccess;
-    final hasSocialLinks =
-        context.watch<SubscriptionsProvider>().hasSocialLinksAccess;
+    final teams = context.watch<TeamsProvider>();
+    final team = teams.teamById(card.teamId) ?? teams.myTeam;
+    final subscriptions = context.watch<SubscriptionsProvider>();
+    final entitlements = subscriptions.entitlementsForCard(card, team: team);
+    final hasPortfolio = entitlements.hasPortfolio;
+    final hasSocialLinks = entitlements.hasSocialLinks;
 
     return Scaffold(
       backgroundColor: AppColors.background,

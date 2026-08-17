@@ -225,6 +225,29 @@ Future<bool> ensureTeamSubscription(BuildContext context) async {
   return subscriptionsProvider.hasTeamSubscription;
 }
 
+/// Carte pro / membre : exige une offre équipe valide.
+Future<bool> ensureCardOfferAccess(
+  BuildContext context,
+  BusinessCard card,
+) async {
+  if (!card.kind.isTeamLinked) return true;
+
+  final subscriptionsProvider = context.read<SubscriptionsProvider>();
+  await subscriptionsProvider.refresh();
+  if (!context.mounted) return false;
+
+  final team = _teamForCard(context, card);
+  if (subscriptionsProvider.canUseTeamLinkedCard(card, team: team)) {
+    return true;
+  }
+
+  await openLinkPremium(
+    context,
+    preferredAudience: OfferAudience.team,
+  );
+  return false;
+}
+
 /// Ouvre la configuration équipe (préremplie si une équipe existe déjà).
 Future<Team?> openSetupTeam(BuildContext context) async {
   final teamsProvider = context.read<TeamsProvider>();
@@ -363,8 +386,29 @@ Future<bool> ensureOfferCapability(
   return false;
 }
 
+/// Designs pro pour cette carte : perso → offre perso ; pro/membre → offre équipe.
+Future<bool> ensureCanCustomizeCard(
+  BuildContext context,
+  BusinessCard card,
+) async {
+  final subscriptionsProvider = context.read<SubscriptionsProvider>();
+  await subscriptionsProvider.refresh();
+  if (!context.mounted) return false;
+
+  final team = _teamForCard(context, card);
+  return ensureOfferCapability(
+    context,
+    allowed: subscriptionsProvider.canCustomizeCard(card, team: team),
+    preferredAudience: _audienceForCard(card),
+  );
+}
+
 Team? _teamForCard(BuildContext context, BusinessCard card) {
   return context.read<TeamsProvider>().teamById(card.teamId);
+}
+
+OfferAudience _audienceForCard(BusinessCard card) {
+  return card.kind.isTeamLinked ? OfferAudience.team : OfferAudience.personal;
 }
 
 /// Ouvre les designs pro si personnalisation autorisée, sinon Premium.
@@ -380,12 +424,15 @@ Future<void> openProfessionalDesignsOrPremium(
   if (subscriptionsProvider.canCustomizeCard(card, team: team)) {
     openProfessionalDesigns(context, card: card);
   } else {
-    openLinkPremium(context);
+    openLinkPremium(context, preferredAudience: _audienceForCard(card));
   }
 }
 
 /// Ouvre l’écran de partage au-dessus du parcours en cours.
-Future<void> openShareCard(BuildContext context, BusinessCard card) {
+Future<void> openShareCard(BuildContext context, BusinessCard card) async {
+  if (!await ensureCardOfferAccess(context, card)) return;
+  if (!context.mounted) return;
+
   final sharingApi = context.read<SharingApiService>();
 
   return rootNavigatorKey.currentState?.push<void>(
@@ -518,6 +565,7 @@ Future<void> openMyCardScreen(BuildContext context, BusinessCard card) {
   if (!await ensureOfferCapability(
     context,
     allowed: subscriptionsProvider.canViewAnalyticsFor(card, team: team),
+    preferredAudience: _audienceForCard(card),
   )) {
     return;
   }
@@ -553,6 +601,7 @@ Future<void> openCardVisitors(BuildContext context, BusinessCard card) async {
   if (!await ensureOfferCapability(
     context,
     allowed: subscriptionsProvider.canViewVisitorsFor(card, team: team),
+    preferredAudience: _audienceForCard(card),
   )) {
     return;
   }
@@ -616,6 +665,7 @@ Future<void> openWalletScreen(BuildContext context, BusinessCard card) async {
   if (!await ensureOfferCapability(
     context,
     allowed: subscriptionsProvider.canUseWalletFor(card, team: team),
+    preferredAudience: _audienceForCard(card),
   )) {
     return;
   }

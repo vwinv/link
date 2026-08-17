@@ -12,6 +12,7 @@ import 'package:linkflutter/features/cards/models/pro_design_template.dart';
 import 'package:linkflutter/features/cards/widgets/brand_color_picker_sheet.dart';
 import 'package:linkflutter/features/cards/widgets/pro_designs/pro_design_grid_card.dart';
 import 'package:linkflutter/providers/cards_provider.dart';
+import 'package:linkflutter/providers/subscriptions_provider.dart';
 import 'package:linkflutter/providers/teams_provider.dart';
 import 'package:linkflutter/shared/widgets/link_back_button.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +65,10 @@ class _ProfessionalDesignsScreenState extends State<ProfessionalDesignsScreen> {
     _scope = widget.card.kind.isProfessional
         ? _CardScope.professional
         : _CardScope.personal;
-    WidgetsBinding.instance.addPostFrameCallback((_) => _bootstrapColorPreferences());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _clampScopeToEntitlements();
+      _bootstrapColorPreferences();
+    });
   }
 
   String _themeSyncKey(CardThemeSettings theme) =>
@@ -114,6 +118,12 @@ class _ProfessionalDesignsScreenState extends State<ProfessionalDesignsScreen> {
       if (!mounted) return;
       _syncColorPreferencesFromCard(card, scroll: true);
     });
+  }
+
+  void _clampScopeToEntitlements() {
+    if (_scope != _CardScope.professional) return;
+    if (context.read<SubscriptionsProvider>().hasTeamSubscription) return;
+    setState(() => _scope = _CardScope.personal);
   }
 
   Future<void> _bootstrapColorPreferences() async {
@@ -256,7 +266,19 @@ class _ProfessionalDesignsScreenState extends State<ProfessionalDesignsScreen> {
     }
   }
 
-  void _onScopeChanged(_CardScope scope) {
+  Future<void> _onScopeChanged(_CardScope scope) async {
+    if (scope == _scope) return;
+
+    if (scope == _CardScope.professional) {
+      final professionalCard = context.read<CardsProvider>().professionalCard;
+      if (professionalCard != null) {
+        if (!await ensureCanCustomizeCard(context, professionalCard)) return;
+      } else if (!await ensureTeamSubscription(context)) {
+        return;
+      }
+      if (!mounted) return;
+    }
+
     setState(() {
       _scope = scope;
       _syncedThemeKey = null;
@@ -266,7 +288,7 @@ class _ProfessionalDesignsScreenState extends State<ProfessionalDesignsScreen> {
     _syncColorPreferencesFromCard(card, scroll: true);
 
     if (scope == _CardScope.professional) {
-      _ensureScopedCard();
+      await _ensureScopedCard();
     }
   }
 
@@ -275,6 +297,8 @@ class _ProfessionalDesignsScreenState extends State<ProfessionalDesignsScreen> {
     final l10n = context.l10n;
     final card = _liveCard(context.watch<CardsProvider>());
     _scheduleSyncFromCard(card);
+    final hasTeamSubscription =
+        context.watch<SubscriptionsProvider>().hasTeamSubscription;
     final team = context.watch<TeamsProvider>().myTeam;
     final useTeamBranding = _scope == _CardScope.professional;
     final logoUrl =
@@ -335,7 +359,9 @@ class _ProfessionalDesignsScreenState extends State<ProfessionalDesignsScreen> {
                               ),
                               const SizedBox(height: AppSpacing.sm),
                               Text(
-                                l10n.proDesignsSubtitle,
+                                l10n.proDesignsSubtitle(
+                                  ProDesignCatalog.templates.length,
+                                ),
                                 style: TextStyle(
                                   color: AppColors.textSecondary,
                                   fontSize: context.rs(AppFontSize.md),
@@ -350,7 +376,11 @@ class _ProfessionalDesignsScreenState extends State<ProfessionalDesignsScreen> {
                     const SizedBox(height: AppSpacing.xxl),
                     _SectionLabel(l10n.proDesignsCardTypeSection),
                     const SizedBox(height: AppSpacing.md),
-                    _CardScopeToggle(scope: _scope, onChanged: _onScopeChanged),
+                    _CardScopeToggle(
+                      scope: _scope,
+                      professionalLocked: !hasTeamSubscription,
+                      onChanged: _onScopeChanged,
+                    ),
                     if (missingProfessional) ...[
                       const SizedBox(height: AppSpacing.lg),
                       Text(
@@ -508,10 +538,15 @@ class _PremiumBadge extends StatelessWidget {
 }
 
 class _CardScopeToggle extends StatelessWidget {
-  const _CardScopeToggle({required this.scope, required this.onChanged});
+  const _CardScopeToggle({
+    required this.scope,
+    required this.onChanged,
+    this.professionalLocked = false,
+  });
 
   final _CardScope scope;
   final ValueChanged<_CardScope> onChanged;
+  final bool professionalLocked;
 
   @override
   Widget build(BuildContext context) {
@@ -537,6 +572,7 @@ class _CardScopeToggle extends StatelessWidget {
               label: l10n.cardScopeProfessional,
               icon: Icons.groups_outlined,
               isSelected: scope == _CardScope.professional,
+              isLocked: professionalLocked,
               onTap: () => onChanged(_CardScope.professional),
             ),
           ),
@@ -552,11 +588,13 @@ class _ScopeOption extends StatelessWidget {
     required this.icon,
     required this.isSelected,
     required this.onTap,
+    this.isLocked = false,
   });
 
   final String label;
   final IconData icon;
   final bool isSelected;
+  final bool isLocked;
   final VoidCallback onTap;
 
   @override
@@ -590,6 +628,16 @@ class _ScopeOption extends StatelessWidget {
                   fontWeight: AppFontWeight.semiBold,
                 ),
               ),
+              if (isLocked) ...[
+                const SizedBox(width: AppSpacing.xs),
+                Icon(
+                  Icons.lock_outline_rounded,
+                  size: 14,
+                  color: isSelected
+                      ? AppColors.onPrimary
+                      : AppColors.textSecondary,
+                ),
+              ],
             ],
           ),
         ),

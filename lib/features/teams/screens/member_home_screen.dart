@@ -235,11 +235,16 @@ class _MemberHomeScreenState extends State<MemberHomeScreen> {
       List<TeamMember> members = const [];
 
       if (card != null) {
-        final entitlements = team?.entitlements;
-        final canAnalytics = entitlements?.hasAnalytics ??
-            context.read<SubscriptionsProvider>().hasAnalyticsAccess;
-        final canVisitors = entitlements?.hasVisitorInsights ??
-            context.read<SubscriptionsProvider>().hasVisitorInsightsAccess;
+        final canAnalytics =
+            context.read<SubscriptionsProvider>().canViewAnalyticsFor(
+                  card,
+                  team: team,
+                );
+        final canVisitors =
+            context.read<SubscriptionsProvider>().canViewVisitorsFor(
+                  card,
+                  team: team,
+                );
 
         if (canAnalytics) {
           try {

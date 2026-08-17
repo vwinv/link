@@ -570,6 +570,8 @@
   "premiumPortfolioLinked": "Portfolio relié à la carte",
   "premiumSeeOffers": "Voir les offres Premium",
   "premiumPortfolioSubtitle": "Reliez vos projets et réalisations à votre carte.",
+  "cardOfferExpired": "Renouvelez votre abonnement pour réactiver cette carte",
+  "cardOfferExpiredSubtitle": "Sans offre valide, la carte n’est plus partageable.",
 
   "customizeTitle": "Personnaliser",
   "customizeStyleSection": "STYLE DE CARTE",
@@ -680,7 +682,12 @@
   "setupTeamCreateError": "Impossible de créer l’équipe",
   "setupTeamAppRestart": "Relancez l’app complètement (arrêt + flutter run) puis réessayez.",
 
-  "proDesignsSubtitle": "30 modèles Premium prêts à l’emploi",
+  "proDesignsSubtitle": "{count} modèles Premium prêts à l’emploi",
+  "@proDesignsSubtitle": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "proDesignsCardTypeSection": "TYPE DE CARTE",
   "proDesignsConfiguringTeam": "Configuration de votre espace équipe…",
   "proDesignsOpenTeamSetup": "Ouvrez la configuration équipe pour créer votre carte pro.",

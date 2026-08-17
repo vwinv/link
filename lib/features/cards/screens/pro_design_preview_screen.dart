@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:linkflutter/config/routes/app_navigation.dart';
 import 'package:linkflutter/core/api/api_exception.dart';
 import 'package:linkflutter/core/l10n/l10n_extensions.dart';
 import 'package:linkflutter/core/bootstrap/user_workspace_bootstrap.dart';
@@ -61,6 +62,9 @@ class _ProDesignPreviewScreenState extends State<ProDesignPreviewScreen> {
 
   Future<void> _applyTemplate() async {
     if (_isApplying) return;
+
+    if (!await ensureCanCustomizeCard(context, widget.card)) return;
+    if (!mounted) return;
 
     setState(() => _isApplying = true);
     final messenger = ScaffoldMessenger.of(context);

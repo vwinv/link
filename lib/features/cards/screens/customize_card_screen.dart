@@ -4,6 +4,7 @@ import 'package:linkflutter/core/api/api_exception.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/core/l10n/l10n_extensions.dart';
 import 'package:linkflutter/core/utils/responsive.dart';
+import 'package:linkflutter/features/cards/data/pro_design_catalog.dart';
 import 'package:linkflutter/features/cards/models/business_card.dart';
 import 'package:linkflutter/features/cards/models/card_badge_type.dart';
 import 'package:linkflutter/features/cards/models/card_style.dart';
@@ -109,7 +110,8 @@ class _CustomizeCardScreenState extends State<CustomizeCardScreen> {
   @override
   Widget build(BuildContext context) {
     final card = widget.card;
-    final team = context.watch<TeamsProvider>().myTeam;
+    final teams = context.watch<TeamsProvider>();
+    final team = teams.teamById(card.teamId) ?? teams.myTeam;
     final l10n = context.l10n;
 
     return Scaffold(
@@ -521,9 +523,9 @@ class _PremiumDesignsBanner extends StatelessWidget {
                   color: AppColors.or_fonce,
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
-                child: const Text(
-                  '30',
-                  style: TextStyle(
+                child: Text(
+                  '${ProDesignCatalog.templates.length}',
+                  style: const TextStyle(
                     color: AppColors.or,
                     fontSize: 12,
                     fontWeight: AppFontWeight.bold,

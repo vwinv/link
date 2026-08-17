@@ -1309,6 +1309,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Reliez vos projets et réalisations à votre carte.';
 
   @override
+  String get cardOfferExpired =>
+      'Renouvelez votre abonnement pour réactiver cette carte';
+
+  @override
+  String get cardOfferExpiredSubtitle =>
+      'Sans offre valide, la carte n’est plus partageable.';
+
+  @override
   String get customizeTitle => 'Personnaliser';
 
   @override
@@ -1519,7 +1527,9 @@ class AppLocalizationsFr extends AppLocalizations {
       'Relancez l’app complètement (arrêt + flutter run) puis réessayez.';
 
   @override
-  String get proDesignsSubtitle => '30 modèles Premium prêts à l’emploi';
+  String proDesignsSubtitle(int count) {
+    return '$count modèles Premium prêts à l’emploi';
+  }
 
   @override
   String get proDesignsCardTypeSection => 'TYPE DE CARTE';
