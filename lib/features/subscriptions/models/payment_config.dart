@@ -1,17 +1,20 @@
 class PaymentConfig {
   const PaymentConfig({
     required this.paymentsEnabled,
+    this.hideInAppPayments = false,
     this.provider = 'none',
   });
 
   factory PaymentConfig.fromJson(Map<String, dynamic> json) {
     return PaymentConfig(
       paymentsEnabled: json['paymentsEnabled'] as bool? ?? false,
+      hideInAppPayments: json['hideInAppPayments'] as bool? ?? false,
       provider: json['provider'] as String? ?? 'none',
     );
   }
 
   final bool paymentsEnabled;
+  final bool hideInAppPayments;
   final String provider;
 }
 

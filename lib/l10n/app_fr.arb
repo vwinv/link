@@ -503,6 +503,18 @@
   "premiumCheckoutRedirect": "Finalisez le paiement dans votre navigateur, puis revenez dans l'application.",
   "premiumCheckoutLaunchError": "Impossible d'ouvrir la page de paiement",
   "premiumRenewalNote": "Renouvellement automatique. Annulable à tout moment dans les réglages.",
+  "premiumSignUp": "S'inscrire",
+  "premiumSignupOk": "Compris",
+  "premiumSignupNote": "Nous vous recontacterons pour les modalités d'inscription.",
+  "premiumSignupThanksTitle": "Merci, {name}",
+  "@premiumSignupThanksTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "premiumSignupThanksTitleAnonymous": "Merci",
+  "premiumSignupThanks": "Votre demande a été enregistrée. Nous vous reviendrons pour les modalités d'inscription.",
+  "premiumSignupThanksAnonymous": "Votre demande a été enregistrée. Nous vous reviendrons pour les modalités d'inscription.",
   "premiumLoadError": "Impossible de charger les offres.",
   "premiumActivated": "Premium {title} ({price}) activé",
   "@premiumActivated": {

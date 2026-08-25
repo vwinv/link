@@ -456,6 +456,18 @@
   "premiumCheckoutRedirect": "Complete payment in your browser, then return to the app.",
   "premiumCheckoutLaunchError": "Unable to open the payment page",
   "premiumRenewalNote": "Auto-renewal. Cancel anytime in settings.",
+  "premiumSignUp": "Sign up",
+  "premiumSignupOk": "Got it",
+  "premiumSignupNote": "We'll get back to you with the registration details.",
+  "premiumSignupThanksTitle": "Thank you, {name}",
+  "@premiumSignupThanksTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "premiumSignupThanksTitleAnonymous": "Thank you",
+  "premiumSignupThanks": "Your request has been recorded. We'll get back to you with the registration details.",
+  "premiumSignupThanksAnonymous": "Your request has been recorded. We'll get back to you with the registration details.",
   "premiumLoadError": "Unable to load offers.",
   "premiumActivated": "Premium {title} ({price}) activated",
   "premiumSubscribeError": "Unable to create subscription",

@@ -1188,6 +1188,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get premiumRenewalNote => 'Auto-renewal. Cancel anytime in settings.';
 
   @override
+  String get premiumSignUp => 'Sign up';
+
+  @override
+  String get premiumSignupOk => 'Got it';
+
+  @override
+  String get premiumSignupNote =>
+      'We\'ll get back to you with the registration details.';
+
+  @override
+  String premiumSignupThanksTitle(String name) {
+    return 'Thank you, $name';
+  }
+
+  @override
+  String get premiumSignupThanksTitleAnonymous => 'Thank you';
+
+  @override
+  String get premiumSignupThanks =>
+      'Your request has been recorded. We\'ll get back to you with the registration details.';
+
+  @override
+  String get premiumSignupThanksAnonymous =>
+      'Your request has been recorded. We\'ll get back to you with the registration details.';
+
+  @override
   String get premiumLoadError => 'Unable to load offers.';
 
   @override

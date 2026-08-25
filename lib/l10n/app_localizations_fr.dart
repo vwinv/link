@@ -1203,6 +1203,32 @@ class AppLocalizationsFr extends AppLocalizations {
       'Renouvellement automatique. Annulable à tout moment dans les réglages.';
 
   @override
+  String get premiumSignUp => 'S\'inscrire';
+
+  @override
+  String get premiumSignupOk => 'Compris';
+
+  @override
+  String get premiumSignupNote =>
+      'Nous vous recontacterons pour les modalités d\'inscription.';
+
+  @override
+  String premiumSignupThanksTitle(String name) {
+    return 'Merci, $name';
+  }
+
+  @override
+  String get premiumSignupThanksTitleAnonymous => 'Merci';
+
+  @override
+  String get premiumSignupThanks =>
+      'Votre demande a été enregistrée. Nous vous reviendrons pour les modalités d\'inscription.';
+
+  @override
+  String get premiumSignupThanksAnonymous =>
+      'Votre demande a été enregistrée. Nous vous reviendrons pour les modalités d\'inscription.';
+
+  @override
   String get premiumLoadError => 'Impossible de charger les offres.';
 
   @override

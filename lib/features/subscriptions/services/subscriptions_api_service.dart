@@ -53,6 +53,28 @@ class SubscriptionsApiService {
     return UserSubscription.fromJson(response);
   }
 
+  Future<({String firstName, String offerTitle})> createSignupRequest({
+    required String offerSlug,
+    required String billingType,
+    String? teamId,
+    int? seats,
+  }) async {
+    final response = await _apiClient.post(
+      '/subscriptions/signup-request',
+      authenticated: true,
+      body: {
+        'offerSlug': offerSlug,
+        'billingType': billingType,
+        if (teamId != null) 'teamId': teamId,
+        if (seats != null) 'seats': seats,
+      },
+    );
+    return (
+      firstName: response['firstName'] as String? ?? '',
+      offerTitle: response['offerTitle'] as String? ?? '',
+    );
+  }
+
   Future<CheckoutSession> createCheckoutSession({
     required String offerSlug,
     required String billingType,

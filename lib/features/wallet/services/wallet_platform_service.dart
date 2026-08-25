@@ -5,7 +5,9 @@ import 'dart:typed_data';
 import 'package:apple_passkit/apple_passkit.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart' show PlatformException;
+import 'package:google_wallet/google_wallet.dart';
 import 'package:linkflutter/core/api/api_exception.dart';
+import 'package:linkflutter/features/wallet/models/wallet_add_result.dart';
 import 'package:linkflutter/features/wallet/models/wallet_platform_type.dart';
 import 'package:linkflutter/features/wallet/services/wallet_api_service.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,6 +17,7 @@ class WalletPlatformService {
 
   final WalletApiService _walletApi;
   final ApplePassKit _applePassKit = ApplePassKit();
+  final GoogleWallet _googleWallet = GoogleWallet();
 
   WalletPlatformType? get currentPlatform {
     if (kIsWeb) return null;
@@ -42,7 +45,7 @@ class WalletPlatformService {
       case WalletPlatformType.apple:
         await _addApplePass(result.passBase64);
       case WalletPlatformType.google:
-        await _openGoogleWallet(result.saveUrl);
+        await _saveGooglePass(result);
     }
   }
 
@@ -98,18 +101,46 @@ class WalletPlatformService {
     }
   }
 
-  Future<void> _openGoogleWallet(String? saveUrl) async {
-    if (saveUrl == null || saveUrl.isEmpty) {
+  Future<void> _saveGooglePass(WalletAddResult result) async {
+    final jwt = result.saveJwt?.trim().isNotEmpty == true
+        ? result.saveJwt!.trim()
+        : _jwtFromSaveUrl(result.saveUrl);
+
+    if (jwt == null || jwt.isEmpty) {
       throw ApiException('Lien Google Wallet invalide.');
     }
 
-    final uri = Uri.parse(saveUrl);
-    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
-
-    if (!launched) {
+    try {
+      final available = await _googleWallet.isAvailable();
+      if (available == true) {
+        final saved = await _googleWallet.savePassesJwt(jwt);
+        if (saved == true) return;
+        // false = feuille fermée / émulateur. On tente le lien web.
+      }
+    } on PlatformException catch (error) {
       throw ApiException(
-        'Impossible d’ouvrir Google Wallet sur cet appareil.',
+        error.message?.trim().isNotEmpty == true
+            ? 'Google Wallet : ${error.message}'
+            : 'Google Wallet a refusé la carte (code ${error.code}).',
       );
     }
+
+    final uri = Uri.parse('https://pay.google.com/gp/v/save/$jwt');
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched) {
+      throw ApiException(
+        'Google Wallet n’est pas disponible ici. L’émulateur Android ne gère pas l’ajout au Wallet : teste sur un téléphone réel, avec l’app Google Wallet et un compte Google testeur si l’émetteur est encore en Demo.',
+      );
+    }
+  }
+
+  String? _jwtFromSaveUrl(String? saveUrl) {
+    final value = saveUrl?.trim();
+    if (value == null || value.isEmpty) return null;
+    const prefix = 'https://pay.google.com/gp/v/save/';
+    if (value.startsWith(prefix)) {
+      return value.substring(prefix.length);
+    }
+    return value;
   }
 }

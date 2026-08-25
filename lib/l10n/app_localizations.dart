@@ -2292,6 +2292,48 @@ abstract class AppLocalizations {
   /// **'Renouvellement automatique. Annulable à tout moment dans les réglages.'**
   String get premiumRenewalNote;
 
+  /// No description provided for @premiumSignUp.
+  ///
+  /// In fr, this message translates to:
+  /// **'S\'inscrire'**
+  String get premiumSignUp;
+
+  /// No description provided for @premiumSignupOk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compris'**
+  String get premiumSignupOk;
+
+  /// No description provided for @premiumSignupNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous vous recontacterons pour les modalités d\'inscription.'**
+  String get premiumSignupNote;
+
+  /// No description provided for @premiumSignupThanksTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Merci, {name}'**
+  String premiumSignupThanksTitle(String name);
+
+  /// No description provided for @premiumSignupThanksTitleAnonymous.
+  ///
+  /// In fr, this message translates to:
+  /// **'Merci'**
+  String get premiumSignupThanksTitleAnonymous;
+
+  /// No description provided for @premiumSignupThanks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre demande a été enregistrée. Nous vous reviendrons pour les modalités d\'inscription.'**
+  String get premiumSignupThanks;
+
+  /// No description provided for @premiumSignupThanksAnonymous.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre demande a été enregistrée. Nous vous reviendrons pour les modalités d\'inscription.'**
+  String get premiumSignupThanksAnonymous;
+
   /// No description provided for @premiumLoadError.
   ///
   /// In fr, this message translates to:

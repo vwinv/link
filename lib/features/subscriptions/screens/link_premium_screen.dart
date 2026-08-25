@@ -40,6 +40,7 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
   bool _isSubscribing = false;
   bool _loadFailed = false;
   bool _usePaydunyaSoftPay = false;
+  bool _hideInAppPayments = false;
 
   @override
   void initState() {
@@ -101,7 +102,11 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
           );
         _selectedOfferId = selectedOffer?.id;
         _selectedPriceId = initialPrice?.id;
-        _usePaydunyaSoftPay = PaymentsConfig.usePaydunyaSoftPay(paymentsEnabled);
+        _hideInAppPayments = paymentConfig.hideInAppPayments;
+        _usePaydunyaSoftPay = PaymentsConfig.usePaydunyaSoftPay(
+          apiPaymentsEnabled: paymentsEnabled,
+          hideInAppPayments: paymentConfig.hideInAppPayments,
+        );
         _isLoading = false;
       });
     } catch (_) {
@@ -153,6 +158,29 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
     final seats = selectedOffer.hasPerSeatPricing && selectedPrice.isPerSeat
         ? selectedOffer.minSeats
         : null;
+
+    if (_hideInAppPayments) {
+      setState(() => _isSubscribing = true);
+      try {
+        await _submitSignupRequest(
+          offer: selectedOffer,
+          billingType: selectedPrice.billingType,
+          teamId: teamId,
+          seats: seats,
+        );
+      } on ApiException catch (error) {
+        if (!mounted) return;
+        messenger.showSnackBar(SnackBar(content: Text(error.message)));
+      } catch (_) {
+        if (!mounted) return;
+        messenger.showSnackBar(
+          SnackBar(content: Text(context.l10n.premiumSubscribeError)),
+        );
+      } finally {
+        if (mounted) setState(() => _isSubscribing = false);
+      }
+      return;
+    }
 
     final billingChoices = PaymentBillingChoice.forOffer(
       offer: selectedOffer,
@@ -272,6 +300,39 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
     }
   }
 
+  Future<void> _submitSignupRequest({
+    required PremiumOffer offer,
+    required String billingType,
+    String? teamId,
+    int? seats,
+  }) async {
+    final api = context.read<SubscriptionsApiService>();
+    final auth = context.read<AuthProvider>();
+    final result = await api.createSignupRequest(
+      offerSlug: offer.slug,
+      billingType: billingType,
+      teamId: teamId,
+      seats: seats,
+    );
+    if (!mounted) return;
+
+    final name = result.firstName.trim().isNotEmpty
+        ? result.firstName.trim()
+        : (auth.user?.firstName.trim() ?? '');
+    await showDialog<void>(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.72),
+      builder: (ctx) => _SignupThanksDialog(
+        title: name.isEmpty
+            ? ctx.l10n.premiumSignupThanksTitleAnonymous
+            : ctx.l10n.premiumSignupThanksTitle(name),
+        message: ctx.l10n.premiumSignupThanks,
+      ),
+    );
+    if (!mounted) return;
+    context.pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -377,9 +438,11 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
                                 ),
                               )
                             : Text(
-                                _usePaydunyaSoftPay
-                                    ? l10n.premiumProceedToPayment
-                                    : l10n.premiumStart,
+                                _hideInAppPayments
+                                    ? l10n.premiumSignUp
+                                    : _usePaydunyaSoftPay
+                                        ? l10n.premiumProceedToPayment
+                                        : l10n.premiumStart,
                                 style: const TextStyle(
                                   fontSize: AppFontSize.md,
                                   fontWeight: AppFontWeight.bold,
@@ -389,7 +452,9 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
                     ),
                     const SizedBox(height: AppSpacing.md),
                     Text(
-                      l10n.premiumRenewalNote,
+                      _hideInAppPayments
+                          ? l10n.premiumSignupNote
+                          : l10n.premiumRenewalNote,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: AppColors.onPrimary.withValues(alpha: 0.45),
@@ -400,6 +465,85 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
                   ],
                 ),
               ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SignupThanksDialog extends StatelessWidget {
+  const _SignupThanksDialog({
+    required this.title,
+    required this.message,
+  });
+
+  final String title;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
+    return Dialog(
+      backgroundColor: const Color(0xFF151518),
+      surfaceTintColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.screenHorizontal,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        side: const BorderSide(color: Color(0xFF2A2A2E)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const _PremiumCrownIcon(),
+            const SizedBox(height: 20),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.onPrimary,
+                fontSize: AppFontSize.xl,
+                fontWeight: AppFontWeight.bold,
+                letterSpacing: -0.3,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AppColors.onPrimary.withValues(alpha: 0.55),
+                fontSize: AppFontSize.sm,
+                height: 1.45,
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: AppSizes.buttonHeight,
+              child: FilledButton(
+                onPressed: () => Navigator.of(context).pop(),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.or,
+                  foregroundColor: AppColors.or_fonce,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
+                ),
+                child: Text(
+                  l10n.premiumSignupOk,
+                  style: const TextStyle(
+                    fontSize: AppFontSize.md,
+                    fontWeight: AppFontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),

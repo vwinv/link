@@ -8,12 +8,19 @@ abstract final class PaymentsConfig {
   );
 
   /// Résout si le flux PayDunya SoftPay doit être utilisé.
-  static bool usePaydunyaSoftPay(bool apiPaymentsEnabled) {
+  static bool usePaydunyaSoftPay({
+    required bool apiPaymentsEnabled,
+    required bool hideInAppPayments,
+  }) {
+    if (hideInAppPayments) return false;
     if (forceInstantSubscribe) return false;
     return apiPaymentsEnabled;
   }
 
   @Deprecated('Utiliser usePaydunyaSoftPay')
   static bool useStripeCheckout(bool apiPaymentsEnabled) =>
-      usePaydunyaSoftPay(apiPaymentsEnabled);
+      usePaydunyaSoftPay(
+        apiPaymentsEnabled: apiPaymentsEnabled,
+        hideInAppPayments: false,
+      );
 }
