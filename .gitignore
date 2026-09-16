@@ -31,7 +31,11 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+build/
 /coverage/
+*.apk
+*.aab
+*.dill
 
 # Symbolication related
 app.*.symbols
