@@ -29,10 +29,10 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAC-Kx4_-Op8r6KP_Ot6XPix0cUvhg1_bY',
-    appId: '1:880526404169:ios:7734cdc117ea036978ed98',
+    appId: '1:880526404169:ios:20a0a0e178b08b3978ed98',
     messagingSenderId: '880526404169',
     projectId: 'dropone-6c91e',
     storageBucket: 'dropone-6c91e.firebasestorage.app',
-    iosBundleId: 'com.mega.dropone',
+    iosBundleId: 'com.mega.dropone2',
   );
 }

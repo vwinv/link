@@ -8,6 +8,7 @@ import 'package:linkflutter/features/sharing/services/sharing_api_service.dart';
 import 'package:linkflutter/features/contacts/services/contacts_api_service.dart';
 import 'package:linkflutter/features/scan/services/scans_api_service.dart';
 import 'package:linkflutter/features/subscriptions/services/subscriptions_api_service.dart';
+import 'package:linkflutter/features/subscriptions/services/apple_iap_service.dart';
 import 'package:linkflutter/features/wallet/services/wallet_api_service.dart';
 import 'package:linkflutter/features/wallet/services/wallet_platform_service.dart';
 import 'package:linkflutter/features/notifications/services/notifications_api_service.dart';
@@ -43,6 +44,11 @@ abstract final class AppProviders {
     Provider(create: (_) => TeamsApiService(_apiClient)),
     Provider(create: (_) => UploadsApiService(_apiClient)),
     Provider(create: (_) => SubscriptionsApiService(_apiClient)),
+    Provider(
+      create: (context) =>
+          AppleIapService(context.read<SubscriptionsApiService>()),
+      dispose: (_, service) => service.dispose(),
+    ),
     Provider(create: (_) => ScansApiService(_apiClient)),
     Provider(create: (_) => ContactsApiService(_apiClient)),
     Provider(create: (_) => SharingApiService(_apiClient)),

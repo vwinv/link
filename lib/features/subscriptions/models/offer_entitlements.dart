@@ -59,6 +59,20 @@ class OfferEntitlements {
     maxShares: 0,
   );
 
+  /// Review Apple (HIDE_IN_APP_PAYMENTS=true) : toutes les capacités débloquées.
+  static const fullAccess = OfferEntitlements(
+    audience: OfferAudience.team,
+    canCustomize: true,
+    maxTeamMembers: -1,
+    hasPortfolio: true,
+    hasWallet: true,
+    hasAnalytics: true,
+    hasVisitorInsights: true,
+    hasSocialLinks: true,
+    maxAiScans: -1,
+    maxShares: -1,
+  );
+
   final OfferAudience audience;
   final bool canCustomize;
   final int maxTeamMembers;

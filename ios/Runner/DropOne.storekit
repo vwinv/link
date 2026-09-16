@@ -1,0 +1,324 @@
+{
+  "identifier" : "DropOneIAP",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    {
+      "displayPrice" : "19.99",
+      "familyShareable" : false,
+      "internalID" : "A1000001-0000-4000-8000-000000000001",
+      "localizations" : [
+        {
+          "description" : "DropOne Premium à vie",
+          "displayName" : "Premium à vie",
+          "locale" : "fr_FR"
+        }
+      ],
+      "productID" : "com.mega.dropone.premium.lifetime",
+      "referenceName" : "Premium Lifetime",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "29.99",
+      "familyShareable" : false,
+      "internalID" : "A1000001-0000-4000-8000-000000000002",
+      "localizations" : [
+        {
+          "description" : "DropOne Premium Plus à vie",
+          "displayName" : "Premium Plus à vie",
+          "locale" : "fr_FR"
+        }
+      ],
+      "productID" : "com.mega.dropone.premiumplus.lifetime",
+      "referenceName" : "Premium Plus Lifetime",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "49.99",
+      "familyShareable" : false,
+      "internalID" : "A1000001-0000-4000-8000-000000000003",
+      "localizations" : [
+        {
+          "description" : "DropOne Starter à vie",
+          "displayName" : "Starter à vie",
+          "locale" : "fr_FR"
+        }
+      ],
+      "productID" : "com.mega.dropone.team.lifetime",
+      "referenceName" : "Team Lifetime",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "99.99",
+      "familyShareable" : false,
+      "internalID" : "A1000001-0000-4000-8000-000000000004",
+      "localizations" : [
+        {
+          "description" : "DropOne Business à vie",
+          "displayName" : "Business à vie",
+          "locale" : "fr_FR"
+        }
+      ],
+      "productID" : "com.mega.dropone.business.lifetime",
+      "referenceName" : "Business Lifetime",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_askToBuyEnabled" : false,
+    "_billingGracePeriodEnabled" : false,
+    "_failTransactionsEnabled" : false,
+    "_locale" : "fr_FR",
+    "_renewalRate" : 0,
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Eligibility"
+      }
+    ],
+    "_timeRate" : 0
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21480001",
+      "localizations" : [
+        {
+          "description" : "Abonnements personnels DropOne",
+          "displayName" : "DropOne Perso",
+          "locale" : "fr_FR"
+        }
+      ],
+      "name" : "DropOne Perso",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "B1000001-0000-4000-8000-000000000001",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "DropOne Premium mensuel",
+              "displayName" : "Premium mensuel",
+              "locale" : "fr_FR"
+            }
+          ],
+          "productID" : "com.mega.dropone.premium.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Premium Monthly",
+          "subscriptionGroupID" : "21480001",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "39.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "B1000001-0000-4000-8000-000000000002",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "DropOne Premium annuel",
+              "displayName" : "Premium annuel",
+              "locale" : "fr_FR"
+            }
+          ],
+          "productID" : "com.mega.dropone.premium.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Premium Yearly",
+          "subscriptionGroupID" : "21480001",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "6.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "B1000001-0000-4000-8000-000000000003",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "DropOne Premium Plus mensuel",
+              "displayName" : "Premium Plus mensuel",
+              "locale" : "fr_FR"
+            }
+          ],
+          "productID" : "com.mega.dropone.premiumplus.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Premium Plus Monthly",
+          "subscriptionGroupID" : "21480001",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "59.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "B1000001-0000-4000-8000-000000000004",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "DropOne Premium Plus annuel",
+              "displayName" : "Premium Plus annuel",
+              "locale" : "fr_FR"
+            }
+          ],
+          "productID" : "com.mega.dropone.premiumplus.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Premium Plus Yearly",
+          "subscriptionGroupID" : "21480001",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    },
+    {
+      "id" : "21480002",
+      "localizations" : [
+        {
+          "description" : "Abonnements équipe DropOne",
+          "displayName" : "DropOne Équipe",
+          "locale" : "fr_FR"
+        }
+      ],
+      "name" : "DropOne Equipe",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "9.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "C1000001-0000-4000-8000-000000000001",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "DropOne Starter mensuel",
+              "displayName" : "Starter mensuel",
+              "locale" : "fr_FR"
+            }
+          ],
+          "productID" : "com.mega.dropone.team.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Team Monthly",
+          "subscriptionGroupID" : "21480002",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "89.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "C1000001-0000-4000-8000-000000000002",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "DropOne Starter annuel",
+              "displayName" : "Starter annuel",
+              "locale" : "fr_FR"
+            }
+          ],
+          "productID" : "com.mega.dropone.team.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Team Yearly",
+          "subscriptionGroupID" : "21480002",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    },
+    {
+      "id" : "21480003",
+      "localizations" : [
+        {
+          "description" : "Abonnements business DropOne",
+          "displayName" : "DropOne Business",
+          "locale" : "fr_FR"
+        }
+      ],
+      "name" : "DropOne Business",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "19.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "D1000001-0000-4000-8000-000000000001",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "DropOne Business mensuel",
+              "displayName" : "Business mensuel",
+              "locale" : "fr_FR"
+            }
+          ],
+          "productID" : "com.mega.dropone.business.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Business Monthly",
+          "subscriptionGroupID" : "21480003",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "179.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "D1000001-0000-4000-8000-000000000002",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "DropOne Business annuel",
+              "displayName" : "Business annuel",
+              "locale" : "fr_FR"
+            }
+          ],
+          "productID" : "com.mega.dropone.business.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Business Yearly",
+          "subscriptionGroupID" : "21480003",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

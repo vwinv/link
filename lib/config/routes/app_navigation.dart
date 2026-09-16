@@ -84,8 +84,12 @@ Future<void> completePostAuthNavigation(
   final hasTeamSubscription = subscriptions.hasTeamSubscription;
   final needsTeamWorkspace = !teams.hasTeam || !cards.hasProfessionalCard;
 
-  final shouldContinueTeamSetup =
-      wantsTeamOnboarding || (hasTeamSubscription && needsTeamWorkspace);
+  // En review Apple (HIDE_IN_APP_PAYMENTS), hasTeamSubscription est forcé
+  // à true pour débloquer les features — ne pas en déduire le parcours équipe.
+  final shouldContinueTeamSetup = wantsTeamOnboarding ||
+      (!subscriptions.isAppleReviewFullAccess &&
+          hasTeamSubscription &&
+          needsTeamWorkspace);
 
   if (shouldContinueTeamSetup) {
     await openSetupProfessionalTeam(context);
@@ -197,8 +201,13 @@ Future<void> openTeamInviteScreen(
 Future<void> openLinkPremium(
   BuildContext context, {
   OfferAudience? preferredAudience,
-}) {
-  return GoRouter.of(
+}) async {
+  final subscriptions = context.read<SubscriptionsProvider>();
+  await subscriptions.ensurePaymentConfigLoaded();
+  if (!context.mounted) return;
+  if (subscriptions.hidePremiumUpsells) return;
+
+  await GoRouter.of(
     context,
   ).push<void>(RoutePaths.premium, extra: preferredAudience);
 }
@@ -214,13 +223,16 @@ Future<bool> ensureTeamSubscription(BuildContext context) async {
   await subscriptionsProvider.refresh();
   if (!context.mounted) return false;
 
-  if (!subscriptionsProvider.hasTeamSubscription) {
-    await openLinkPremiumForTeam(context);
-    if (!context.mounted) return false;
-
-    await subscriptionsProvider.refresh();
-    if (!context.mounted) return false;
+  if (subscriptionsProvider.isAppleReviewFullAccess ||
+      subscriptionsProvider.hasTeamSubscription) {
+    return true;
   }
+
+  await openLinkPremiumForTeam(context);
+  if (!context.mounted) return false;
+
+  await subscriptionsProvider.refresh();
+  if (!context.mounted) return false;
 
   return subscriptionsProvider.hasTeamSubscription;
 }
@@ -382,6 +394,8 @@ Future<bool> ensureOfferCapability(
   OfferAudience? preferredAudience,
 }) async {
   if (allowed) return true;
+  final subscriptionsProvider = context.read<SubscriptionsProvider>();
+  if (subscriptionsProvider.isAppleReviewFullAccess) return true;
   await openLinkPremium(context, preferredAudience: preferredAudience);
   return false;
 }

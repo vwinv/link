@@ -75,6 +75,29 @@ class SubscriptionsApiService {
     );
   }
 
+  Future<UserSubscription> verifyAppleIap({
+    required String signedTransaction,
+    String? offerSlug,
+    String? billingType,
+    String? teamId,
+    int? seats,
+  }) async {
+    final response = await _apiClient.post(
+      '/subscriptions/apple/verify',
+      authenticated: true,
+      timeout: const Duration(seconds: 30),
+      body: {
+        'signedTransaction': signedTransaction,
+        if (offerSlug != null && offerSlug.isNotEmpty) 'offerSlug': offerSlug,
+        if (billingType != null && billingType.isNotEmpty)
+          'billingType': billingType,
+        if (teamId != null) 'teamId': teamId,
+        if (seats != null) 'seats': seats,
+      },
+    );
+    return UserSubscription.fromJson(response);
+  }
+
   Future<CheckoutSession> createCheckoutSession({
     required String offerSlug,
     required String billingType,

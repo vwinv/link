@@ -4,6 +4,8 @@ import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/core/l10n/l10n_extensions.dart';
 import 'package:linkflutter/core/utils/responsive.dart';
 import 'package:linkflutter/features/subscriptions/widgets/premium_unlock_banner.dart';
+import 'package:linkflutter/providers/subscriptions_provider.dart';
+import 'package:provider/provider.dart';
 
 class CreateCardPortfolioSection extends StatelessWidget {
   const CreateCardPortfolioSection({super.key});
@@ -11,6 +13,10 @@ class CreateCardPortfolioSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final subscriptions = context.watch<SubscriptionsProvider>();
+    final hidePremium = subscriptions.hidePremiumUpsells;
+    final hasPortfolio =
+        subscriptions.hasPortfolioAccess || hidePremium;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,7 +33,7 @@ class CreateCardPortfolioSection extends StatelessWidget {
                   ),
             ),
             const SizedBox(width: AppSpacing.md),
-            const _PremiumBadge(),
+            if (!hasPortfolio && !hidePremium) const _PremiumBadge(),
           ],
         ),
         const SizedBox(height: AppSpacing.sm),
@@ -39,10 +45,29 @@ class CreateCardPortfolioSection extends StatelessWidget {
               ),
         ),
         const SizedBox(height: AppSpacing.xl),
-        PremiumUnlockBanner(
-          title: l10n.premiumPortfolioLinked,
-          onTap: () => openLinkPremium(context),
-        ),
+        if (hasPortfolio)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Text(
+              l10n.premiumPortfolioLinked,
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: context.rs(AppFontSize.sm),
+                height: 1.4,
+              ),
+            ),
+          )
+        else if (!hidePremium)
+          PremiumUnlockBanner(
+            title: l10n.premiumPortfolioLinked,
+            onTap: () => openLinkPremium(context),
+          ),
       ],
     );
   }

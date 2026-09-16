@@ -297,8 +297,9 @@ class _ProfessionalDesignsScreenState extends State<ProfessionalDesignsScreen> {
     final l10n = context.l10n;
     final card = _liveCard(context.watch<CardsProvider>());
     _scheduleSyncFromCard(card);
-    final hasTeamSubscription =
-        context.watch<SubscriptionsProvider>().hasTeamSubscription;
+    final subscriptions = context.watch<SubscriptionsProvider>();
+    final hasTeamSubscription = subscriptions.hasTeamSubscription;
+    final hidePremium = subscriptions.hidePremiumUpsells;
     final team = context.watch<TeamsProvider>().myTeam;
     final useTeamBranding = _scope == _CardScope.professional;
     final logoUrl =
@@ -370,7 +371,7 @@ class _ProfessionalDesignsScreenState extends State<ProfessionalDesignsScreen> {
                             ],
                           ),
                         ),
-                        const _PremiumBadge(),
+                        if (!hidePremium) const _PremiumBadge(),
                       ],
                     ),
                     const SizedBox(height: AppSpacing.xxl),

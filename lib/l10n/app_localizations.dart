@@ -2298,6 +2298,42 @@ abstract class AppLocalizations {
   /// **'S\'inscrire'**
   String get premiumSignUp;
 
+  /// No description provided for @premiumPayWithApple.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payer avec Apple'**
+  String get premiumPayWithApple;
+
+  /// No description provided for @premiumRestorePurchases.
+  ///
+  /// In fr, this message translates to:
+  /// **'Restaurer les achats'**
+  String get premiumRestorePurchases;
+
+  /// No description provided for @premiumRestoreEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun achat Apple à restaurer.'**
+  String get premiumRestoreEmpty;
+
+  /// No description provided for @premiumRestoreSuccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Achat restauré. Offre {title} active.'**
+  String premiumRestoreSuccess(String title);
+
+  /// No description provided for @premiumAppleIapNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le paiement est débité sur votre compte Apple. L’abonnement se renouvelle automatiquement sauf résiliation au moins 24 h avant la fin de la période en cours, dans les réglages iOS.'**
+  String get premiumAppleIapNote;
+
+  /// No description provided for @premiumTermsOfUse.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conditions d\'utilisation'**
+  String get premiumTermsOfUse;
+
   /// No description provided for @premiumSignupOk.
   ///
   /// In fr, this message translates to:

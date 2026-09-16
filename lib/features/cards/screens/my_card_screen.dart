@@ -116,9 +116,10 @@ class _MyCardScreenState extends State<MyCardScreen> {
     final teams = context.watch<TeamsProvider>();
     final team = teams.teamById(card.teamId) ?? teams.myTeam;
     final subscriptions = context.watch<SubscriptionsProvider>();
+    final hidePremium = subscriptions.hidePremiumUpsells;
     final entitlements = subscriptions.entitlementsForCard(card, team: team);
-    final hasPortfolio = entitlements.hasPortfolio;
-    final hasSocialLinks = entitlements.hasSocialLinks;
+    final hasPortfolio = entitlements.hasPortfolio || hidePremium;
+    final hasSocialLinks = entitlements.hasSocialLinks || hidePremium;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -248,11 +249,13 @@ class _MyCardScreenState extends State<MyCardScreen> {
                   const SizedBox(height: AppSpacing.xxl),
                   _SectionLabel(l10n.myCardSocialNetworks),
                   const SizedBox(height: AppSpacing.md),
-                  if (!hasSocialLinks)
+                  if (!hasSocialLinks && !hidePremium)
                     PremiumUnlockBanner(
                       title: l10n.premiumSocialUnlock,
                       onTap: () => openLinkPremium(context),
                     )
+                  else if (!hasSocialLinks)
+                    const SizedBox.shrink()
                   else if (_isLoadingSocial)
                     const Center(
                       child: Padding(
@@ -279,7 +282,7 @@ class _MyCardScreenState extends State<MyCardScreen> {
                   Row(
                     children: [
                       Expanded(child: _SectionLabel(l10n.myCardPortfolio)),
-                      if (!hasPortfolio)
+                      if (!hasPortfolio && !hidePremium)
                         TextButton(
                           onPressed: () => openLinkPremium(context),
                           child: Text(
@@ -310,7 +313,7 @@ class _MyCardScreenState extends State<MyCardScreen> {
                         ),
                       ),
                     )
-                  else
+                  else if (!hidePremium)
                     PremiumUnlockBanner(
                       title: l10n.myCardPortfolioPremium,
                       onTap: () => openLinkPremium(context),

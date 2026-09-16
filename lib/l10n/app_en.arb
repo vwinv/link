@@ -457,6 +457,17 @@
   "premiumCheckoutLaunchError": "Unable to open the payment page",
   "premiumRenewalNote": "Auto-renewal. Cancel anytime in settings.",
   "premiumSignUp": "Sign up",
+  "premiumPayWithApple": "Pay with Apple",
+  "premiumRestorePurchases": "Restore purchases",
+  "premiumRestoreEmpty": "No Apple purchases to restore.",
+  "premiumRestoreSuccess": "Purchase restored. {title} is now active.",
+  "@premiumRestoreSuccess": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "premiumAppleIapNote": "Payment will be charged to your Apple account. The subscription renews automatically unless cancelled at least 24 hours before the end of the current period in iOS Settings.",
+  "premiumTermsOfUse": "Terms of Use",
   "premiumSignupOk": "Got it",
   "premiumSignupNote": "We'll get back to you with the registration details.",
   "premiumSignupThanksTitle": "Thank you, {name}",

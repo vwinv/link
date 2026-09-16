@@ -22,19 +22,19 @@ abstract final class OAuthConfig {
   static const googleWebClientId = String.fromEnvironment(
     'GOOGLE_WEB_CLIENT_ID',
     defaultValue:
-        '880526404169-0sopgh9eaqsn67i47bpbooo0a5la9s9i.apps.googleusercontent.com',
+        '880526404169-hkfi066mbr50rge90kqk11guuh6kojm5.apps.googleusercontent.com',
   );
 
   static const googleIosClientId = String.fromEnvironment(
     'GOOGLE_IOS_CLIENT_ID',
     defaultValue:
-        '880526404169-oupm39ivodrfs20324kskvc84nffm7rj.apps.googleusercontent.com',
+        '880526404169-ipnqljjrvrjpgnlochj23pkac6o277mb.apps.googleusercontent.com',
   );
 
   /// Bundle ID iOS - doit correspondre à `APPLE_CLIENT_ID` côté backend.
   static const appleClientId = String.fromEnvironment(
     'APPLE_CLIENT_ID',
-    defaultValue: 'com.mega.dropone',
+    defaultValue: 'com.mega.dropone2',
   );
 
   static bool get isGoogleConfigured => googleWebClientId.isNotEmpty;

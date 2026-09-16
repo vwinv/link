@@ -14,7 +14,7 @@
 	</array>
 	<key>com.apple.developer.pass-type-identifiers</key>
 	<array>
-		<string>$(TeamIdentifierPrefix)pass.com.mega.dropone</string>
+		<string>$(TeamIdentifierPrefix)pass.com.mega.dropone2</string>
 	</array>
 </dict>
 </plist>

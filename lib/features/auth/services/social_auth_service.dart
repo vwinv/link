@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:linkflutter/core/config/oauth_config.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -26,30 +27,43 @@ class SocialAuthService {
       );
     }
 
-    if (!_googleInitialized) {
-      await GoogleSignIn.instance.initialize(
-        clientId: OAuthConfig.googleIosClientId.isEmpty
-            ? null
-            : OAuthConfig.googleIosClientId,
-        serverClientId: OAuthConfig.googleWebClientId,
-      );
-      _googleInitialized = true;
-    }
-
     try {
+      if (!_googleInitialized) {
+        await GoogleSignIn.instance.initialize(
+          clientId: OAuthConfig.googleIosClientId.isEmpty
+              ? null
+              : OAuthConfig.googleIosClientId,
+          serverClientId: OAuthConfig.googleWebClientId,
+        );
+        _googleInitialized = true;
+      }
+
       final account = await GoogleSignIn.instance.authenticate();
       final idToken = account.authentication.idToken;
       if (idToken == null || idToken.isEmpty) {
-        throw SocialAuthMisconfigured('Token Google indisponible');
+        throw SocialAuthMisconfigured(
+          'Token Google indisponible (vérifier GIDServerClientID / GOOGLE_WEB_CLIENT_ID)',
+        );
       }
       return idToken;
+    } on SocialAuthMisconfigured {
+      rethrow;
+    } on SocialAuthCancelled {
+      rethrow;
     } on GoogleSignInException catch (error) {
       if (error.code == GoogleSignInExceptionCode.canceled) {
         throw SocialAuthCancelled();
       }
+      final detail = error.description?.trim();
+      debugPrint('GoogleSignInException: ${error.code.name} $detail');
       throw SocialAuthMisconfigured(
-        'Connexion Google impossible (${error.code.name})',
+        detail != null && detail.isNotEmpty
+            ? 'Connexion Google impossible (${error.code.name}): $detail'
+            : 'Connexion Google impossible (${error.code.name})',
       );
+    } catch (error, stack) {
+      debugPrint('Google Sign-In error: $error\n$stack');
+      throw SocialAuthMisconfigured('Connexion Google impossible: $error');
     }
   }
 

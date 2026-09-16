@@ -344,7 +344,8 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
                             team: _team,
                             memberCount: memberCount,
                             showPremiumBadge:
-                                subscriptionsProvider.hasActiveSubscription,
+                                subscriptionsProvider.hasActiveSubscription &&
+                                    !subscriptionsProvider.hidePremiumUpsells,
                             onPremiumTap: () => openLinkPremiumForTeam(context),
                           ),
                           const SizedBox(height: AppSpacing.xl),

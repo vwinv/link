@@ -1206,6 +1206,27 @@ class AppLocalizationsFr extends AppLocalizations {
   String get premiumSignUp => 'S\'inscrire';
 
   @override
+  String get premiumPayWithApple => 'Payer avec Apple';
+
+  @override
+  String get premiumRestorePurchases => 'Restaurer les achats';
+
+  @override
+  String get premiumRestoreEmpty => 'Aucun achat Apple à restaurer.';
+
+  @override
+  String premiumRestoreSuccess(String title) {
+    return 'Achat restauré. Offre $title active.';
+  }
+
+  @override
+  String get premiumAppleIapNote =>
+      'Le paiement est débité sur votre compte Apple. L’abonnement se renouvelle automatiquement sauf résiliation au moins 24 h avant la fin de la période en cours, dans les réglages iOS.';
+
+  @override
+  String get premiumTermsOfUse => 'Conditions d\'utilisation';
+
+  @override
   String get premiumSignupOk => 'Compris';
 
   @override

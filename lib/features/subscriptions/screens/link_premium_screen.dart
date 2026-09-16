@@ -1,15 +1,19 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:linkflutter/config/routes/app_navigation.dart';
 import 'package:linkflutter/core/api/api_exception.dart';
 import 'package:linkflutter/core/config/payments_config.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/core/l10n/l10n_extensions.dart';
 import 'package:linkflutter/core/utils/responsive.dart';
 import 'package:linkflutter/l10n/app_localizations.dart';
+import 'package:linkflutter/features/subscriptions/apple_iap_products.dart';
 import 'package:linkflutter/features/subscriptions/models/payment_config.dart';
 import 'package:linkflutter/features/subscriptions/models/offer_entitlements.dart';
 import 'package:linkflutter/features/subscriptions/models/premium_offer.dart';
 import 'package:linkflutter/features/subscriptions/models/premium_offer_price.dart';
+import 'package:linkflutter/features/subscriptions/services/apple_iap_service.dart';
 import 'package:linkflutter/features/subscriptions/services/subscriptions_api_service.dart';
 import 'package:linkflutter/features/subscriptions/widgets/payment_billing_picker_sheet.dart';
 import 'package:linkflutter/features/subscriptions/widgets/soft_pay_sheet.dart';
@@ -17,6 +21,7 @@ import 'package:linkflutter/providers/auth_provider.dart';
 import 'package:linkflutter/providers/subscriptions_provider.dart';
 import 'package:linkflutter/providers/teams_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LinkPremiumScreen extends StatefulWidget {
   const LinkPremiumScreen({
@@ -41,6 +46,7 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
   bool _loadFailed = false;
   bool _usePaydunyaSoftPay = false;
   bool _hideInAppPayments = false;
+  Map<String, String> _applePriceLabels = {};
 
   @override
   void initState() {
@@ -105,10 +111,10 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
         _hideInAppPayments = paymentConfig.hideInAppPayments;
         _usePaydunyaSoftPay = PaymentsConfig.usePaydunyaSoftPay(
           apiPaymentsEnabled: paymentsEnabled,
-          hideInAppPayments: paymentConfig.hideInAppPayments,
         );
         _isLoading = false;
       });
+      await _loadApplePrices(offers);
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -146,6 +152,28 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
     return null;
   }
 
+  bool get _useAppleIap =>
+      _hideInAppPayments &&
+      !kIsWeb &&
+      defaultTargetPlatform == TargetPlatform.iOS;
+
+  Future<void> _loadApplePrices(List<PremiumOffer> offers) async {
+    if (!_useAppleIap) return;
+    final ids = <String>{};
+    for (final offer in offers) {
+      for (final price in offer.prices) {
+        final id = price.appleProductId?.trim() ?? '';
+        if (id.isNotEmpty) ids.add(id);
+      }
+    }
+    if (ids.isEmpty || !mounted) return;
+    try {
+      final labels = await context.read<AppleIapService>().priceLabels(ids);
+      if (!mounted || labels.isEmpty) return;
+      setState(() => _applePriceLabels = labels);
+    } catch (_) {}
+  }
+
   Future<void> _startPremium() async {
     final selectedOffer = _selectedOffer;
     final selectedPrice = _selectedPrice;
@@ -159,26 +187,13 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
         ? selectedOffer.minSeats
         : null;
 
-    if (_hideInAppPayments) {
-      setState(() => _isSubscribing = true);
-      try {
-        await _submitSignupRequest(
-          offer: selectedOffer,
-          billingType: selectedPrice.billingType,
-          teamId: teamId,
-          seats: seats,
-        );
-      } on ApiException catch (error) {
-        if (!mounted) return;
-        messenger.showSnackBar(SnackBar(content: Text(error.message)));
-      } catch (_) {
-        if (!mounted) return;
-        messenger.showSnackBar(
-          SnackBar(content: Text(context.l10n.premiumSubscribeError)),
-        );
-      } finally {
-        if (mounted) setState(() => _isSubscribing = false);
-      }
+    if (_useAppleIap) {
+      await _purchaseWithApple(
+        offer: selectedOffer,
+        price: selectedPrice,
+        teamId: teamId,
+        seats: seats,
+      );
       return;
     }
 
@@ -300,37 +315,115 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
     }
   }
 
-  Future<void> _submitSignupRequest({
+  Future<void> _purchaseWithApple({
     required PremiumOffer offer,
-    required String billingType,
+    required PremiumOfferPrice price,
     String? teamId,
     int? seats,
   }) async {
-    final api = context.read<SubscriptionsApiService>();
-    final auth = context.read<AuthProvider>();
-    final result = await api.createSignupRequest(
-      offerSlug: offer.slug,
-      billingType: billingType,
-      teamId: teamId,
-      seats: seats,
-    );
-    if (!mounted) return;
+    final productId = appleProductIdFor(
+          offerSlug: offer.slug,
+          billingType: price.billingType,
+          fromApi: price.appleProductId,
+        ) ??
+        '';
+    if (productId.isEmpty) {
+      if (!mounted) return;
+      await _showAppleIapError(
+        'Produit Apple manquant pour ${offer.slug} (${price.billingType}).',
+      );
+      return;
+    }
 
-    final name = result.firstName.trim().isNotEmpty
-        ? result.firstName.trim()
-        : (auth.user?.firstName.trim() ?? '');
-    await showDialog<void>(
+    setState(() => _isSubscribing = true);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final iap = context.read<AppleIapService>();
+      final subscription = await iap.purchase(
+        productId: productId,
+        offerSlug: offer.slug,
+        billingType: price.billingType,
+        teamId: teamId,
+        seats: seats,
+      );
+      if (!mounted) return;
+      context.read<SubscriptionsProvider>().setSubscription(subscription);
+      context.pop();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            context.l10n.premiumActivated(offer.title, price.title),
+          ),
+        ),
+      );
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      await _showAppleIapError(error.message);
+    } catch (error) {
+      if (!mounted) return;
+      await _showAppleIapError(error.toString());
+    } finally {
+      if (mounted) setState(() => _isSubscribing = false);
+    }
+  }
+
+  Future<void> _restoreApplePurchases() async {
+    if (_isSubscribing) return;
+    setState(() => _isSubscribing = true);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final subscription = await context.read<AppleIapService>().restore();
+      if (!mounted) return;
+      if (subscription == null) {
+        messenger.showSnackBar(
+          SnackBar(content: Text(context.l10n.premiumRestoreEmpty)),
+        );
+        return;
+      }
+      context.read<SubscriptionsProvider>().setSubscription(subscription);
+      context.pop();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            context.l10n.premiumRestoreSuccess(subscription.offerTitle),
+          ),
+        ),
+      );
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      await _showAppleIapError(error.message);
+    } catch (error) {
+      if (!mounted) return;
+      await _showAppleIapError(error.toString());
+    } finally {
+      if (mounted) setState(() => _isSubscribing = false);
+    }
+  }
+
+  Future<void> _showAppleIapError(String message) {
+    return showDialog<void>(
       context: context,
-      barrierColor: Colors.black.withValues(alpha: 0.72),
-      builder: (ctx) => _SignupThanksDialog(
-        title: name.isEmpty
-            ? ctx.l10n.premiumSignupThanksTitleAnonymous
-            : ctx.l10n.premiumSignupThanksTitle(name),
-        message: ctx.l10n.premiumSignupThanks,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF151518),
+        title: Text(
+          ctx.l10n.premiumPayWithApple,
+          style: const TextStyle(color: AppColors.onPrimary),
+        ),
+        content: Text(
+          message,
+          style: TextStyle(
+            color: AppColors.onPrimary.withValues(alpha: 0.8),
+            height: 1.4,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(ctx.l10n.premiumSignupOk),
+          ),
+        ],
       ),
     );
-    if (!mounted) return;
-    context.pop();
   }
 
   @override
@@ -380,6 +473,7 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
                               offers: _offers,
                               selectedOfferId: _selectedOfferId,
                               selectedPriceId: _selectedPriceId,
+                              applePriceLabels: _applePriceLabels,
                               onOfferChanged: (offer) {
                                 final selected = _priceForOffer(offer);
                                 setState(() {
@@ -438,8 +532,8 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
                                 ),
                               )
                             : Text(
-                                _hideInAppPayments
-                                    ? l10n.premiumSignUp
+                                _useAppleIap
+                                    ? l10n.premiumPayWithApple
                                     : _usePaydunyaSoftPay
                                         ? l10n.premiumProceedToPayment
                                         : l10n.premiumStart,
@@ -450,10 +544,24 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
                               ),
                       ),
                     ),
+                    if (_useAppleIap) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      TextButton(
+                        onPressed: _isSubscribing ? null : _restoreApplePurchases,
+                        child: Text(
+                          l10n.premiumRestorePurchases,
+                          style: TextStyle(
+                            color: AppColors.onPrimary.withValues(alpha: 0.75),
+                            fontSize: AppFontSize.sm,
+                            fontWeight: AppFontWeight.medium,
+                          ),
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: AppSpacing.md),
                     Text(
-                      _hideInAppPayments
-                          ? l10n.premiumSignupNote
+                      _useAppleIap
+                          ? l10n.premiumAppleIapNote
                           : l10n.premiumRenewalNote,
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -462,88 +570,45 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
                         height: 1.4,
                       ),
                     ),
+                    if (_useAppleIap) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: AppSpacing.md,
+                        children: [
+                          TextButton(
+                            onPressed: () => openPrivacyPolicy(context),
+                            child: Text(
+                              l10n.privacyPolicyTitle,
+                              style: TextStyle(
+                                color: AppColors.or.withValues(alpha: 0.9),
+                                fontSize: context.rs(12),
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              await launchUrl(
+                                Uri.parse(
+                                  'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/',
+                                ),
+                                mode: LaunchMode.externalApplication,
+                              );
+                            },
+                            child: Text(
+                              l10n.premiumTermsOfUse,
+                              style: TextStyle(
+                                color: AppColors.or.withValues(alpha: 0.9),
+                                fontSize: context.rs(12),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SignupThanksDialog extends StatelessWidget {
-  const _SignupThanksDialog({
-    required this.title,
-    required this.message,
-  });
-
-  final String title;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-
-    return Dialog(
-      backgroundColor: const Color(0xFF151518),
-      surfaceTintColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.screenHorizontal,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-        side: const BorderSide(color: Color(0xFF2A2A2E)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const _PremiumCrownIcon(),
-            const SizedBox(height: 20),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.onPrimary,
-                fontSize: AppFontSize.xl,
-                fontWeight: AppFontWeight.bold,
-                letterSpacing: -0.3,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AppColors.onPrimary.withValues(alpha: 0.55),
-                fontSize: AppFontSize.sm,
-                height: 1.45,
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: AppSizes.buttonHeight,
-              child: FilledButton(
-                onPressed: () => Navigator.of(context).pop(),
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.or,
-                  foregroundColor: AppColors.or_fonce,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.md),
-                  ),
-                ),
-                child: Text(
-                  l10n.premiumSignupOk,
-                  style: const TextStyle(
-                    fontSize: AppFontSize.md,
-                    fontWeight: AppFontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -607,6 +672,7 @@ class _HorizontalOfferPackagesCarousel extends StatefulWidget {
     required this.selectedPriceId,
     required this.onOfferChanged,
     required this.onPriceSelected,
+    this.applePriceLabels = const {},
   });
 
   final List<PremiumOffer> offers;
@@ -615,6 +681,7 @@ class _HorizontalOfferPackagesCarousel extends StatefulWidget {
   final ValueChanged<PremiumOffer> onOfferChanged;
   final void Function(PremiumOffer offer, PremiumOfferPrice price)
       onPriceSelected;
+  final Map<String, String> applePriceLabels;
 
   @override
   State<_HorizontalOfferPackagesCarousel> createState() =>
@@ -671,6 +738,7 @@ class _HorizontalOfferPackagesCarouselState
                     offer: offer,
                     isOfferSelected: offer.id == widget.selectedOfferId,
                     selectedPriceId: widget.selectedPriceId,
+                    applePriceLabels: widget.applePriceLabels,
                     onPriceSelected: (price) =>
                         widget.onPriceSelected(offer, price),
                   ),
@@ -729,12 +797,14 @@ class _OfferPackageCard extends StatelessWidget {
     required this.isOfferSelected,
     required this.selectedPriceId,
     required this.onPriceSelected,
+    this.applePriceLabels = const {},
   });
 
   final PremiumOffer offer;
   final bool isOfferSelected;
   final String? selectedPriceId;
   final ValueChanged<PremiumOfferPrice> onPriceSelected;
+  final Map<String, String> applePriceLabels;
 
   @override
   Widget build(BuildContext context) {
@@ -866,6 +936,8 @@ class _OfferPackageCard extends StatelessWidget {
                       _PremiumPriceRow(
                         price: orderedPrices[index],
                         includedSeats: offer.minSeats,
+                        applePriceLabel: applePriceLabels[
+                            orderedPrices[index].appleProductId ?? ''],
                         isSelected: isOfferSelected &&
                             orderedPrices[index].id == selectedPriceId,
                         onTap: () => onPriceSelected(orderedPrices[index]),
@@ -956,14 +1028,18 @@ class _PremiumPriceRow extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
     this.includedSeats = 1,
+    this.applePriceLabel,
   });
 
   final PremiumOfferPrice price;
   final bool isSelected;
   final VoidCallback onTap;
   final int includedSeats;
+  final String? applePriceLabel;
 
   String get _amountLabel {
+    final apple = applePriceLabel?.trim() ?? '';
+    if (apple.isNotEmpty) return apple;
     if (price.isPerSeat) {
       return price.displayTotal(includedSeats, includedSeats: includedSeats);
     }

@@ -34,15 +34,19 @@ class _CreateCardStep2ScreenState extends State<CreateCardStep2Screen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _bootstrap());
   }
 
-  void _bootstrap() {
+  Future<void> _bootstrap() async {
     if (!mounted) return;
 
     final provider = context.read<CreateCardProvider>();
+    final subscriptions = context.read<SubscriptionsProvider>();
 
     if (provider.cardId == null) {
       context.go(RoutePaths.createCard);
       return;
     }
+
+    await subscriptions.ensurePaymentConfigLoaded();
+    if (!mounted) return;
 
     _resetControllers(provider.socialLinks);
     setState(() => _isReady = true);
@@ -69,6 +73,8 @@ class _CreateCardStep2ScreenState extends State<CreateCardStep2Screen> {
   Future<void> _continue() async {
     final provider = context.read<CreateCardProvider>();
     final subscriptions = context.read<SubscriptionsProvider>();
+    await subscriptions.ensurePaymentConfigLoaded();
+    if (!mounted) return;
 
     for (final entry in _controllers.entries) {
       provider.updateSocialLinkValue(entry.key, entry.value.text.trim());
@@ -79,7 +85,7 @@ class _CreateCardStep2ScreenState extends State<CreateCardStep2Screen> {
     );
 
     if (!subscriptions.hasSocialLinksAccess) {
-      if (hasFilledLinks) {
+      if (hasFilledLinks && !subscriptions.hidePremiumUpsells) {
         await openLinkPremium(context);
         return;
       }
@@ -124,8 +130,10 @@ class _CreateCardStep2ScreenState extends State<CreateCardStep2Screen> {
 
     final l10n = context.l10n;
     final provider = context.watch<CreateCardProvider>();
+    final subscriptions = context.watch<SubscriptionsProvider>();
+    final hidePremium = subscriptions.hidePremiumUpsells;
     final canEditSocial =
-        context.watch<SubscriptionsProvider>().hasSocialLinksAccess;
+        subscriptions.hasSocialLinksAccess || hidePremium;
     final isSaving = provider.isSaving;
     final socialLinks = provider.socialLinks;
 
@@ -174,7 +182,7 @@ class _CreateCardStep2ScreenState extends State<CreateCardStep2Screen> {
                                   ),
                             ),
                           ),
-                          if (!canEditSocial) ...[
+                          if (!canEditSocial && !hidePremium) ...[
                             const SizedBox(width: AppSpacing.md),
                             Container(
                               padding: const EdgeInsets.symmetric(
@@ -219,7 +227,7 @@ class _CreateCardStep2ScreenState extends State<CreateCardStep2Screen> {
                             ),
                       ),
                       const SizedBox(height: AppSpacing.xxl),
-                      if (!canEditSocial)
+                      if (!canEditSocial && !hidePremium)
                         PremiumUnlockBanner(
                           title: l10n.premiumSocialUnlock,
                           onTap: () => openLinkPremium(context),

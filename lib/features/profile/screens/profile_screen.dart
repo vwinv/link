@@ -131,6 +131,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final cards = context.watch<CardsProvider>().cards;
     final hasPremium =
         context.watch<SubscriptionsProvider>().hasActiveSubscription;
+    final hidePremium =
+        context.watch<SubscriptionsProvider>().hidePremiumUpsells;
     final language = context.watch<LocaleProvider>().language;
 
     return Scaffold(
@@ -163,7 +165,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: AppSpacing.lg),
             ],
-            if (!hasPremium) ...[
+            if (!hasPremium && !hidePremium) ...[
               _PremiumUpgradeBanner(
                 onTap: () => openLinkPremium(context),
               ),

@@ -504,6 +504,17 @@
   "premiumCheckoutLaunchError": "Impossible d'ouvrir la page de paiement",
   "premiumRenewalNote": "Renouvellement automatique. Annulable à tout moment dans les réglages.",
   "premiumSignUp": "S'inscrire",
+  "premiumPayWithApple": "Payer avec Apple",
+  "premiumRestorePurchases": "Restaurer les achats",
+  "premiumRestoreEmpty": "Aucun achat Apple à restaurer.",
+  "premiumRestoreSuccess": "Achat restauré. Offre {title} active.",
+  "@premiumRestoreSuccess": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "premiumAppleIapNote": "Le paiement est débité sur votre compte Apple. L’abonnement se renouvelle automatiquement sauf résiliation au moins 24 h avant la fin de la période en cours, dans les réglages iOS.",
+  "premiumTermsOfUse": "Conditions d'utilisation",
   "premiumSignupOk": "Compris",
   "premiumSignupNote": "Nous vous recontacterons pour les modalités d'inscription.",
   "premiumSignupThanksTitle": "Merci, {name}",

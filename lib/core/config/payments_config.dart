@@ -8,19 +8,15 @@ abstract final class PaymentsConfig {
   );
 
   /// Résout si le flux PayDunya SoftPay doit être utilisé.
+  /// L’IAP Apple (iOS + HIDE_IN_APP_PAYMENTS) est un chemin UI distinct.
   static bool usePaydunyaSoftPay({
     required bool apiPaymentsEnabled,
-    required bool hideInAppPayments,
   }) {
-    if (hideInAppPayments) return false;
     if (forceInstantSubscribe) return false;
     return apiPaymentsEnabled;
   }
 
   @Deprecated('Utiliser usePaydunyaSoftPay')
   static bool useStripeCheckout(bool apiPaymentsEnabled) =>
-      usePaydunyaSoftPay(
-        apiPaymentsEnabled: apiPaymentsEnabled,
-        hideInAppPayments: false,
-      );
+      usePaydunyaSoftPay(apiPaymentsEnabled: apiPaymentsEnabled);
 }

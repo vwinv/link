@@ -5,6 +5,7 @@ import 'package:linkflutter/core/api/api_exception.dart';
 import 'package:linkflutter/features/cards/models/business_card.dart';
 import 'package:linkflutter/features/cards/models/card_kind.dart';
 import 'package:linkflutter/features/subscriptions/models/offer_entitlements.dart';
+import 'package:linkflutter/features/subscriptions/models/payment_config.dart';
 import 'package:linkflutter/features/subscriptions/models/user_subscription.dart';
 import 'package:linkflutter/features/subscriptions/services/subscriptions_api_service.dart';
 import 'package:linkflutter/features/teams/models/team.dart';
@@ -21,17 +22,38 @@ class SubscriptionsProvider extends ChangeNotifier {
   final SubscriptionsApiService _subscriptionsApi;
 
   UserSubscription? _subscription;
+  bool _hideInAppPayments = false;
   bool _isLoading = false;
   Future<void>? _loadingFuture;
 
-  UserSubscription? get subscription =>
-      _subscription?.isActive == true ? _subscription : null;
+  /// iOS + HIDE_IN_APP_PAYMENTS=true : accès complet pour la review Apple.
+  bool get isAppleReviewFullAccess =>
+      !kIsWeb &&
+      defaultTargetPlatform == TargetPlatform.iOS &&
+      _hideInAppPayments;
+
+  /// Masque les boutons / bandeaux « Passer Premium » (review Apple).
+  bool get hidePremiumUpsells => isAppleReviewFullAccess;
+
+  bool get hideInAppPayments => _hideInAppPayments;
+
+  UserSubscription? get subscription {
+    if (isAppleReviewFullAccess) {
+      return _subscription?.isActive == true ? _subscription : _syntheticReviewSubscription;
+    }
+    return _subscription?.isActive == true ? _subscription : null;
+  }
+
   bool get isLoading => _isLoading;
-  bool get hasActiveSubscription => subscription != null;
+  bool get hasActiveSubscription =>
+      isAppleReviewFullAccess || subscription != null;
   OfferEntitlements get entitlements =>
-      subscription?.entitlements ?? OfferEntitlements.none;
+      isAppleReviewFullAccess
+          ? OfferEntitlements.fullAccess
+          : (subscription?.entitlements ?? OfferEntitlements.none);
   bool get hasTeamSubscription =>
-      hasActiveSubscription && entitlements.hasTeamAccess;
+      isAppleReviewFullAccess ||
+      (hasActiveSubscription && entitlements.hasTeamAccess);
   bool get canCustomizeCards => entitlements.canCustomize;
   bool get hasPortfolioAccess => entitlements.hasPortfolio;
   bool get hasWalletAccess => entitlements.hasWallet;
@@ -45,6 +67,10 @@ class SubscriptionsProvider extends ChangeNotifier {
     BusinessCard card, {
     Team? team,
   }) {
+    if (isAppleReviewFullAccess) {
+      return OfferEntitlements.fullAccess;
+    }
+
     if (card.kind == CardKind.member) {
       final teamEntitlements = team?.entitlements;
       if (teamEntitlements != null && teamEntitlements.hasTeamAccess) {
@@ -78,6 +104,7 @@ class SubscriptionsProvider extends ChangeNotifier {
 
   /// Carte pro / membre : bloquée sans offre équipe valide.
   bool canUseTeamLinkedCard(BusinessCard card, {Team? team}) {
+    if (isAppleReviewFullAccess) return true;
     if (card.kind != CardKind.professional && card.kind != CardKind.member) {
       return true;
     }
@@ -98,16 +125,41 @@ class SubscriptionsProvider extends ChangeNotifier {
     }
   }
 
+  /// Charge uniquement le flag paiements (utile avant / pendant création de carte).
+  Future<void> ensurePaymentConfigLoaded() async {
+    if (_hideInAppPayments) return;
+    try {
+      final paymentConfig = await _subscriptionsApi.fetchPaymentConfig();
+      if (_hideInAppPayments == paymentConfig.hideInAppPayments) return;
+      _hideInAppPayments = paymentConfig.hideInAppPayments;
+      notifyListeners();
+    } catch (_) {
+      // Conserve l’état courant.
+    }
+  }
+
   Future<void> _loadFromApi() async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      final subscription = await _subscriptionsApi.fetchMySubscription();
+      final results = await Future.wait([
+        _subscriptionsApi.fetchMySubscription(),
+        _subscriptionsApi.fetchPaymentConfig(),
+      ]);
+      final subscription = results[0] as UserSubscription?;
+      final paymentConfig = results[1] as PaymentConfig;
+      _hideInAppPayments = paymentConfig.hideInAppPayments;
       await _applySubscription(subscription);
     } on ApiException catch (error) {
       if (error.statusCode == 404) {
-        await _applySubscription(null);
+        try {
+          final paymentConfig = await _subscriptionsApi.fetchPaymentConfig();
+          _hideInAppPayments = paymentConfig.hideInAppPayments;
+          await _applySubscription(null);
+        } catch (_) {
+          await _applySubscription(null);
+        }
       }
     } catch (_) {
       // Conserve le cache local en cas d'erreur réseau.
@@ -168,8 +220,21 @@ class SubscriptionsProvider extends ChangeNotifier {
 
   Future<void> clear() async {
     _subscription = null;
+    _hideInAppPayments = false;
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_cacheKey);
     notifyListeners();
   }
+
+  static final UserSubscription _syntheticReviewSubscription = UserSubscription(
+    id: 'apple-review-full-access',
+    status: 'ACTIVE',
+    billingPeriod: 'MONTHLY',
+    planName: 'DropOne Review',
+    planSlug: 'apple-review',
+    offerTitle: 'DropOne Review',
+    offerSlug: 'apple-review',
+    billingType: 'MONTHLY',
+    entitlements: OfferEntitlements.fullAccess,
+  );
 }

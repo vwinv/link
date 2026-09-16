@@ -68,6 +68,10 @@ class AuthApiService {
     return User.fromJson(response);
   }
 
+  Future<void> logout() async {
+    await _apiClient.post('/auth/logout', authenticated: true);
+  }
+
   Future<void> deleteAccount() async {
     await _apiClient.delete('/users/me', authenticated: true);
   }

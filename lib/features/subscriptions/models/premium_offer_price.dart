@@ -10,6 +10,7 @@ class PremiumOfferPrice {
     this.badgeLabel,
     required this.isPopular,
     required this.sortOrder,
+    this.appleProductId,
   });
 
   factory PremiumOfferPrice.fromJson(Map<String, dynamic> json) {
@@ -24,6 +25,7 @@ class PremiumOfferPrice {
       badgeLabel: json['badgeLabel'] as String?,
       isPopular: json['isPopular'] as bool? ?? false,
       sortOrder: json['sortOrder'] as int? ?? 0,
+      appleProductId: json['appleProductId'] as String?,
     );
   }
 
@@ -37,6 +39,7 @@ class PremiumOfferPrice {
   final String? badgeLabel;
   final bool isPopular;
   final int sortOrder;
+  final String? appleProductId;
 
   bool get isPerSeat => pricePerSeat != null && pricePerSeat! > 0;
 

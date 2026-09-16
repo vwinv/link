@@ -121,8 +121,8 @@ class AuthProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       return false;
-    } catch (_) {
-      _errorMessage = 'Connexion Google impossible';
+    } catch (error) {
+      _errorMessage = 'Connexion Google impossible: $error';
       _isLoading = false;
       notifyListeners();
       return false;
@@ -233,6 +233,11 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
+    try {
+      await _authApi.logout();
+    } catch (_) {
+      // On nettoie quand même la session locale.
+    }
     final userId = _user?.id;
     final prefs = await SharedPreferences.getInstance();
     if (userId != null) {

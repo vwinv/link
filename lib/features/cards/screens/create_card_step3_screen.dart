@@ -14,6 +14,7 @@ import 'package:linkflutter/features/cards/widgets/create_card_step_indicator.da
 import 'package:linkflutter/providers/account_type_provider.dart';
 import 'package:linkflutter/providers/cards_provider.dart';
 import 'package:linkflutter/providers/create_card_provider.dart';
+import 'package:linkflutter/providers/subscriptions_provider.dart';
 import 'package:linkflutter/shared/widgets/link_primary_button.dart';
 import 'package:linkflutter/shared/widgets/responsive_layout.dart';
 import 'package:provider/provider.dart';
@@ -31,12 +32,14 @@ class _CreateCardStep3ScreenState extends State<CreateCardStep3Screen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       final provider = context.read<CreateCardProvider>();
       if (provider.cardId == null) {
         context.go(RoutePaths.createCard);
+        return;
       }
+      await context.read<SubscriptionsProvider>().ensurePaymentConfigLoaded();
     });
   }
 

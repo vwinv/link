@@ -1191,6 +1191,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get premiumSignUp => 'Sign up';
 
   @override
+  String get premiumPayWithApple => 'Pay with Apple';
+
+  @override
+  String get premiumRestorePurchases => 'Restore purchases';
+
+  @override
+  String get premiumRestoreEmpty => 'No Apple purchases to restore.';
+
+  @override
+  String premiumRestoreSuccess(String title) {
+    return 'Purchase restored. $title is now active.';
+  }
+
+  @override
+  String get premiumAppleIapNote =>
+      'Payment will be charged to your Apple account. The subscription renews automatically unless cancelled at least 24 hours before the end of the current period in iOS Settings.';
+
+  @override
+  String get premiumTermsOfUse => 'Terms of Use';
+
+  @override
   String get premiumSignupOk => 'Got it';
 
   @override
