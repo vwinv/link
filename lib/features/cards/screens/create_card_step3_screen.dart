@@ -9,7 +9,7 @@ import 'package:linkflutter/features/auth/models/account_type.dart';
 import 'package:linkflutter/features/cards/models/card_kind.dart';
 import 'package:linkflutter/features/cards/models/card_ready_data.dart';
 import 'package:linkflutter/features/cards/widgets/create_card_header.dart';
-import 'package:linkflutter/features/cards/widgets/create_card_portfolio_section.dart';
+// import 'package:linkflutter/features/cards/widgets/create_card_portfolio_section.dart';
 import 'package:linkflutter/features/cards/widgets/create_card_step_indicator.dart';
 import 'package:linkflutter/providers/account_type_provider.dart';
 import 'package:linkflutter/providers/cards_provider.dart';
@@ -104,10 +104,11 @@ class _CreateCardStep3ScreenState extends State<CreateCardStep3Screen> {
                       const SizedBox(height: AppSpacing.lg),
                       CreateCardStepIndicator(
                         currentStep: 3,
-                        stepLabel: l10n.createCardStepPortfolio,
+                        // stepLabel: l10n.createCardStepPortfolio,
+                        stepLabel: l10n.commonFinish,
                       ),
-                      const SizedBox(height: AppSpacing.xxl),
-                      const CreateCardPortfolioSection(),
+                      // const SizedBox(height: AppSpacing.xxl),
+                      // const CreateCardPortfolioSection(),
                       const SizedBox(height: AppSpacing.xxl),
                     ],
                   ),

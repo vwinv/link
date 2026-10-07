@@ -218,9 +218,8 @@ class _CardAnalyticsScreenState extends State<CardAnalyticsScreen> {
     return switch (key) {
       'qr' => l10n.cardAnalyticsSourceQr,
       'share' => l10n.cardAnalyticsSourceShare,
-      'nfc' => l10n.cardAnalyticsSourceNfc,
       'app' => l10n.cardAnalyticsSourceApp,
-      'other' => l10n.cardAnalyticsSourceOther,
+      'nfc' || 'other' => l10n.cardAnalyticsSourceOther,
       _ => l10n.cardAnalyticsSourceLink,
     };
   }
@@ -229,9 +228,8 @@ class _CardAnalyticsScreenState extends State<CardAnalyticsScreen> {
     return switch (key) {
       'qr' => AppColors.bleu_primaire,
       'share' => const Color(0xFF34C759),
-      'nfc' => const Color(0xFFAF52DE),
       'app' => const Color(0xFF5AC8FA),
-      'other' => AppColors.textTertiaire,
+      'nfc' || 'other' => AppColors.textTertiaire,
       _ => const Color(0xFFFF9500),
     };
   }

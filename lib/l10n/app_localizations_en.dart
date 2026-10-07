@@ -78,7 +78,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profilePremiumTitle => 'Upgrade to Premium';
 
   @override
-  String get profilePremiumSubtitle => 'Portfolio, pro designs, colors…';
+  String get profilePremiumSubtitle => 'Pro designs, colors…';
 
   @override
   String get profileTeamConfigure => 'Set up your team';
@@ -629,7 +629,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cardAnalyticsSourceLink => 'Link';
 
   @override
-  String get cardAnalyticsSourceNfc => 'NFC';
+  String get cardAnalyticsSourceNfc => 'Other';
 
   @override
   String get cardAnalyticsSourceApp => 'App';
@@ -749,7 +749,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cardVisitorDetailMethodQr => 'QR Code';
 
   @override
-  String get cardVisitorDetailMethodNfc => 'NFC';
+  String get cardVisitorDetailMethodNfc => 'Link';
 
   @override
   String get cardVisitorDetailMethodShare => 'Direct share';

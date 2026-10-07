@@ -912,14 +912,14 @@ class _OfferPackageCard extends StatelessWidget {
                         ? l10n.commonIncluded
                         : l10n.commonNotIncluded,
                   ),
-                  const SizedBox(height: AppSpacing.sm),
-                  _OfferDetailRow(
-                    icon: Icons.badge_outlined,
-                    label: l10n.premiumFeaturePortfolio,
-                    value: offer.hasPortfolio
-                        ? l10n.commonIncluded
-                        : l10n.commonNotIncluded,
-                  ),
+                  // const SizedBox(height: AppSpacing.sm),
+                  // _OfferDetailRow(
+                  //   icon: Icons.badge_outlined,
+                  //   label: l10n.premiumFeaturePortfolio,
+                  //   value: offer.hasPortfolio
+                  //       ? l10n.commonIncluded
+                  //       : l10n.commonNotIncluded,
+                  // ),
                   const SizedBox(height: AppSpacing.lg),
                   if (offer.prices.isEmpty)
                     Text(

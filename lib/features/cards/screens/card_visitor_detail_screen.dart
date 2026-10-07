@@ -56,18 +56,18 @@ class _CardVisitorDetailScreenState extends State<CardVisitorDetailScreen> {
     final l10n = context.l10n;
     return switch (visitor.source) {
       'qr' => l10n.cardVisitorDetailMethodQr,
-      'nfc' => l10n.cardVisitorDetailMethodNfc,
       'share' => l10n.cardVisitorDetailMethodShare,
       'app' => l10n.cardVisitorDetailMethodApp,
+      'nfc' || 'other' => l10n.cardAnalyticsSourceOther,
       _ => l10n.cardVisitorDetailMethodLink,
     };
   }
 
   IconData get _sourceIcon => switch (visitor.source) {
         'qr' => Icons.qr_code_2_rounded,
-        'nfc' => Icons.nfc_rounded,
         'share' => Icons.reply_rounded,
         'app' => Icons.phone_iphone_rounded,
+        'nfc' || 'other' => Icons.more_horiz_rounded,
         _ => Icons.link_rounded,
       };
 

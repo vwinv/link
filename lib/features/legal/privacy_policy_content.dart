@@ -46,7 +46,7 @@ abstract final class PrivacyPolicyContent {
           title: 'Informations de profil (facultatives)',
           bullets: [
             'Réseaux sociaux',
-            'Portfolio',
+            // 'Portfolio',
             'Site web',
             'Informations de présentation',
           ],
@@ -81,7 +81,7 @@ abstract final class PrivacyPolicyContent {
       bullets: [
         'créer et gérer votre compte ;',
         'générer votre carte de visite numérique ;',
-        'partager votre profil via QR Code, NFC ou lien ;',
+        'partager votre profil via QR Code ou lien ;',
         'gérer les équipes et entreprises ;',
         'permettre l\'authentification sécurisée ;',
         'envoyer des notifications importantes ;',

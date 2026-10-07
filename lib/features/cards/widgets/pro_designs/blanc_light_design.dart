@@ -41,7 +41,7 @@ class BlancLightDesign extends StatelessWidget {
       _ActionData(Icons.phone_rounded, 'M’appeler'),
       _ActionData(Icons.chat_bubble_outline_rounded, 'M’envoyer un message'),
       _ActionData(Icons.mail_outline_rounded, 'M’écrire par email'),
-      _ActionData(Icons.auto_awesome_rounded, 'Consulter mon portfolio'),
+      // _ActionData(Icons.auto_awesome_rounded, 'Consulter mon portfolio'),
     ];
 
     return Column(

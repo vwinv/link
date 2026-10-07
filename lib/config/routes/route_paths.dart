@@ -19,7 +19,7 @@ abstract final class RoutePaths {
   static const teamMembers = '/cards/professional/team-members';
   static const cardDetail = '/cards/:id';
   static const teams = '/teams';
-  static const portfolio = '/portfolio';
+  // static const portfolio = '/portfolio';
   static const premium = '/premium';
   static const publicCard = '/public-card';
   static const notifications = '/notifications';

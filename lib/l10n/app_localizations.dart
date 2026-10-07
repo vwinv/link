@@ -239,7 +239,7 @@ abstract class AppLocalizations {
   /// No description provided for @profilePremiumSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Portfolio, designs pro, couleurs…'**
+  /// **'Designs pro, couleurs…'**
   String get profilePremiumSubtitle;
 
   /// No description provided for @profileTeamConfigure.
@@ -1271,7 +1271,7 @@ abstract class AppLocalizations {
   /// No description provided for @cardAnalyticsSourceNfc.
   ///
   /// In fr, this message translates to:
-  /// **'NFC'**
+  /// **'Autre'**
   String get cardAnalyticsSourceNfc;
 
   /// No description provided for @cardAnalyticsSourceApp.
@@ -1505,7 +1505,7 @@ abstract class AppLocalizations {
   /// No description provided for @cardVisitorDetailMethodNfc.
   ///
   /// In fr, this message translates to:
-  /// **'NFC'**
+  /// **'Lien'**
   String get cardVisitorDetailMethodNfc;
 
   /// No description provided for @cardVisitorDetailMethodShare.

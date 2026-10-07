@@ -118,7 +118,7 @@ class _MyCardScreenState extends State<MyCardScreen> {
     final subscriptions = context.watch<SubscriptionsProvider>();
     final hidePremium = subscriptions.hidePremiumUpsells;
     final entitlements = subscriptions.entitlementsForCard(card, team: team);
-    final hasPortfolio = entitlements.hasPortfolio || hidePremium;
+    // final hasPortfolio = entitlements.hasPortfolio || hidePremium;
     final hasSocialLinks = entitlements.hasSocialLinks || hidePremium;
 
     return Scaffold(
@@ -278,46 +278,46 @@ class _MyCardScreenState extends State<MyCardScreen> {
                         ],
                       ],
                     ),
-                  const SizedBox(height: AppSpacing.xxl),
-                  Row(
-                    children: [
-                      Expanded(child: _SectionLabel(l10n.myCardPortfolio)),
-                      if (!hasPortfolio && !hidePremium)
-                        TextButton(
-                          onPressed: () => openLinkPremium(context),
-                          child: Text(
-                            l10n.commonUnlock,
-                            style: const TextStyle(
-                              color: AppColors.bleu_primaire,
-                              fontWeight: AppFontWeight.semiBold,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  if (hasPortfolio)
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(AppSpacing.lg),
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(AppRadius.lg),
-                        border: Border.all(color: AppColors.border),
-                      ),
-                      child: Text(
-                        l10n.myCardPortfolioLinked,
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: context.rs(AppFontSize.md),
-                        ),
-                      ),
-                    )
-                  else if (!hidePremium)
-                    PremiumUnlockBanner(
-                      title: l10n.myCardPortfolioPremium,
-                      onTap: () => openLinkPremium(context),
-                    ),
+                  // const SizedBox(height: AppSpacing.xxl),
+                  // Row(
+                  //   children: [
+                  //     Expanded(child: _SectionLabel(l10n.myCardPortfolio)),
+                  //     if (!hasPortfolio && !hidePremium)
+                  //       TextButton(
+                  //         onPressed: () => openLinkPremium(context),
+                  //         child: Text(
+                  //           l10n.commonUnlock,
+                  //           style: const TextStyle(
+                  //             color: AppColors.bleu_primaire,
+                  //             fontWeight: AppFontWeight.semiBold,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //   ],
+                  // ),
+                  // const SizedBox(height: AppSpacing.md),
+                  // if (hasPortfolio)
+                  //   Container(
+                  //     width: double.infinity,
+                  //     padding: const EdgeInsets.all(AppSpacing.lg),
+                  //     decoration: BoxDecoration(
+                  //       color: AppColors.surface,
+                  //       borderRadius: BorderRadius.circular(AppRadius.lg),
+                  //       border: Border.all(color: AppColors.border),
+                  //     ),
+                  //     child: Text(
+                  //       l10n.myCardPortfolioLinked,
+                  //       style: TextStyle(
+                  //         color: AppColors.textSecondary,
+                  //         fontSize: context.rs(AppFontSize.md),
+                  //       ),
+                  //     ),
+                  //   )
+                  // else if (!hidePremium)
+                  //   PremiumUnlockBanner(
+                  //     title: l10n.myCardPortfolioPremium,
+                  //     onTap: () => openLinkPremium(context),
+                  //   ),
                 ],
               ),
             ),

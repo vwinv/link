@@ -25,7 +25,7 @@
   "profileLanguage": "Langue",
   "profileEdit": "Modifier",
   "profilePremiumTitle": "Passer à Premium",
-  "profilePremiumSubtitle": "Portfolio, designs pro, couleurs…",
+  "profilePremiumSubtitle": "Designs pro, couleurs…",
   "profileTeamConfigure": "Configurer votre équipe",
   "profileTeamMembers": "{teamName} - {count} membres",
   "@profileTeamMembers": {
@@ -255,7 +255,7 @@
   "cardAnalyticsSourceQr": "QR Code",
   "cardAnalyticsSourceShare": "Partage direct",
   "cardAnalyticsSourceLink": "Lien",
-  "cardAnalyticsSourceNfc": "NFC",
+  "cardAnalyticsSourceNfc": "Autre",
   "cardAnalyticsSourceApp": "Application",
   "cardAnalyticsSourceOther": "Autres",
 
@@ -296,7 +296,7 @@
   "cardVisitorDetailNo": "Non",
   "cardVisitorDetailUnavailable": "-",
   "cardVisitorDetailMethodQr": "QR Code",
-  "cardVisitorDetailMethodNfc": "NFC",
+  "cardVisitorDetailMethodNfc": "Lien",
   "cardVisitorDetailMethodShare": "Partage direct",
   "cardVisitorDetailMethodApp": "Application",
   "cardVisitorDetailMethodLink": "Lien partagé",
