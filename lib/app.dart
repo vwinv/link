@@ -10,6 +10,8 @@ import 'package:linkflutter/config/theme/app_theme.dart';
 import 'package:linkflutter/core/constants/app_assets.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/core/deep_link/deep_link_service.dart';
+import 'package:linkflutter/features/app_update/widgets/app_update_bottom_sheet.dart';
+import 'package:linkflutter/features/app_update/widgets/app_update_gate.dart';
 import 'package:linkflutter/features/notifications/services/push_notifications_service.dart';
 import 'package:linkflutter/providers/app_providers.dart';
 import 'package:linkflutter/providers/auth_provider.dart';
@@ -24,7 +26,7 @@ class LinkApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: AppProviders.providers,
-      child: const _AppView(),
+      child: const AppUpdateGate(child: _AppView()),
     );
   }
 }
@@ -146,6 +148,7 @@ class _AppViewState extends State<_AppView> {
                     ),
                   ),
                 ),
+              const AppUpdateBottomSheetOverlay(),
             ],
           ),
         );

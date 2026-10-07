@@ -1,4 +1,5 @@
 import 'package:linkflutter/core/api/api_client.dart';
+import 'package:linkflutter/features/app_update/services/app_update_service.dart';
 import 'package:linkflutter/features/auth/services/auth_api_service.dart';
 import 'package:linkflutter/features/auth/services/social_auth_service.dart';
 import 'package:linkflutter/features/cards/services/cards_api_service.dart';
@@ -34,6 +35,9 @@ abstract final class AppProviders {
 
   static List<SingleChildWidget> get providers => [
     Provider<ApiClient>.value(value: _apiClient),
+    ChangeNotifierProvider(
+      create: (_) => AppUpdateService(_apiClient),
+    ),
     Provider(
       create: (_) => DeepLinkService(),
       dispose: (_, service) => service.dispose(),

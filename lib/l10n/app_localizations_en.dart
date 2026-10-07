@@ -1598,4 +1598,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get proDesignPreviewUseTemplate => 'Use this template';
+
+  @override
+  String get appUpdateSoftTitle => 'Update available';
+
+  @override
+  String get appUpdateForceTitle => 'Update required';
+
+  @override
+  String get appUpdateSoftMessage =>
+      'A new version of DropOne is available. Update to get the latest improvements.';
+
+  @override
+  String get appUpdateForceMessage =>
+      'This version of DropOne is no longer supported. Please update the app to continue.';
+
+  @override
+  String get appUpdateCta => 'Update';
+
+  @override
+  String get appUpdateLater => 'Later';
 }

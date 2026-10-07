@@ -643,5 +643,12 @@
   "proDesignPreviewApplied": "Template {name} applied",
   "proDesignPreviewApplyError": "Could not apply the template. Try again.",
   "proDesignPreviewRecipientPreview": "Recipient preview",
-  "proDesignPreviewUseTemplate": "Use this template"
+  "proDesignPreviewUseTemplate": "Use this template",
+
+  "appUpdateSoftTitle": "Update available",
+  "appUpdateForceTitle": "Update required",
+  "appUpdateSoftMessage": "A new version of DropOne is available. Update to get the latest improvements.",
+  "appUpdateForceMessage": "This version of DropOne is no longer supported. Please update the app to continue.",
+  "appUpdateCta": "Update",
+  "appUpdateLater": "Later"
 }

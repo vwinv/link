@@ -1619,4 +1619,24 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get proDesignPreviewUseTemplate => 'Utiliser ce modèle';
+
+  @override
+  String get appUpdateSoftTitle => 'Mise à jour disponible';
+
+  @override
+  String get appUpdateForceTitle => 'Mise à jour requise';
+
+  @override
+  String get appUpdateSoftMessage =>
+      'Une nouvelle version de DropOne est disponible. Mettez à jour pour profiter des dernières améliorations.';
+
+  @override
+  String get appUpdateForceMessage =>
+      'Cette version de DropOne n’est plus prise en charge. Merci de mettre à jour l’application pour continuer.';
+
+  @override
+  String get appUpdateCta => 'Mettre à jour';
+
+  @override
+  String get appUpdateLater => 'Plus tard';
 }

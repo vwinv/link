@@ -731,5 +731,12 @@
   },
   "proDesignPreviewApplyError": "Impossible d’appliquer le modèle. Réessayez.",
   "proDesignPreviewRecipientPreview": "Aperçu destinataire",
-  "proDesignPreviewUseTemplate": "Utiliser ce modèle"
+  "proDesignPreviewUseTemplate": "Utiliser ce modèle",
+
+  "appUpdateSoftTitle": "Mise à jour disponible",
+  "appUpdateForceTitle": "Mise à jour requise",
+  "appUpdateSoftMessage": "Une nouvelle version de DropOne est disponible. Mettez à jour pour profiter des dernières améliorations.",
+  "appUpdateForceMessage": "Cette version de DropOne n’est plus prise en charge. Merci de mettre à jour l’application pour continuer.",
+  "appUpdateCta": "Mettre à jour",
+  "appUpdateLater": "Plus tard"
 }

@@ -83,11 +83,11 @@ abstract final class ApiConfig {
   /// (Android), sinon le lien s’ouvre dans le navigateur au lieu de l’app.
   static String publicUrl(String slug) => '$publicBaseUrl/cards/$slug';
 
-  /// App Store - à remplir après déploiement iOS.
-  /// Override : `--dart-define=APP_STORE_URL=https://apps.apple.com/app/idXXXX`
+  /// App Store Drop One.
+  /// Override : `--dart-define=APP_STORE_URL=https://apps.apple.com/...`
   static const appStoreUrl = String.fromEnvironment(
     'APP_STORE_URL',
-    defaultValue: 'https://apps.apple.com/app/idXXXXXXXX',
+    defaultValue: 'https://apps.apple.com/us/app/drop-one/id6807993018',
   );
 
   /// Play Store - à remplir après déploiement Android.

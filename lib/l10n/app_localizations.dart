@@ -2987,6 +2987,42 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Utiliser ce modèle'**
   String get proDesignPreviewUseTemplate;
+
+  /// No description provided for @appUpdateSoftTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mise à jour disponible'**
+  String get appUpdateSoftTitle;
+
+  /// No description provided for @appUpdateForceTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mise à jour requise'**
+  String get appUpdateForceTitle;
+
+  /// No description provided for @appUpdateSoftMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une nouvelle version de DropOne est disponible. Mettez à jour pour profiter des dernières améliorations.'**
+  String get appUpdateSoftMessage;
+
+  /// No description provided for @appUpdateForceMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette version de DropOne n’est plus prise en charge. Merci de mettre à jour l’application pour continuer.'**
+  String get appUpdateForceMessage;
+
+  /// No description provided for @appUpdateCta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mettre à jour'**
+  String get appUpdateCta;
+
+  /// No description provided for @appUpdateLater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus tard'**
+  String get appUpdateLater;
 }
 
 class _AppLocalizationsDelegate
