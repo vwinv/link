@@ -880,6 +880,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get socialWhatsApp => 'WhatsApp';
 
   @override
+  String get socialTikTok => 'TikTok';
+
+  @override
+  String get socialYouTube => 'YouTube';
+
+  @override
   String get socialX => 'X';
 
   @override
@@ -1291,6 +1297,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get premiumAudiencePersonal => 'Personal';
 
   @override
+  String premiumIncludedPlaces(int count) {
+    return '$count included seats';
+  }
+
+  @override
   String premiumTeamMembers(int count) {
     return 'Up to $count members';
   }
@@ -1383,7 +1394,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String teamMembersSeatLimitReached(int max) {
-    return 'Limit of $max seats reached. Upgrade your plan.';
+    return 'Limit of $max seats reached. Each extra seat is paid.';
   }
 
   @override

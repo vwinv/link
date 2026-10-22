@@ -8,13 +8,13 @@ abstract final class ApiConfig {
 
   /// URL publique des cartes partagées (QR, WhatsApp, Universal Links).
   /// Local API : `--dart-define=API_HOST=192.168.x.x` ou `API_BASE_URL=...`
-  static const defaultPublicBaseUrl = 'https://api.dropone.pro';
-  /* static String get defaultPublicBaseUrl {
+  //static const defaultPublicBaseUrl = 'https://api.dropone.pro';
+  static String get defaultPublicBaseUrl {
     if (kIsWeb) return 'http://localhost:$_port';
     if (Platform.isAndroid) return 'http://10.0.2.2:$_port';
     // iOS simulator : 10.0.2.2 n’existe pas, et `localhost` peut résoudre en IPv6.
     return 'http://0.0.0.0:$_port';
-  } */
+  }
 
   /// Backend local uniquement si tu passes :
   /// `flutter run --dart-define=API_HOST=192.168.1.42`

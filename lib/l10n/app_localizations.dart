@@ -1722,6 +1722,18 @@ abstract class AppLocalizations {
   /// **'WhatsApp'**
   String get socialWhatsApp;
 
+  /// No description provided for @socialTikTok.
+  ///
+  /// In fr, this message translates to:
+  /// **'TikTok'**
+  String get socialTikTok;
+
+  /// No description provided for @socialYouTube.
+  ///
+  /// In fr, this message translates to:
+  /// **'YouTube'**
+  String get socialYouTube;
+
   /// No description provided for @socialX.
   ///
   /// In fr, this message translates to:
@@ -2478,6 +2490,12 @@ abstract class AppLocalizations {
   /// **'Personnel'**
   String get premiumAudiencePersonal;
 
+  /// No description provided for @premiumIncludedPlaces.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} places incluses'**
+  String premiumIncludedPlaces(int count);
+
   /// No description provided for @premiumTeamMembers.
   ///
   /// In fr, this message translates to:
@@ -2631,7 +2649,7 @@ abstract class AppLocalizations {
   /// No description provided for @teamMembersSeatLimitReached.
   ///
   /// In fr, this message translates to:
-  /// **'Limite de {max} sièges atteinte. Passez à une offre supérieure.'**
+  /// **'Limite de {max} places atteinte. Chaque place supplémentaire est payante.'**
   String teamMembersSeatLimitReached(int max);
 
   /// No description provided for @teamMembersAddTitle.

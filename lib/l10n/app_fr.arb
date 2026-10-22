@@ -373,6 +373,8 @@
   "socialLinkedIn": "LinkedIn",
   "socialInstagram": "Instagram",
   "socialWhatsApp": "WhatsApp",
+  "socialTikTok": "TikTok",
+  "socialYouTube": "YouTube",
   "socialX": "X",
   "socialFacebook": "Facebook",
   "socialWebsite": "Site web",
@@ -550,6 +552,12 @@
   "premiumNoPricing": "Aucun tarif configuré",
   "premiumAudienceTeam": "Équipe",
   "premiumAudiencePersonal": "Personnel",
+  "premiumIncludedPlaces": "{count} places incluses",
+  "@premiumIncludedPlaces": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "premiumTeamMembers": "Jusqu'à {count} membres",
   "@premiumTeamMembers": {
     "placeholders": {
@@ -608,7 +616,7 @@
 
   "teamMembersLoadError": "Impossible de charger les membres",
   "teamMembersSubscriptionRequired": "Un abonnement équipe actif est requis pour ajouter des membres.",
-  "teamMembersSeatLimitReached": "Limite de {max} sièges atteinte. Passez à une offre supérieure.",
+  "teamMembersSeatLimitReached": "Limite de {max} places atteinte. Chaque place supplémentaire est payante.",
   "@teamMembersSeatLimitReached": {
     "placeholders": {
       "max": { "type": "int" }

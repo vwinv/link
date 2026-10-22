@@ -344,6 +344,7 @@ class _MyCardsScreenState extends State<MyCardsScreen>
               ] else if (_scope == _CardScope.professional) ...[
                 _MissingProfessionalCardCard(
                   hasTeam: context.watch<TeamsProvider>().hasTeam,
+                  canEditTeam: context.watch<TeamsProvider>().isTeamOwner,
                   onCreate: _createProfessionalCard,
                   onEditTeam: () => openSetupTeam(context),
                 ),
@@ -538,11 +539,13 @@ class _MissingPersonalCardCard extends StatelessWidget {
 class _MissingProfessionalCardCard extends StatelessWidget {
   const _MissingProfessionalCardCard({
     required this.hasTeam,
+    required this.canEditTeam,
     required this.onCreate,
     required this.onEditTeam,
   });
 
   final bool hasTeam;
+  final bool canEditTeam;
   final VoidCallback onCreate;
   final VoidCallback onEditTeam;
 
@@ -601,7 +604,7 @@ class _MissingProfessionalCardCard extends StatelessWidget {
               ),
             ),
           ),
-          if (hasTeam) ...[
+          if (canEditTeam) ...[
             const SizedBox(height: AppSpacing.sm),
             TextButton(
               onPressed: onEditTeam,

@@ -89,7 +89,9 @@ class _SetupTeamScreenState extends State<SetupTeamScreen> {
   }
 
   void _hydrateFromProvider() {
-    final team = context.read<TeamsProvider>().myTeam;
+    // Un membre invité peut créer sa propre équipe : on ne préremplit
+    // qu’avec l’équipe dont il est déjà propriétaire.
+    final team = context.read<TeamsProvider>().ownedTeam;
     if (team == null) return;
 
     setState(() {
@@ -110,7 +112,7 @@ class _SetupTeamScreenState extends State<SetupTeamScreen> {
     }
     if (!mounted) return;
 
-    final team = teamsProvider.myTeam;
+    final team = teamsProvider.ownedTeam;
     if (team == null) return;
 
     setState(() {

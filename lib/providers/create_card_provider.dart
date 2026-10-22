@@ -159,7 +159,7 @@ class CreateCardProvider extends ChangeNotifier {
           .map(
             (entry) => {
               'platform': entry.value.platform.apiValue,
-              'url': entry.value.value.trim(),
+              'url': entry.value.platform.shareUrl(entry.value.value),
               'order': entry.key,
             },
           )

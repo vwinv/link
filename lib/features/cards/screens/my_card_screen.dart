@@ -32,6 +32,8 @@ class _MyCardScreenState extends State<MyCardScreen> {
       CardSocialPlatform.linkedin,
       CardSocialPlatform.instagram,
       CardSocialPlatform.whatsapp,
+      CardSocialPlatform.tiktok,
+      CardSocialPlatform.youtube,
     ];
     if (_card.kind.isTeamLinked) {
       return [...base, CardSocialPlatform.website];

@@ -31,7 +31,7 @@ class PaymentBillingChoice {
             ? selectedPrice
             : null);
     final choices = <PaymentBillingChoice>[];
-    final included = offer.minSeats;
+    final included = offer.includedSeats;
 
     // Annuel = mensuel × 12 (proposé en premier, non obligatoire).
     if (monthly != null) {

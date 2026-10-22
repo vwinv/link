@@ -5,6 +5,8 @@ enum CardSocialPlatform {
   linkedin,
   instagram,
   whatsapp,
+  tiktok,
+  youtube,
   x,
   facebook,
   website,
@@ -19,6 +21,10 @@ extension CardSocialPlatformX on CardSocialPlatform {
         return CardSocialPlatform.instagram;
       case 'WHATSAPP':
         return CardSocialPlatform.whatsapp;
+      case 'TIKTOK':
+        return CardSocialPlatform.tiktok;
+      case 'YOUTUBE':
+        return CardSocialPlatform.youtube;
       case 'TWITTER':
         return CardSocialPlatform.x;
       case 'FACEBOOK':
@@ -38,6 +44,10 @@ extension CardSocialPlatformX on CardSocialPlatform {
         return 'Instagram';
       case CardSocialPlatform.whatsapp:
         return 'WhatsApp';
+      case CardSocialPlatform.tiktok:
+        return 'TikTok';
+      case CardSocialPlatform.youtube:
+        return 'YouTube';
       case CardSocialPlatform.x:
         return 'X';
       case CardSocialPlatform.facebook:
@@ -55,6 +65,10 @@ extension CardSocialPlatformX on CardSocialPlatform {
         return 'INSTAGRAM';
       case CardSocialPlatform.whatsapp:
         return 'WHATSAPP';
+      case CardSocialPlatform.tiktok:
+        return 'TIKTOK';
+      case CardSocialPlatform.youtube:
+        return 'YOUTUBE';
       case CardSocialPlatform.x:
         return 'TWITTER';
       case CardSocialPlatform.facebook:
@@ -72,6 +86,10 @@ extension CardSocialPlatformX on CardSocialPlatform {
         return 'Votre @ Instagram';
       case CardSocialPlatform.whatsapp:
         return 'Votre numéro WhatsApp';
+      case CardSocialPlatform.tiktok:
+        return 'Votre @ TikTok ou lien';
+      case CardSocialPlatform.youtube:
+        return 'Votre @ YouTube ou lien';
       case CardSocialPlatform.x:
         return 'Votre @ X';
       case CardSocialPlatform.facebook:
@@ -89,6 +107,10 @@ extension CardSocialPlatformX on CardSocialPlatform {
         return const Color(0xFFE4405F);
       case CardSocialPlatform.whatsapp:
         return const Color(0xFF25D366);
+      case CardSocialPlatform.tiktok:
+        return const Color(0xFF111111);
+      case CardSocialPlatform.youtube:
+        return const Color(0xFFFF0000);
       case CardSocialPlatform.x:
         return const Color(0xFF000000);
       case CardSocialPlatform.facebook:
@@ -106,6 +128,10 @@ extension CardSocialPlatformX on CardSocialPlatform {
         return AppAssets.instagram;
       case CardSocialPlatform.whatsapp:
         return AppAssets.whatsapp;
+      case CardSocialPlatform.tiktok:
+        return AppAssets.tiktok;
+      case CardSocialPlatform.youtube:
+        return AppAssets.youtube;
       case CardSocialPlatform.x:
         return AppAssets.twitter;
       case CardSocialPlatform.facebook:
@@ -122,6 +148,10 @@ extension CardSocialPlatformX on CardSocialPlatform {
         return 'Ig';
       case CardSocialPlatform.whatsapp:
         return 'Wa';
+      case CardSocialPlatform.tiktok:
+        return 'Tk';
+      case CardSocialPlatform.youtube:
+        return 'Yt';
       case CardSocialPlatform.x:
         return 'X';
       case CardSocialPlatform.facebook:
@@ -135,6 +165,8 @@ extension CardSocialPlatformX on CardSocialPlatform {
     switch (this) {
       case CardSocialPlatform.whatsapp:
         return TextInputType.phone;
+      case CardSocialPlatform.tiktok:
+      case CardSocialPlatform.youtube:
       case CardSocialPlatform.linkedin:
       case CardSocialPlatform.facebook:
       case CardSocialPlatform.website:
@@ -151,5 +183,20 @@ extension CardSocialPlatformX on CardSocialPlatform {
       return trimmed;
     }
     return 'https://$trimmed';
+  }
+
+  /// Lien public enregistré (URL complète, ou @pseudo → profil).
+  String shareUrl(String raw) {
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) return trimmed;
+    if (trimmed.contains('://') || trimmed.contains('.')) {
+      return CardSocialPlatformX.normalizeWebsiteUrl(trimmed);
+    }
+    final handle = trimmed.replaceFirst(RegExp(r'^@'), '');
+    return switch (this) {
+      CardSocialPlatform.tiktok => 'https://www.tiktok.com/@$handle',
+      CardSocialPlatform.youtube => 'https://www.youtube.com/@$handle',
+      _ => CardSocialPlatformX.normalizeWebsiteUrl(trimmed),
+    };
   }
 }

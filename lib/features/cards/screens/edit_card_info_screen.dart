@@ -204,9 +204,7 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
         .map(
           (entry) => {
             'platform': entry.value.platform.apiValue,
-            'url': entry.value.platform == CardSocialPlatform.website
-                ? CardSocialPlatformX.normalizeWebsiteUrl(entry.value.value)
-                : entry.value.value.trim(),
+            'url': entry.value.platform.shareUrl(entry.value.value),
             'order': entry.key,
           },
         )

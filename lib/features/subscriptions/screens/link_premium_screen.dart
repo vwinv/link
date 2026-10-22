@@ -184,7 +184,7 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
         ? context.read<TeamsProvider>().myTeam?.id
         : null;
     final seats = selectedOffer.hasPerSeatPricing && selectedPrice.isPerSeat
-        ? selectedOffer.minSeats
+        ? selectedOffer.includedSeats
         : null;
 
     if (_useAppleIap) {
@@ -200,7 +200,7 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
     final billingChoices = PaymentBillingChoice.forOffer(
       offer: selectedOffer,
       selectedPrice: selectedPrice,
-      seats: seats ?? selectedOffer.minSeats,
+      seats: seats ?? selectedOffer.includedSeats,
     );
     final billingChoice = await PaymentBillingPickerSheet.show(
       context: context,
@@ -214,10 +214,10 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
     try {
       final checkoutPrice = billingChoice.sourcePrice;
       final billingType = billingChoice.billingType;
-      final seatCount = seats ?? selectedOffer.minSeats;
+      final seatCount = seats ?? selectedOffer.includedSeats;
       final baseAmount = checkoutPrice.totalForSeats(
         seatCount,
-        includedSeats: selectedOffer.minSeats,
+        includedSeats: selectedOffer.includedSeats,
       );
       final amount = billingType.toUpperCase() == 'YEARLY' &&
               checkoutPrice.billingType.toUpperCase() == 'MONTHLY'
@@ -935,7 +935,7 @@ class _OfferPackageCard extends StatelessWidget {
                       if (index > 0) const SizedBox(height: AppSpacing.sm),
                       _PremiumPriceRow(
                         price: orderedPrices[index],
-                        includedSeats: offer.minSeats,
+                        includedSeats: offer.includedSeats,
                         applePriceLabel: applePriceLabels[
                             orderedPrices[index].appleProductId ?? ''],
                         isSelected: isOfferSelected &&
@@ -967,10 +967,10 @@ class _OfferPackageCard extends StatelessWidget {
   static String _usersLabel(AppLocalizations l10n, PremiumOffer offer) {
     if (offer.audience.isTeam) {
       if (offer.hasPerSeatPricing) {
-        if (offer.maxTeamMembers < 0) {
-          return l10n.premiumSeatsFrom(offer.minSeats);
+        if (offer.maxTeamMembers > 0) {
+          return l10n.premiumIncludedPlaces(offer.maxTeamMembers);
         }
-        return l10n.premiumSeatsRange(offer.minSeats, offer.maxTeamMembers);
+        return l10n.premiumSeatsFrom(offer.includedSeats);
       }
       if (offer.maxTeamMembers < 0) return l10n.commonUnlimited;
       return l10n.premiumTeamMembers(offer.maxTeamMembers);

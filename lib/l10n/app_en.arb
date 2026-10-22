@@ -337,6 +337,8 @@
   "socialLinkedIn": "LinkedIn",
   "socialInstagram": "Instagram",
   "socialWhatsApp": "WhatsApp",
+  "socialTikTok": "TikTok",
+  "socialYouTube": "YouTube",
   "socialX": "X",
   "socialFacebook": "Facebook",
   "socialWebsite": "Website",
@@ -497,6 +499,12 @@
   "premiumNoPricing": "No pricing configured",
   "premiumAudienceTeam": "Team",
   "premiumAudiencePersonal": "Personal",
+  "premiumIncludedPlaces": "{count} included seats",
+  "@premiumIncludedPlaces": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "premiumTeamMembers": "Up to {count} members",
   "@premiumTeamMembers": {
     "placeholders": {
@@ -550,7 +558,7 @@
 
   "teamMembersLoadError": "Could not load members",
   "teamMembersSubscriptionRequired": "An active team subscription is required to add members.",
-  "teamMembersSeatLimitReached": "Limit of {max} seats reached. Upgrade your plan.",
+  "teamMembersSeatLimitReached": "Limit of {max} seats reached. Each extra seat is paid.",
   "teamMembersAddTitle": "Add member",
   "teamMembersAddSubtitle": "Send an email invitation. They will need to accept it to join the team.",
   "teamMembersFullNameHint": "Nina Ba",

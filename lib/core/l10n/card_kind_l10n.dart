@@ -24,6 +24,10 @@ extension CardSocialPlatformL10n on CardSocialPlatform {
         return l10n.socialInstagram;
       case CardSocialPlatform.whatsapp:
         return l10n.socialWhatsApp;
+      case CardSocialPlatform.tiktok:
+        return l10n.socialTikTok;
+      case CardSocialPlatform.youtube:
+        return l10n.socialYouTube;
       case CardSocialPlatform.x:
         return l10n.socialX;
       case CardSocialPlatform.facebook:

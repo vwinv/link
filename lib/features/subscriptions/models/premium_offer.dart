@@ -60,16 +60,19 @@ class PremiumOffer {
   bool get hasPerSeatPricing =>
       audience.isTeam && prices.any((price) => price.isPerSeat);
 
+  /// Places couvertes par le tarif de base (max membres, sinon le minimum).
+  int get includedSeats {
+    if (maxTeamMembers > 0) return maxTeamMembers;
+    return minSeats < 1 ? 1 : minSeats;
+  }
+
   int get maxSelectableSeats {
-    if (maxTeamMembers < 0) return 500;
-    if (maxTeamMembers <= 0) return minSeats;
+    if (hasPerSeatPricing || maxTeamMembers < 0) return 500;
+    if (maxTeamMembers <= 0) return includedSeats;
     return maxTeamMembers;
   }
 
-  int get defaultSeats {
-    // Toujours partir des sièges inclus ; on ne peut qu’ajouter des supplémentaires.
-    return minSeats.clamp(1, maxSelectableSeats);
-  }
+  int get defaultSeats => includedSeats.clamp(1, maxSelectableSeats);
 
   PremiumOfferPrice? get popularPrice {
     for (final price in prices) {
