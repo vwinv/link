@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "880526404169",
+    "project_id": "dropone-6c91e",
+    "storage_bucket": "dropone-6c91e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:880526404169:android:88837616a50aaacb78ed98",
+        "android_client_info": {
+          "package_name": "com.mega.dropone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVIxuz_TrX2tbfgx7KW9wvYflT5nsx2lk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
