@@ -72,11 +72,13 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
       final paymentConfig = results[1] as PaymentConfig;
       final paymentsEnabled = paymentConfig.paymentsEnabled;
 
-      final offers = allOffers;
+      final preferred = widget.preferredAudience;
+      final offers = preferred == OfferAudience.portfolio
+          ? allOffers.where((offer) => offer.audience.isPortfolio).toList()
+          : allOffers.where((offer) => !offer.audience.isPortfolio).toList();
 
       PremiumOffer? selectedOffer;
-      final preferred = widget.preferredAudience;
-      if (preferred != null) {
+      if (preferred != null && preferred != OfferAudience.portfolio) {
         for (final offer in offers) {
           if (offer.audience == preferred) {
             selectedOffer = offer;
@@ -953,9 +955,9 @@ class _OfferPackageCard extends StatelessWidget {
   }
 
   static String _audienceLabel(AppLocalizations l10n, OfferAudience audience) {
-    return audience.isTeam
-        ? l10n.premiumAudienceTeam
-        : l10n.premiumAudiencePersonal;
+    if (audience.isTeam) return l10n.premiumAudienceTeam;
+    if (audience.isPortfolio) return l10n.premiumAudiencePortfolio;
+    return l10n.premiumAudiencePersonal;
   }
 
   static String _scansLabel(AppLocalizations l10n, int maxAiScans) {

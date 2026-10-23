@@ -38,6 +38,24 @@
                     android:host="api.dropone.pro"
                     android:pathPrefix="/cards/"/>
             </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:scheme="https"
+                    android:host="api.dropone.pro"
+                    android:pathPrefix="/portfolios/"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:scheme="link"
+                    android:host="portfolios"
+                    android:pathPrefix="/"/>
+            </intent-filter>
             <!-- Tests dev : link://cards/mon-slug -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>

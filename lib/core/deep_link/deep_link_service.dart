@@ -12,7 +12,7 @@ class DeepLinkService {
   static const _dismissedSlugKey = 'dismissed_public_card_slug';
 
   final AppLinks _appLinks;
-  String? _pendingSlug;
+  PublicDeepLink? _pendingLink;
   String? _dismissedSlug;
   StreamSubscription<Uri>? _subscription;
   var _initialized = false;
@@ -22,16 +22,34 @@ class DeepLinkService {
 
   bool isPublicCardDismissed(String slug) => _dismissedSlug == slug;
 
+  bool isPublicLinkDismissed(PublicDeepLink link) =>
+      _dismissedSlug == link.dismissKey;
+
+  PublicDeepLink? consumePendingLink() {
+    final link = _pendingLink;
+    _pendingLink = null;
+    return link;
+  }
+
   String? consumePendingSlug() {
-    final slug = _pendingSlug;
-    _pendingSlug = null;
-    return slug;
+    final link = _pendingLink;
+    if (link == null || link.isPortfolio) return null;
+    _pendingLink = null;
+    return link.slug;
   }
 
   Future<void> dismissPublicCard(String slug) async {
-    _dismissedSlug = slug;
+    await _rememberDismissed(slug);
+  }
+
+  Future<void> dismissPublicPortfolio(String slug) async {
+    await _rememberDismissed('portfolio:$slug');
+  }
+
+  Future<void> _rememberDismissed(String key) async {
+    _dismissedSlug = key;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_dismissedSlugKey, slug);
+    await prefs.setString(_dismissedSlugKey, key);
   }
 
   Future<void> _loadDismissedSlug() async {
@@ -50,13 +68,13 @@ class DeepLinkService {
   /// Attend que le lien initial ait été lu (évite les courses avec le splash).
   Future<void> ensureReady() => _readyFuture ?? Future.value();
 
-  Future<void> initialize(void Function(String slug) onSlug) {
+  Future<void> initialize(void Function(PublicDeepLink link) onLink) {
     if (_readyFuture != null) return _readyFuture!;
-    _readyFuture = _initializeImpl(onSlug);
+    _readyFuture = _initializeImpl(onLink);
     return _readyFuture!;
   }
 
-  Future<void> _initializeImpl(void Function(String slug) onSlug) async {
+  Future<void> _initializeImpl(void Function(PublicDeepLink link) onLink) async {
     if (_initialized) return;
     _initialized = true;
 
@@ -67,20 +85,20 @@ class DeepLinkService {
         const Duration(seconds: 2),
         onTimeout: () => null,
       );
-      final initialSlug = parseCardSlugFromUri(initialUri);
-      if (initialSlug != null) {
-        // Une ouverture via deep link doit toujours pouvoir réafficher la carte
+      final initialLink = parsePublicDeepLink(initialUri);
+      if (initialLink != null) {
+        // Une ouverture via deep link doit toujours pouvoir réafficher la page
         // (même si l’utilisateur l’avait fermée précédemment).
         await _clearDismissedSlug();
-        _pendingSlug = initialSlug;
+        _pendingLink = initialLink;
       }
 
       _subscription = _appLinks.uriLinkStream.listen(
         (uri) async {
-          final slug = parseCardSlugFromUri(uri);
-          if (slug == null) return;
+          final link = parsePublicDeepLink(uri);
+          if (link == null) return;
           await _clearDismissedSlug();
-          onSlug(slug);
+          onLink(link);
         },
         onError: (_) {},
       );

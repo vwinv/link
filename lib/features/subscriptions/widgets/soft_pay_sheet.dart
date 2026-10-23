@@ -25,6 +25,7 @@ class SoftPaySheet extends StatefulWidget {
     this.email,
     this.teamId,
     this.seats,
+    this.purpose,
   });
 
   final String offerSlug;
@@ -38,6 +39,7 @@ class SoftPaySheet extends StatefulWidget {
   final String? email;
   final String? teamId;
   final int? seats;
+  final String? purpose;
 
   static const BorderRadius topBorderRadius = BorderRadius.vertical(
     top: Radius.circular(24),
@@ -56,6 +58,7 @@ class SoftPaySheet extends StatefulWidget {
     String? email,
     String? teamId,
     int? seats,
+    String? purpose,
   }) {
     return showModalBottomSheet<bool>(
       context: context,
@@ -74,6 +77,7 @@ class SoftPaySheet extends StatefulWidget {
         email: email,
         teamId: teamId,
         seats: seats,
+        purpose: purpose,
       ),
     );
   }
@@ -351,6 +355,7 @@ class _SoftPaySheetState extends State<SoftPaySheet>
         email: widget.email,
         teamId: widget.teamId,
         seats: widget.seats,
+        purpose: widget.purpose,
       );
       if (!mounted) return;
       setState(() => _result = result);

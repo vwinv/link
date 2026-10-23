@@ -225,6 +225,22 @@ abstract final class SharePlatformService {
     }
   }
 
+  static Future<bool> shareLinkedIn(
+    BuildContext context, {
+    required String url,
+  }) async {
+    final encoded = Uri.encodeComponent(url);
+    final uri = Uri.parse(
+      'https://www.linkedin.com/sharing/share-offsite/?url=$encoded',
+    );
+    final opened = await _tryLaunchUrl(uri, LaunchMode.externalApplication);
+    if (!context.mounted) return opened;
+    if (!opened) {
+      await copyLink(context, url: url);
+    }
+    return opened;
+  }
+
   static Future<bool> copyLink(
     BuildContext context, {
     required String url,

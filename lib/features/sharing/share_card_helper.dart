@@ -6,6 +6,15 @@ abstract final class ShareCardHelper {
 
   static String publicUrl(String slug) => ApiConfig.publicPageUrl(slug);
 
+  static String portfolioPublicUrl(String slug) =>
+      ApiConfig.portfolioPublicUrl(slug);
+
+  static Uri portfolioShareUri(BusinessCard card) =>
+      Uri.parse(portfolioPublicUrl(card.slug));
+
+  static String portfolioShareTitle(BusinessCard card) =>
+      '${card.fullName} | $brandName Portfolio';
+
   static Uri linkShareUri(BusinessCard card) => Uri.parse(publicUrl(card.slug));
 
   /// URL envoyée à WhatsApp pour déclencher l’aperçu riche.

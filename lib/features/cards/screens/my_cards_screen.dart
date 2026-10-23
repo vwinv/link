@@ -9,27 +9,30 @@ import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/core/l10n/card_kind_l10n.dart';
 import 'package:linkflutter/core/l10n/l10n_extensions.dart';
 import 'package:linkflutter/core/utils/responsive.dart';
-import 'package:linkflutter/features/cards/models/card_kind.dart';
 import 'package:linkflutter/features/cards/models/business_card.dart';
 import 'package:linkflutter/features/cards/models/card_analytics.dart';
+import 'package:linkflutter/core/api/api_config.dart';
+import 'package:linkflutter/features/cards/models/portfolio_profile.dart';
+import 'package:linkflutter/features/cards/models/portfolio_stats.dart';
+import 'package:linkflutter/features/cards/models/portfolio_style.dart';
 import 'package:linkflutter/features/contacts/models/link_contact.dart';
 import 'package:linkflutter/features/cards/services/cards_api_service.dart';
 import 'package:linkflutter/features/cards/widgets/card_preview.dart';
+import 'package:linkflutter/features/cards/widgets/portfolio_home_preview.dart';
+import 'package:linkflutter/features/cards/widgets/portfolio_stats_sheet.dart';
 import 'package:linkflutter/providers/auth_provider.dart';
 import 'package:linkflutter/providers/card_analytics_refresh_notifier.dart';
+import 'package:linkflutter/features/sharing/models/share_quota.dart';
+import 'package:linkflutter/features/sharing/services/sharing_api_service.dart';
 import 'package:linkflutter/features/sharing/share_card_helper.dart';
 import 'package:linkflutter/providers/create_card_provider.dart';
 import 'package:linkflutter/providers/cards_provider.dart';
 import 'package:linkflutter/providers/contacts_provider.dart';
+import 'package:linkflutter/providers/subscriptions_provider.dart';
 import 'package:linkflutter/providers/teams_provider.dart';
 import 'package:provider/provider.dart';
 
-enum _CardScope { personal, professional }
-
-extension on _CardScope {
-  CardKind get toCardKind =>
-      this == _CardScope.personal ? CardKind.personal : CardKind.professional;
-}
+enum _CardScope { personal, professional, portfolio }
 
 class MyCardsScreen extends StatefulWidget {
   const MyCardsScreen({super.key});
@@ -46,6 +49,11 @@ class _MyCardsScreenState extends State<MyCardsScreen>
 
   _CardScope _scope = _CardScope.personal;
   CardAnalytics _analytics = CardAnalytics.empty;
+  String? _portfolioCardId;
+  PortfolioStyle? _portfolioStyle;
+  PortfolioProfile? _portfolioProfile;
+  PortfolioOfferAccess? _portfolioAccess;
+  var _portfolioLoading = false;
   String? _trackedAnalyticsCardId;
   Timer? _analyticsTimer;
   Timer? _burstAnalyticsTimer;
@@ -182,10 +190,69 @@ class _MyCardsScreenState extends State<MyCardsScreen>
     ]);
     if (!mounted) return;
 
-    final card = context.read<CardsProvider>().cardForKind(_scope.toCardKind);
+    final card = _cardForScope(context.read<CardsProvider>(), _scope);
     if (card != null) {
       await _loadAnalytics(card.id);
+      if (_scope == _CardScope.portfolio) {
+        await _loadPortfolioPresence(card.id);
+      }
     }
+  }
+
+  Future<void> _loadPortfolioPresence(String cardId) async {
+    setState(() {
+      _portfolioLoading = true;
+      if (_portfolioCardId != cardId) {
+        _portfolioProfile = null;
+        _portfolioStyle = null;
+        _portfolioAccess = null;
+      }
+      _portfolioCardId = cardId;
+    });
+    try {
+      final api = context.read<CardsApiService>();
+      final sharingApi = context.read<SharingApiService>();
+      final reviewAccess =
+          context.read<SubscriptionsProvider>().isAppleReviewFullAccess;
+      final style = await api.fetchPortfolioStyle(cardId);
+      PortfolioProfile? profile;
+      PortfolioOfferAccess? access;
+      if (style.exists) {
+        try {
+          profile = await api.fetchPortfolioProfile(cardId);
+        } catch (_) {
+          profile = null;
+        }
+        if (reviewAccess) {
+          access = PortfolioOfferAccess.full;
+        } else {
+          try {
+            access = await sharingApi.fetchPortfolioAccess();
+          } catch (_) {
+            access = _portfolioAccess;
+          }
+        }
+      }
+      if (!mounted || _portfolioCardId != cardId) return;
+      setState(() {
+        _portfolioStyle = style;
+        _portfolioProfile = style.exists ? profile : null;
+        _portfolioAccess = style.exists ? access : null;
+        _portfolioLoading = false;
+      });
+    } catch (_) {
+      if (!mounted || _portfolioCardId != cardId) return;
+      setState(() => _portfolioLoading = false);
+    }
+  }
+
+  Future<void> _runPortfolioAction(
+    BusinessCard card,
+    Future<void> Function() action,
+  ) async {
+    await action();
+    if (!mounted) return;
+    await _loadPortfolioPresence(card.id);
   }
 
   Future<void> _afterCardAction(
@@ -196,6 +263,28 @@ class _MyCardsScreenState extends State<MyCardsScreen>
     if (!mounted) return;
     await _reloadAnalytics(card.id);
     _scheduleBurstAnalyticsRefresh(card.id);
+  }
+
+  Future<void> _openPortfolioStats(BusinessCard card) async {
+    if (!await ensurePortfolioCapability(
+      context,
+      allowed: (access) => access.hasAnalytics,
+    )) {
+      return;
+    }
+    if (!mounted) return;
+    var stats = PortfolioStats.empty;
+    try {
+      stats = await context.read<CardsApiService>().fetchPortfolioStats(card.id);
+    } catch (_) {
+      stats = PortfolioStats.empty;
+    }
+    if (!mounted) return;
+    await showPortfolioStatsSheet(
+      context,
+      visits: stats.siteVisits,
+      portfolioClicks: stats.portfolioClicks,
+    );
   }
 
   Future<void> _openMemberAccount(BuildContext context) async {
@@ -225,6 +314,15 @@ class _MyCardsScreenState extends State<MyCardsScreen>
     setState(() => _scope = _CardScope.professional);
   }
 
+  BusinessCard? _cardForScope(CardsProvider cards, _CardScope scope) {
+    return switch (scope) {
+      _CardScope.personal => cards.personalCard,
+      _CardScope.professional => cards.professionalCard,
+      _CardScope.portfolio =>
+        cards.professionalCard ?? cards.personalCard ?? cards.memberCard(),
+    };
+  }
+
   void _createPersonalCard() {
     context.read<CreateCardProvider>().initFromUser(
       context.read<AuthProvider>().user,
@@ -239,7 +337,7 @@ class _MyCardsScreenState extends State<MyCardsScreen>
     final teamsProvider = context.watch<TeamsProvider>();
     final contactsProvider = context.watch<ContactsProvider>();
     final user = context.watch<AuthProvider>().user;
-    final card = cardsProvider.cardForKind(_scope.toCardKind);
+    final card = _cardForScope(cardsProvider, _scope);
     final team = teamsProvider.myTeam;
     _scheduleAnalyticsLoad(card);
 
@@ -271,20 +369,97 @@ class _MyCardsScreenState extends State<MyCardsScreen>
               _CardScopeToggle(
                 scope: _scope,
                 onChanged: (scope) {
-                  final card = cardsProvider.cardForKind(scope.toCardKind);
+                  final nextCard = _cardForScope(cardsProvider, scope);
                   setState(() {
                     _scope = scope;
                     _trackedAnalyticsCardId = null;
                     _analytics = CardAnalytics.empty;
+                    if (scope == _CardScope.portfolio &&
+                        nextCard != null &&
+                        _portfolioCardId != nextCard.id) {
+                      _portfolioLoading = true;
+                    }
                   });
-                  if (card != null) {
-                    _trackedAnalyticsCardId = card.id;
-                    _loadAnalytics(card.id);
+                  if (nextCard != null) {
+                    _trackedAnalyticsCardId = nextCard.id;
+                    _loadAnalytics(nextCard.id);
+                    if (scope == _CardScope.portfolio &&
+                        (_portfolioCardId != nextCard.id || _portfolioStyle == null)) {
+                      _loadPortfolioPresence(nextCard.id);
+                    }
                   }
                 },
               ),
               const SizedBox(height: AppSpacing.xl),
-              if (card != null) ...[
+              if (_scope == _CardScope.portfolio) ...[
+                if (card != null &&
+                    _portfolioCardId == card.id &&
+                    _portfolioStyle?.exists == true) ...[
+                  Text(
+                    context.l10n.portfolioHomeHeadline,
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: context.rs(22),
+                      fontWeight: AppFontWeight.bold,
+                      height: 1.2,
+                      letterSpacing: -0.4,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  _LivePortfolioPreview(card: card, profile: _portfolioProfile),
+                  const SizedBox(height: AppSpacing.md),
+                  _PortfolioActionRow(
+                    shareLocked: _portfolioAccess != null &&
+                        !_portfolioAccess!.canShare,
+                    customizeLocked: _portfolioAccess != null &&
+                        !_portfolioAccess!.canCustomize,
+                    onShare: () => _runPortfolioAction(
+                      card,
+                      () => openSharePortfolio(context, card),
+                    ),
+                    onEdit: () => _runPortfolioAction(
+                      card,
+                      () => openPortfolioEditor(context, card),
+                    ),
+                    onCustomize: () => _runPortfolioAction(
+                      card,
+                      () => openPortfolioStyle(
+                        context,
+                        card,
+                        customizeOnly: true,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  _HomeStatsCta(
+                    subtitle: context.l10n.portfolioStatsSubtitle,
+                    locked: _portfolioAccess != null &&
+                        !_portfolioAccess!.hasAnalytics,
+                    onTap: () => _openPortfolioStats(card),
+                  ),
+                ] else if (_portfolioLoading)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 48),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else ...[
+                  const PortfolioHomePreview(),
+                  const SizedBox(height: AppSpacing.lg),
+                  _CreatePortfolioCard(
+                    onCreate: () {
+                      if (card == null) {
+                        _createPersonalCard();
+                        return;
+                      }
+                      _runPortfolioAction(
+                        card,
+                        () => openPortfolioStyle(context, card),
+                      );
+                    },
+                  ),
+                ],
+                const SizedBox(height: AppSpacing.xxl),
+              ] else if (card != null) ...[
                 Material(
                   color: Colors.transparent,
                   child: InkWell(
@@ -353,7 +528,8 @@ class _MyCardsScreenState extends State<MyCardsScreen>
                 _MissingPersonalCardCard(onCreate: _createPersonalCard),
                 const SizedBox(height: AppSpacing.xxl),
               ],
-              _SharedContactsSection(contacts: contactsProvider.recentContacts),
+              if (_scope != _CardScope.portfolio)
+                _SharedContactsSection(contacts: contactsProvider.recentContacts),
             ],
           ),
         ),
@@ -415,12 +591,14 @@ class _ActionTile extends StatelessWidget {
     required this.icon,
     required this.onTap,
     this.isPrimary = false,
+    this.locked = false,
   });
 
   final String label;
   final IconData icon;
   final VoidCallback onTap;
   final bool isPrimary;
+  final bool locked;
 
   @override
   Widget build(BuildContext context) {
@@ -450,23 +628,208 @@ class _ActionTile extends StatelessWidget {
                     ]
                   : null,
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Stack(
+              fit: StackFit.expand,
               children: [
-                Icon(icon, size: 22, color: foreground),
-                const SizedBox(height: 6),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: foreground,
-                    fontSize: context.rs(12),
-                    fontWeight: AppFontWeight.semiBold,
-                  ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(icon, size: 22, color: foreground),
+                    const SizedBox(height: 6),
+                    Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: foreground,
+                        fontSize: context.rs(12),
+                        fontWeight: AppFontWeight.semiBold,
+                      ),
+                    ),
+                  ],
                 ),
+                if (locked)
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Icon(
+                      Icons.lock_outline_rounded,
+                      size: 14,
+                      color: foreground.withValues(alpha: 0.85),
+                    ),
+                  ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _LivePortfolioPreview extends StatelessWidget {
+  const _LivePortfolioPreview({required this.card, required this.profile});
+
+  final BusinessCard card;
+  final PortfolioProfile? profile;
+
+  @override
+  Widget build(BuildContext context) {
+    final saved = profile;
+    final first = saved?.firstName.trim() ?? '';
+    final last = saved?.lastName.trim() ?? '';
+    final savedName = '$first $last'.trim();
+    final name = savedName.isNotEmpty ? savedName : card.fullName;
+    final savedTitle = saved?.title.trim() ?? '';
+    final job = card.jobTitle?.trim() ?? '';
+    final role = savedTitle.isNotEmpty
+        ? savedTitle
+        : (job.isNotEmpty ? job : card.subtitle);
+    final photo = ApiConfig.resolvePublicAssetUrl(saved?.photoUrl) ??
+        card.avatarImageUrl;
+    PortfolioExperienceItem? journey;
+    for (final item in saved?.experiences ?? const <PortfolioExperienceItem>[]) {
+      if (item.role.trim().isNotEmpty) {
+        journey = item;
+        break;
+      }
+    }
+    final skills = (saved?.skills ?? const <PortfolioSkillItem>[])
+        .where((item) => item.name.trim().isNotEmpty)
+        .take(3)
+        .map(
+          (item) => PortfolioPreviewSkill(
+            item.name.trim(),
+            (item.level.clamp(0, 100)) / 100,
+          ),
+        )
+        .toList();
+
+    return PortfolioHomePreview(
+      slug: card.slug,
+      name: name.isEmpty ? '—' : name,
+      role: role,
+      photoUrl: photo,
+      journeyTitle: journey?.role.trim(),
+      journeyMeta: journey == null || journey.subtitle.isEmpty
+          ? null
+          : journey.subtitle,
+      skills: skills,
+    );
+  }
+}
+
+class _PortfolioActionRow extends StatelessWidget {
+  const _PortfolioActionRow({
+    required this.onShare,
+    required this.onEdit,
+    required this.onCustomize,
+    this.shareLocked = false,
+    this.customizeLocked = false,
+  });
+
+  final VoidCallback onShare;
+  final VoidCallback onEdit;
+  final VoidCallback onCustomize;
+  final bool shareLocked;
+  final bool customizeLocked;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Row(
+      children: [
+        Expanded(
+          child: _ActionTile(
+            label: l10n.commonShare,
+            icon: Icons.ios_share_rounded,
+            isPrimary: true,
+            locked: shareLocked,
+            onTap: onShare,
+          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: _ActionTile(
+            label: l10n.commonEdit,
+            icon: Icons.edit_outlined,
+            onTap: onEdit,
+          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: _ActionTile(
+            label: l10n.customizeTitle,
+            icon: Icons.palette_outlined,
+            locked: customizeLocked,
+            onTap: onCustomize,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CreatePortfolioCard extends StatelessWidget {
+  const _CreatePortfolioCard({required this.onCreate});
+
+  final VoidCallback onCreate;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.xl),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        children: [
+          const Icon(
+            Icons.auto_awesome_outlined,
+            color: AppColors.bleu_primaire,
+            size: 36,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            l10n.portfolioHomeHeadline,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: context.rs(AppFontSize.lg),
+              fontWeight: AppFontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            l10n.portfolioEmptySubtitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: context.rs(AppFontSize.sm),
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: onCreate,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.bleu_primaire,
+                foregroundColor: AppColors.onPrimary,
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                ),
+              ),
+              child: Text(l10n.portfolioCreate),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -703,18 +1066,23 @@ class _CardScopeToggle extends StatelessWidget {
         children: [
           Expanded(
             child: _ScopeChip(
-              label: l10n.cardScopePersonal,
-              icon: Icons.person_outline,
+              label: l10n.cardScopePersonalShort,
               isSelected: scope == _CardScope.personal,
               onTap: () => onChanged(_CardScope.personal),
             ),
           ),
           Expanded(
             child: _ScopeChip(
-              label: l10n.cardScopeProfessional,
-              icon: Icons.groups_outlined,
+              label: l10n.cardScopeProfessionalShort,
               isSelected: scope == _CardScope.professional,
               onTap: () => onChanged(_CardScope.professional),
+            ),
+          ),
+          Expanded(
+            child: _ScopeChip(
+              label: l10n.portfolioScope,
+              isSelected: scope == _CardScope.portfolio,
+              onTap: () => onChanged(_CardScope.portfolio),
             ),
           ),
         ],
@@ -726,13 +1094,11 @@ class _CardScopeToggle extends StatelessWidget {
 class _ScopeChip extends StatelessWidget {
   const _ScopeChip({
     required this.label,
-    required this.icon,
     required this.isSelected,
     required this.onTap,
   });
 
   final String label;
-  final IconData icon;
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -745,27 +1111,20 @@ class _ScopeChip extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.pill),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 18,
-                color: isSelected ? AppColors.onPrimary : AppColors.textSecondary,
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Text(
-                label,
-                style: TextStyle(
-                  color: isSelected
-                      ? AppColors.onPrimary
-                      : AppColors.textSecondary,
-                  fontSize: context.rs(13),
-                  fontWeight: AppFontWeight.semiBold,
-                ),
-              ),
-            ],
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: AppSpacing.md,
+          ),
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: isSelected ? AppColors.onPrimary : AppColors.textSecondary,
+              fontSize: context.rs(13),
+              fontWeight: AppFontWeight.semiBold,
+            ),
           ),
         ),
       ),
@@ -774,9 +1133,15 @@ class _ScopeChip extends StatelessWidget {
 }
 
 class _HomeStatsCta extends StatelessWidget {
-  const _HomeStatsCta({required this.onTap});
+  const _HomeStatsCta({
+    required this.onTap,
+    this.subtitle,
+    this.locked = false,
+  });
 
   final VoidCallback onTap;
+  final String? subtitle;
+  final bool locked;
 
   @override
   Widget build(BuildContext context) {
@@ -823,7 +1188,7 @@ class _HomeStatsCta extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          l10n.myCardsSeeStatsSubtitle,
+                          subtitle ?? l10n.myCardsSeeStatsSubtitle,
                           style: TextStyle(
                             color: AppColors.onPrimary.withValues(alpha: 0.85),
                             fontSize: context.rs(12),
@@ -833,7 +1198,9 @@ class _HomeStatsCta extends StatelessWidget {
                     ),
                   ),
                   Icon(
-                    Icons.chevron_right_rounded,
+                    locked
+                        ? Icons.lock_outline_rounded
+                        : Icons.chevron_right_rounded,
                     color: AppColors.onPrimary.withValues(alpha: 0.9),
                   ),
                 ],

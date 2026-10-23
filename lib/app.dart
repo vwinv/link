@@ -56,8 +56,11 @@ class _AppViewState extends State<_AppView> {
     if (_deepLinksInitialized || _router == null) return;
     _deepLinksInitialized = true;
 
-    context.read<DeepLinkService>().initialize((slug) {
-      _router?.go('${RoutePaths.publicCard}/$slug');
+    context.read<DeepLinkService>().initialize((link) {
+      final base = link.isPortfolio
+          ? RoutePaths.publicPortfolio
+          : RoutePaths.publicCard;
+      _router?.go('$base/${link.slug}');
     });
   }
 

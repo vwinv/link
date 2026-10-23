@@ -174,6 +174,427 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cardScopeMemberShort => 'Carte membre';
 
   @override
+  String get portfolioScope => 'Portfolio';
+
+  @override
+  String get portfolioHomeHeadline =>
+      'Créer ton portfolio et impacte le monde professionnel';
+
+  @override
+  String get portfolioPathLabel => 'PARCOURS';
+
+  @override
+  String get portfolioSkillsLabel => 'SKILLS';
+
+  @override
+  String get portfolioPathEmpty => 'Ajoutez votre parcours';
+
+  @override
+  String get portfolioSkillsEmpty => 'Ajoutez vos compétences';
+
+  @override
+  String get portfolioStatsSubtitle => 'Découvrez qui a vu votre portfolio';
+
+  @override
+  String get portfolioStatsTitle => 'Statistiques du portfolio';
+
+  @override
+  String get portfolioStatsVisits => 'Visites du site';
+
+  @override
+  String get portfolioStatsClicks => 'Clics « Voir mon portfolio »';
+
+  @override
+  String get portfolioStatsHint =>
+      'Les chiffres apparaissent dès les premières visites.';
+
+  @override
+  String get portfolioStatsClose => 'Fermer';
+
+  @override
+  String get portfolioEmptySubtitle =>
+      'Publiez votre parcours et vos compétences pour vous démarquer.';
+
+  @override
+  String get portfolioCreate => 'Créer mon portfolio';
+
+  @override
+  String get portfolioStyleTitle => 'Style du portfolio';
+
+  @override
+  String get portfolioStyleSubtitle =>
+      'Choisissez un modèle de mise en page, puis une couleur. Vous pourrez en changer à tout moment sans perdre vos contenus.';
+
+  @override
+  String get portfolioStyleModels => 'MODÈLE';
+
+  @override
+  String get portfolioStyleColor => 'COULEUR';
+
+  @override
+  String portfolioStyleChoose(String layout, String color) {
+    return 'Choisir · $layout · $color';
+  }
+
+  @override
+  String portfolioStyleContinue(String layout, String color) {
+    return 'Continuer · $layout · $color';
+  }
+
+  @override
+  String get portfolioStyleSaved => 'Style du portfolio enregistré';
+
+  @override
+  String get portfolioStyleSaveError =>
+      'Impossible d\'enregistrer le style du portfolio';
+
+  @override
+  String get portfolioEditorTitle => 'Mon portfolio';
+
+  @override
+  String get portfolioEditorTheme => 'Thème';
+
+  @override
+  String get portfolioEditorPreview => 'Aperçu';
+
+  @override
+  String get portfolioEditorPublish => 'Publier mon portfolio';
+
+  @override
+  String portfolioEditorProgress(int percent) {
+    return '$percent % complété';
+  }
+
+  @override
+  String get portfolioEditorPhotoTitle => 'Photo du portfolio';
+
+  @override
+  String get portfolioEditorPhotoHint =>
+      'Format portrait conseillé, fond uni ou détouré pour un meilleur rendu.';
+
+  @override
+  String get portfolioEditorPhotoChange => 'Changer';
+
+  @override
+  String get portfolioEditorPersonal => 'Informations personnelles';
+
+  @override
+  String get portfolioEditorFirstName => 'Prénom(s)';
+
+  @override
+  String get portfolioEditorLastName => 'Nom';
+
+  @override
+  String get portfolioEditorAge => 'Âge';
+
+  @override
+  String get portfolioEditorAgeHint => 'Ex. 32';
+
+  @override
+  String get portfolioEditorPhone => 'Téléphone';
+
+  @override
+  String get portfolioEditorAddress => 'Adresse';
+
+  @override
+  String get portfolioEditorAddressHint => 'Quartier, ville, pays';
+
+  @override
+  String get portfolioEditorHidePersonal =>
+      'Masquer l\'âge et l\'adresse sur le site';
+
+  @override
+  String get portfolioEditorPresentation => 'Présentation';
+
+  @override
+  String get portfolioEditorPortfolioTitle => 'Titre du portfolio';
+
+  @override
+  String get portfolioEditorDescription => 'Description';
+
+  @override
+  String get portfolioEditorDescriptionHint =>
+      'Qui êtes-vous, que faites-vous, pour qui ? 3 à 4 phrases.';
+
+  @override
+  String get portfolioEditorExperience => 'Expérience professionnelle';
+
+  @override
+  String portfolioEditorPosts(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count postes',
+      one: '1 poste',
+      zero: '0 poste',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get portfolioEditorAddExperience => 'Ajouter une expérience';
+
+  @override
+  String get portfolioEditorTeaching => 'Expérience pédagogique';
+
+  @override
+  String portfolioEditorEntries(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count entrées',
+      one: '1 entrée',
+      zero: '0 entrée',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get portfolioEditorAddTeaching => 'Ajouter une expérience pédagogique';
+
+  @override
+  String get portfolioEditorEdit => 'Modifier';
+
+  @override
+  String get portfolioEditorSkills => 'Skills (avec niveau)';
+
+  @override
+  String get portfolioEditorAddSkill => 'Ajouter un skill';
+
+  @override
+  String get portfolioEditorCompetences => 'Compétences';
+
+  @override
+  String get portfolioEditorCompetencesHint => 'Savoir-faire métier';
+
+  @override
+  String get portfolioEditorStrengths => 'Atouts';
+
+  @override
+  String get portfolioEditorStrengthsHint => 'Ce qui vous distingue';
+
+  @override
+  String get portfolioEditorInterests => 'Centres d\'intérêt';
+
+  @override
+  String get portfolioEditorInterestsHint => 'Une touche personnelle';
+
+  @override
+  String get portfolioEditorAdd => 'Ajouter';
+
+  @override
+  String get portfolioEditorProjects => 'Réalisations';
+
+  @override
+  String get portfolioEditorProjectsHint =>
+      'Jusqu\'à 12 réalisations. La photo et le lien sont optionnels.';
+
+  @override
+  String get portfolioEditorImport => 'Importer';
+
+  @override
+  String get portfolioEditorRole => 'Intitulé du poste';
+
+  @override
+  String get portfolioEditorCompany => 'Entreprise';
+
+  @override
+  String get portfolioEditorPeriod => 'Période';
+
+  @override
+  String get portfolioEditorPeriodHint => '2021 – aujourd\'hui';
+
+  @override
+  String get portfolioEditorCourse => 'Intitulé du cours / atelier';
+
+  @override
+  String get portfolioEditorSchool => 'Établissement';
+
+  @override
+  String get portfolioEditorYear => 'Année';
+
+  @override
+  String get portfolioEditorSkillName => 'Compétence';
+
+  @override
+  String get portfolioEditorProjectTitle => 'Titre';
+
+  @override
+  String get portfolioEditorCaption => 'Description';
+
+  @override
+  String get portfolioEditorProjectPhoto => 'Photo (optionnel)';
+
+  @override
+  String get portfolioEditorProjectPhotoAdd => 'Ajouter une photo';
+
+  @override
+  String get portfolioEditorProjectPhotoChange => 'Changer la photo';
+
+  @override
+  String get portfolioEditorProjectLink => 'Lien (optionnel)';
+
+  @override
+  String get portfolioEditorProjectLinkHint => 'https://...';
+
+  @override
+  String get portfolioEditorSave => 'Enregistrer';
+
+  @override
+  String get portfolioEditorDelete => 'Supprimer';
+
+  @override
+  String get portfolioEditorPublished => 'Portfolio publié';
+
+  @override
+  String get portfolioEditorSaveError =>
+      'Impossible d\'enregistrer le portfolio';
+
+  @override
+  String get portfolioEditorNameRequired =>
+      'Indiquez votre prénom et votre nom';
+
+  @override
+  String get portfolioEditorMissing =>
+      'Choisissez d\'abord un thème pour créer le portfolio.';
+
+  @override
+  String get portfolioEditorChipHint => 'Nouveau';
+
+  @override
+  String get portfolioEditorNewChip => 'Nouveau...';
+
+  @override
+  String get portfolioEditorPoste => 'Poste';
+
+  @override
+  String get portfolioEditorPosteHint => 'Ex. Responsable communication';
+
+  @override
+  String get portfolioEditorCompanyHint => 'Ex. Mega-SN';
+
+  @override
+  String get portfolioEditorPeriodExample => 'Ex. 2021 – aujourd\'hui';
+
+  @override
+  String get portfolioEditorMissions => 'Missions';
+
+  @override
+  String get portfolioEditorMissionsHint =>
+      'Missions principales en une phrase';
+
+  @override
+  String get portfolioEditorCourseHint => 'Ex. Marketing digital';
+
+  @override
+  String get portfolioEditorSchoolHint => 'Ex. ISM Dakar';
+
+  @override
+  String get portfolioEditorYearHint => 'Ex. 2023';
+
+  @override
+  String get portfolioEditorAudience => 'Public, volume horaire';
+
+  @override
+  String get portfolioEditorAudienceHint => 'Ex. Master 1 · 20 h';
+
+  @override
+  String get portfolioEditorSkillSheet => 'Skill';
+
+  @override
+  String get portfolioEditorSkillNameLabel => 'Nom du skill';
+
+  @override
+  String get portfolioEditorSkillHint => 'Ex. Négociation';
+
+  @override
+  String get portfolioEditorLevel => 'Niveau';
+
+  @override
+  String get portfolioLayoutClassique => 'Classique';
+
+  @override
+  String get portfolioLayoutClassiqueHint => 'Photo ronde, frise';
+
+  @override
+  String get portfolioLayoutCouverture => 'Couverture';
+
+  @override
+  String get portfolioLayoutCouvertureHint => 'Grande photo en tête';
+
+  @override
+  String get portfolioLayoutEditorial => 'Éditorial';
+
+  @override
+  String get portfolioLayoutEditorialHint => 'Typo, sections filetées';
+
+  @override
+  String get portfolioLayoutGalerie => 'Galerie';
+
+  @override
+  String get portfolioLayoutGalerieHint => 'Réalisations d\'abord';
+
+  @override
+  String get portfolioLayoutMinimal => 'Minimal';
+
+  @override
+  String get portfolioLayoutMinimalHint => 'Épuré, centré';
+
+  @override
+  String get portfolioLayoutBento => 'Bento';
+
+  @override
+  String get portfolioLayoutBentoHint => 'Mosaïque de blocs';
+
+  @override
+  String get portfolioLayoutPortrait => 'Portrait';
+
+  @override
+  String get portfolioLayoutPortraitHint => 'Photo verticale';
+
+  @override
+  String get portfolioLayoutCartes => 'Cartes';
+
+  @override
+  String get portfolioLayoutCartesHint => 'Sections en cartes';
+
+  @override
+  String get portfolioColorBleu => 'Bleu Drop';
+
+  @override
+  String get portfolioColorIvoire => 'Ivoire';
+
+  @override
+  String get portfolioColorNoir => 'Noir & Or';
+
+  @override
+  String get portfolioColorForet => 'Émeraude';
+
+  @override
+  String get portfolioColorNeon => 'Néon';
+
+  @override
+  String get portfolioColorCorail => 'Coucher de soleil';
+
+  @override
+  String get portfolioColorLagon => 'Lagune';
+
+  @override
+  String get portfolioColorLilas => 'Aurore';
+
+  @override
+  String get portfolioColorTerre => 'Terracotta';
+
+  @override
+  String get portfolioColorSable => 'Éditorial';
+
+  @override
+  String get portfolioColorSoleil => 'Brutal';
+
+  @override
+  String get portfolioColorMinuit => 'Verre givré';
+
+  @override
   String myCardsGreeting(String name) {
     return 'Bonjour, $name 👋';
   }
@@ -1138,10 +1559,52 @@ class AppLocalizationsFr extends AppLocalizations {
       'Faites scanner ce code - aucune app requise pour vos contacts.';
 
   @override
+  String get sharePortfolioTitle => 'Partager mon portfolio';
+
+  @override
+  String get sharePortfolioQrHint =>
+      'Faites scanner ce code pour ouvrir le portfolio.';
+
+  @override
+  String get sharePortfolioPublishedTitle => 'Portfolio publié';
+
+  @override
+  String get sharePortfolioLiveTitle => 'Votre site est en ligne';
+
+  @override
+  String get sharePortfolioLiveBody =>
+      'Il apparaît désormais sur votre carte Drop One\navec le bouton « Voir mon portfolio ».';
+
+  @override
+  String get sharePortfolioCopy => 'Copier';
+
+  @override
+  String get sharePortfolioCardPreview => 'APERÇU SUR VOTRE CARTE';
+
+  @override
+  String get sharePortfolioViewOnCard => 'Voir mon portfolio';
+
+  @override
+  String get sharePortfolioExchange => 'Échanger mes coordonnées';
+
+  @override
+  String get sharePortfolioStatsRowHint =>
+      'Visites et clics, avec vos stats de carte';
+
+  @override
+  String get shareOptionQr => 'QR code';
+
+  @override
+  String get shareOptionMore => 'Plus';
+
+  @override
   String get shareOptionMessage => 'Message';
 
   @override
   String get shareOptionAirDrop => 'AirDrop';
+
+  @override
+  String get shareOptionLink => 'Lien';
 
   @override
   String shareQuotaReached(int max) {
@@ -1158,6 +1621,24 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get shareBlockedHint => 'Passez à Premium pour partager sans limite.';
+
+  @override
+  String get sharePortfolioLockedHint =>
+      'Un abonnement Portfolio est nécessaire pour partager ce site.';
+
+  @override
+  String get sharePortfolioLockedCta => 'Voir les offres Portfolio';
+
+  @override
+  String get portfolioOfferExpired => 'Un abonnement Portfolio est nécessaire';
+
+  @override
+  String get portfolioOfferExpiredSubtitle =>
+      'Partage, thème et statistiques dépendent d’une offre Portfolio.';
+
+  @override
+  String get sharePortfolioLinkLocked =>
+      'Lien disponible avec l’offre Portfolio';
 
   @override
   String scanQuotaReached(int max) {
@@ -1313,7 +1794,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get premiumAudiencePersonal => 'Personnel';
 
   @override
+  String get premiumAudiencePortfolio => 'Portfolio';
+
+  @override
   String premiumIncludedPlaces(int count) {
+    return '$count places incluses';
+  }
+
+  @override
+  String premiumIncludedSeats(int count) {
     return '$count places incluses';
   }
 
@@ -1412,8 +1901,22 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String teamMembersSeatLimitReached(int max) {
-    return 'Limite de $max places atteinte. Chaque place supplémentaire est payante.';
+    return 'Les $max places sont utilisées. Chaque place en plus est payante.';
   }
+
+  @override
+  String get teamExtraSeatTitle => 'Place supplémentaire';
+
+  @override
+  String get teamExtraSeatMessage =>
+      'Les places incluses sont utilisées. Chaque place en plus est payante.';
+
+  @override
+  String get teamExtraSeatPay => 'Payer une place';
+
+  @override
+  String get teamExtraSeatAdded =>
+      'Place ajoutée. Vous pouvez inviter un membre.';
 
   @override
   String get teamMembersAddTitle => 'Ajouter un membre';

@@ -64,10 +64,13 @@ class _SplashScreenState extends State<SplashScreen> {
     final auth = context.read<AuthProvider>();
     final onboarding = context.read<OnboardingProvider>();
     final accountType = context.read<AccountTypeProvider>();
-    final pendingSlug = context.read<DeepLinkService>().consumePendingSlug();
+    final pendingLink = context.read<DeepLinkService>().consumePendingLink();
 
-    if (pendingSlug != null) {
-      context.go('${RoutePaths.publicCard}/$pendingSlug');
+    if (pendingLink != null) {
+      final base = pendingLink.isPortfolio
+          ? RoutePaths.publicPortfolio
+          : RoutePaths.publicCard;
+      context.go('$base/${pendingLink.slug}');
       return;
     }
     if (auth.isAuthenticated) {
@@ -90,9 +93,8 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              AppAssets.icone,
-              width: AppSizes.splashIconSize,
-              height: AppSizes.splashIconSize,
+              AppAssets.logo,
+              width: 200,
               fit: BoxFit.contain,
             ),
             const SizedBox(height: AppSpacing.xxxl),

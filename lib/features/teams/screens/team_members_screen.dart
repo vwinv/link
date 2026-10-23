@@ -5,6 +5,7 @@ import 'package:linkflutter/core/api/api_exception.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/core/l10n/l10n_extensions.dart';
 import 'package:linkflutter/core/utils/responsive.dart';
+import 'package:linkflutter/features/teams/buy_extra_seat.dart';
 import 'package:linkflutter/features/teams/screens/add_team_member_screen.dart';
 import 'package:linkflutter/features/teams/models/team.dart';
 import 'package:linkflutter/features/teams/models/team_member.dart';
@@ -97,16 +98,16 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
   Future<void> _openAddMemberSheet() async {
     final l10n = context.l10n;
     if (!_hasAvailableSeats) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _seats.max <= 0
-                ? l10n.teamMembersSubscriptionRequired
-                : l10n.teamMembersSeatLimitReached(_seats.max),
-          ),
-        ),
-      );
-      return;
+      if (_seats.max <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.teamMembersSubscriptionRequired)),
+        );
+        return;
+      }
+      final bought = await buyExtraTeamSeat(context, teamId: _team.id);
+      if (!mounted || !bought) return;
+      await _loadMembers();
+      if (!mounted || !_hasAvailableSeats) return;
     }
 
     final teamsApi = context.read<TeamsApiService>();
@@ -382,7 +383,7 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
                           const SizedBox(height: AppSpacing.sm),
                           if (canManageMembers)
                             _AddMemberButton(
-                              enabled: _hasAvailableSeats,
+                              enabled: true,
                               onTap: _openAddMemberSheet,
                             ),
                         ],

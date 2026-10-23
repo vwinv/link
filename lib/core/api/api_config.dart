@@ -83,6 +83,10 @@ abstract final class ApiConfig {
   /// (Android), sinon le lien s’ouvre dans le navigateur au lieu de l’app.
   static String publicUrl(String slug) => '$publicBaseUrl/cards/$slug';
 
+  /// Lien public du portfolio : `https://api.dropone.pro/portfolios/{slug}`
+  static String portfolioPublicUrl(String slug) =>
+      '$publicBaseUrl/portfolios/$slug';
+
   /// App Store Drop One.
   /// Override : `--dart-define=APP_STORE_URL=https://apps.apple.com/...`
   static const appStoreUrl = String.fromEnvironment(
@@ -102,6 +106,28 @@ abstract final class ApiConfig {
   static String publicPageLoadUrl(String slug) {
     final base = _useLocalApi ? '$_apiOrigin/cards/$slug' : publicUrl(slug);
     return '$base?embed=1';
+  }
+
+  /// Origine lisible par la WebView. `0.0.0.0` est une adresse d’écoute,
+  /// le simulateur ne charge pas une page dessus.
+  static String get webViewOrigin =>
+      _apiOrigin.replaceFirst('://0.0.0.0', '://127.0.0.1');
+
+  static String portfolioPageLoadUrl(
+    String slug, {
+    String? layout,
+    String? color,
+  }) {
+    final params = <String, String>{
+      'embed': '1',
+      'v': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+    if (layout != null && layout.isNotEmpty) params['layout'] = layout;
+    if (color != null && color.isNotEmpty) params['color'] = color;
+    final query = params.entries
+        .map((entry) => '${entry.key}=${Uri.encodeQueryComponent(entry.value)}')
+        .join('&');
+    return '$webViewOrigin/portfolios/$slug?$query';
   }
 
   /// Alias conservé pour compatibilité.

@@ -128,6 +128,7 @@ class SubscriptionsApiService {
     String? email,
     String? teamId,
     int? seats,
+    String? purpose,
   }) async {
     final response = await _apiClient.post(
       '/subscriptions/softpay',
@@ -143,9 +144,25 @@ class SubscriptionsApiService {
         if (email != null && email.isNotEmpty) 'email': email,
         if (teamId != null) 'teamId': teamId,
         if (seats != null) 'seats': seats,
+        if (purpose != null) 'purpose': purpose,
       },
     );
     return SoftPayResult.fromJson(response);
+  }
+
+  Future<SeatUpgradeCheckout> checkoutExtraSeats({
+    required String teamId,
+    int additionalSeats = 1,
+  }) async {
+    final response = await _apiClient.post(
+      '/subscriptions/seats',
+      authenticated: true,
+      body: {
+        'teamId': teamId,
+        'additionalSeats': additionalSeats,
+      },
+    );
+    return SeatUpgradeCheckout.fromJson(response);
   }
 
   Future<({bool paid, UserSubscription? subscription})> confirmPaydunya({
@@ -166,4 +183,33 @@ class SubscriptionsApiService {
     }
     return (paid: paid, subscription: subscription);
   }
+}
+
+class SeatUpgradeCheckout {
+  const SeatUpgradeCheckout({
+    required this.paidImmediately,
+    required this.amountFcfa,
+    this.invoiceToken,
+    this.offerSlug,
+    this.billingType,
+    this.currency = 'FCFA',
+  });
+
+  factory SeatUpgradeCheckout.fromJson(Map<String, dynamic> json) {
+    return SeatUpgradeCheckout(
+      paidImmediately: json['paidImmediately'] == true,
+      amountFcfa: (json['amountFcfa'] as num?)?.round() ?? 0,
+      invoiceToken: json['invoiceToken'] as String?,
+      offerSlug: json['offerSlug'] as String?,
+      billingType: json['billingType'] as String?,
+      currency: json['currency'] as String? ?? 'FCFA',
+    );
+  }
+
+  final bool paidImmediately;
+  final int amountFcfa;
+  final String? invoiceToken;
+  final String? offerSlug;
+  final String? billingType;
+  final String currency;
 }

@@ -7,7 +7,9 @@ import 'package:linkflutter/config/routes/route_paths.dart';
 import 'package:linkflutter/core/api/api_exception.dart';
 import 'package:linkflutter/core/bootstrap/user_workspace_bootstrap.dart';
 import 'package:linkflutter/features/sharing/screens/share_card_screen.dart';
+import 'package:linkflutter/features/sharing/screens/share_portfolio_screen.dart';
 import 'package:linkflutter/features/sharing/services/sharing_api_service.dart';
+import 'package:linkflutter/features/sharing/models/share_quota.dart';
 import 'package:linkflutter/features/subscriptions/models/offer_entitlements.dart';
 import 'package:linkflutter/features/cards/models/business_card.dart';
 import 'package:linkflutter/features/cards/models/pro_design_template.dart';
@@ -21,6 +23,8 @@ import 'package:linkflutter/features/cards/screens/card_analytics_screen.dart';
 import 'package:linkflutter/features/cards/screens/card_visitor_detail_screen.dart';
 import 'package:linkflutter/features/cards/screens/card_visitors_screen.dart';
 import 'package:linkflutter/features/cards/screens/pro_design_preview_screen.dart';
+import 'package:linkflutter/features/cards/screens/portfolio_editor_screen.dart';
+import 'package:linkflutter/features/cards/screens/portfolio_style_screen.dart';
 import 'package:linkflutter/features/cards/screens/professional_designs_screen.dart';
 import 'package:linkflutter/features/cards/services/cards_api_service.dart';
 import 'package:linkflutter/features/contacts/models/link_contact.dart';
@@ -205,7 +209,8 @@ Future<void> openLinkPremium(
   final subscriptions = context.read<SubscriptionsProvider>();
   await subscriptions.ensurePaymentConfigLoaded();
   if (!context.mounted) return;
-  if (subscriptions.hidePremiumUpsells) return;
+  final portfolioOffers = preferredAudience == OfferAudience.portfolio;
+  if (subscriptions.hidePremiumUpsells && !portfolioOffers) return;
 
   await GoRouter.of(
     context,
@@ -425,6 +430,50 @@ OfferAudience _audienceForCard(BusinessCard card) {
   return card.kind.isTeamLinked ? OfferAudience.team : OfferAudience.personal;
 }
 
+/// Droits de l’offre Portfolio active (partage, thème, stats).
+Future<PortfolioOfferAccess> loadPortfolioOfferAccess(
+  BuildContext context,
+) async {
+  final subscriptions = context.read<SubscriptionsProvider>();
+  if (subscriptions.isAppleReviewFullAccess) {
+    return PortfolioOfferAccess.full;
+  }
+  try {
+    return await context.read<SharingApiService>().fetchPortfolioAccess();
+  } catch (_) {
+    final subscription = subscriptions.subscription;
+    final active =
+        subscription != null && subscription.audience.isPortfolio;
+    if (!active) return PortfolioOfferAccess.locked;
+    final entitlements = subscription.entitlements;
+    final max = entitlements.hasPortfolio ? entitlements.maxShares : 0;
+    final unlimited = max < 0;
+    return PortfolioOfferAccess(
+      canShare: entitlements.hasPortfolio && max != 0,
+      canCustomize: true,
+      hasAnalytics: true,
+      quota: ShareQuota(
+        used: 0,
+        max: max,
+        canShare: entitlements.hasPortfolio && (unlimited || max > 0),
+        isUnlimited: unlimited,
+      ),
+    );
+  }
+}
+
+/// Ouvre les offres Portfolio si la capacité demandée n’est pas dans l’offre.
+Future<bool> ensurePortfolioCapability(
+  BuildContext context, {
+  required bool Function(PortfolioOfferAccess access) allowed,
+}) async {
+  final access = await loadPortfolioOfferAccess(context);
+  if (allowed(access)) return true;
+  if (!context.mounted) return false;
+  await openLinkPremium(context, preferredAudience: OfferAudience.portfolio);
+  return false;
+}
+
 /// Ouvre les designs pro si personnalisation autorisée, sinon Premium.
 Future<void> openProfessionalDesignsOrPremium(
   BuildContext context, {
@@ -457,6 +506,78 @@ Future<void> openShareCard(BuildContext context, BusinessCard card) async {
               value: sharingApi,
               child: ShareCardScreen(card: card),
             ),
+          ),
+        ),
+      ) ??
+      Future<void>.value();
+}
+
+/// Partage du portfolio : fermé sans abonnement Portfolio valide.
+Future<void> openSharePortfolio(BuildContext context, BusinessCard card) async {
+  if (!await ensurePortfolioCapability(
+    context,
+    allowed: (access) => access.canShare,
+  )) {
+    return;
+  }
+  if (!context.mounted) return;
+
+  final sharingApi = context.read<SharingApiService>();
+  final cardsApi = context.read<CardsApiService>();
+
+  return rootNavigatorKey.currentState?.push<void>(
+        MaterialPageRoute<void>(
+          fullscreenDialog: true,
+          builder: (_) => MultiProvider(
+            providers: [
+              Provider<SharingApiService>.value(value: sharingApi),
+              Provider<CardsApiService>.value(value: cardsApi),
+            ],
+            child: SharePortfolioScreen(card: card),
+          ),
+        ),
+      ) ??
+      Future<void>.value();
+}
+
+/// Infos du portfolio : photo, parcours, compétences, réalisations.
+Future<void> openPortfolioEditor(BuildContext context, BusinessCard card) async {
+  final style = await context.read<CardsApiService>().fetchPortfolioStyle(card.id);
+  if (!context.mounted) return;
+
+  return rootNavigatorKey.currentState?.push<void>(
+        MaterialPageRoute<void>(
+          builder: (_) => PortfolioEditorScreen(
+            card: card,
+            layoutId: style.layoutId,
+            colorId: style.colorId,
+          ),
+        ),
+      ) ??
+      Future<void>.value();
+}
+
+/// Choix du modèle et de la couleur. Crée le portfolio à la validation.
+/// Une fois le thème enregistré, le changer exige un abonnement Portfolio.
+Future<void> openPortfolioStyle(
+  BuildContext context,
+  BusinessCard card, {
+  bool customizeOnly = false,
+}) async {
+  if (customizeOnly &&
+      !await ensurePortfolioCapability(
+        context,
+        allowed: (access) => access.canCustomize,
+      )) {
+    return;
+  }
+  if (!context.mounted) return;
+
+  return rootNavigatorKey.currentState?.push<void>(
+        MaterialPageRoute<void>(
+          builder: (_) => PortfolioStyleScreen(
+            card: card,
+            customizeOnly: customizeOnly,
           ),
         ),
       ) ??

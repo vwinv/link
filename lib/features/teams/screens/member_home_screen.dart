@@ -12,6 +12,7 @@ import 'package:linkflutter/features/cards/models/card_visitors.dart';
 import 'package:linkflutter/features/cards/services/cards_api_service.dart';
 import 'package:linkflutter/features/cards/widgets/card_preview.dart';
 import 'package:linkflutter/features/sharing/share_card_helper.dart';
+import 'package:linkflutter/features/teams/buy_extra_seat.dart';
 import 'package:linkflutter/features/teams/models/team.dart';
 import 'package:linkflutter/features/teams/models/team_member.dart';
 import 'package:linkflutter/features/teams/models/team_seats_quota.dart';
@@ -93,16 +94,16 @@ class _MemberHomeScreenState extends State<MemberHomeScreen> {
     final l10n = context.l10n;
 
     if (!_seats.canAddMember) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _seats.max <= 0
-                ? l10n.teamMembersSubscriptionRequired
-                : l10n.teamMembersSeatLimitReached(_seats.max),
-          ),
-        ),
-      );
-      return;
+      if (_seats.max <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.teamMembersSubscriptionRequired)),
+        );
+        return;
+      }
+      final bought = await buyExtraTeamSeat(context, teamId: team.id);
+      if (!mounted || !bought) return;
+      await _reloadMembers();
+      if (!mounted || !_seats.canAddMember) return;
     }
 
     final teamsApi = context.read<TeamsApiService>();

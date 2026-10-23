@@ -1,11 +1,14 @@
 enum OfferAudience {
   personal,
-  team;
+  team,
+  portfolio;
 
   static OfferAudience fromKey(String? value) {
     switch (value?.toUpperCase()) {
       case 'TEAM':
         return OfferAudience.team;
+      case 'PORTFOLIO':
+        return OfferAudience.portfolio;
       default:
         return OfferAudience.personal;
     }
@@ -15,6 +18,7 @@ enum OfferAudience {
 
   bool get isTeam => this == OfferAudience.team;
   bool get isPersonal => this == OfferAudience.personal;
+  bool get isPortfolio => this == OfferAudience.portfolio;
 }
 
 class OfferEntitlements {

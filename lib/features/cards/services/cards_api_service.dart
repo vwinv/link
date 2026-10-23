@@ -5,6 +5,9 @@ import 'package:linkflutter/features/cards/models/card_kind.dart';
 import 'package:linkflutter/features/cards/models/card_social_link.dart';
 import 'package:linkflutter/features/cards/models/card_theme_settings.dart';
 import 'package:linkflutter/features/cards/models/card_visitors.dart';
+import 'package:linkflutter/features/cards/models/portfolio_profile.dart';
+import 'package:linkflutter/features/cards/models/portfolio_stats.dart';
+import 'package:linkflutter/features/cards/models/portfolio_style.dart';
 
 class CardsApiService {
   CardsApiService(this._apiClient);
@@ -153,6 +156,58 @@ class CardsApiService {
         .whereType<Map>()
         .map((item) => CardSocialLink.fromJson(Map<String, dynamic>.from(item)))
         .toList();
+  }
+
+  Future<PortfolioStyle> fetchPortfolioStyle(String cardId) async {
+    final response = await _apiClient.get(
+      '/portfolios/card/$cardId',
+      authenticated: true,
+    );
+    return PortfolioStyle.fromJson(response);
+  }
+
+  Future<PortfolioStyle> savePortfolioStyle({
+    required String cardId,
+    required String layoutId,
+    required String colorId,
+  }) async {
+    final response = await _apiClient.patch(
+      '/portfolios/card/$cardId/style',
+      authenticated: true,
+      body: {
+        'layout': layoutId,
+        'color': colorId,
+      },
+    );
+    return PortfolioStyle.fromJson(response);
+  }
+
+  Future<PortfolioProfile> fetchPortfolioProfile(String cardId) async {
+    final response = await _apiClient.get(
+      '/portfolios/card/$cardId/editor',
+      authenticated: true,
+    );
+    return PortfolioProfile.fromJson(response);
+  }
+
+  Future<PortfolioProfile> savePortfolioProfile({
+    required String cardId,
+    required Map<String, dynamic> body,
+  }) async {
+    final response = await _apiClient.patch(
+      '/portfolios/card/$cardId/profile',
+      authenticated: true,
+      body: body,
+    );
+    return PortfolioProfile.fromJson(response);
+  }
+
+  Future<PortfolioStats> fetchPortfolioStats(String cardId) async {
+    final response = await _apiClient.get(
+      '/portfolios/card/$cardId/stats',
+      authenticated: true,
+    );
+    return PortfolioStats.fromJson(response);
   }
 
   Future<CardAnalytics> fetchCardAnalytics(

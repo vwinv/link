@@ -27,3 +27,47 @@ class ShareQuota {
   final bool canShare;
   final bool isUnlimited;
 }
+
+/// Capacités de l’offre Portfolio active.
+class PortfolioOfferAccess {
+  const PortfolioOfferAccess({
+    required this.canShare,
+    required this.canCustomize,
+    required this.hasAnalytics,
+    required this.quota,
+  });
+
+  factory PortfolioOfferAccess.fromJson(Map<String, dynamic> json) {
+    final quota = json['quota'];
+    return PortfolioOfferAccess(
+      canShare: json['canShare'] == true,
+      canCustomize: json['canCustomize'] == true,
+      hasAnalytics: json['hasAnalytics'] == true,
+      quota: quota is Map
+          ? ShareQuota.fromJson(Map<String, dynamic>.from(quota))
+          : ShareQuota.empty,
+    );
+  }
+
+  static const locked = PortfolioOfferAccess(
+    canShare: false,
+    canCustomize: false,
+    hasAnalytics: false,
+    quota: ShareQuota.empty,
+  );
+
+  static const full = PortfolioOfferAccess(
+    canShare: true,
+    canCustomize: true,
+    hasAnalytics: true,
+    quota: ShareQuota(used: 0, max: -1, canShare: true, isUnlimited: true),
+  );
+
+  final bool canShare;
+  final bool canCustomize;
+  final bool hasAnalytics;
+  final ShareQuota quota;
+
+  /// L’offre inclut le partage (quota > 0 ou illimité).
+  bool get sharingIncluded => quota.isUnlimited || quota.max > 0;
+}

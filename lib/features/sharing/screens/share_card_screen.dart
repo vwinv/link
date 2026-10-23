@@ -328,8 +328,8 @@ class _ShareCardScreenState extends State<ShareCardScreen> {
                       ),
                       Expanded(
                         child: _ShareOption(
-                          label: ShareCardHelper.brandName,
-                          assetPath: AppAssets.icone,
+                          label: l10n.shareOptionLink,
+                          icon: Icons.link_rounded,
                           onTap: _shareLink,
                         ),
                       ),

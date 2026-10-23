@@ -398,6 +398,774 @@ abstract class AppLocalizations {
   /// **'Carte membre'**
   String get cardScopeMemberShort;
 
+  /// No description provided for @portfolioScope.
+  ///
+  /// In fr, this message translates to:
+  /// **'Portfolio'**
+  String get portfolioScope;
+
+  /// No description provided for @portfolioHomeHeadline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer ton portfolio et impacte le monde professionnel'**
+  String get portfolioHomeHeadline;
+
+  /// No description provided for @portfolioPathLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'PARCOURS'**
+  String get portfolioPathLabel;
+
+  /// No description provided for @portfolioSkillsLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'SKILLS'**
+  String get portfolioSkillsLabel;
+
+  /// No description provided for @portfolioPathEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez votre parcours'**
+  String get portfolioPathEmpty;
+
+  /// No description provided for @portfolioSkillsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez vos compétences'**
+  String get portfolioSkillsEmpty;
+
+  /// No description provided for @portfolioStatsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Découvrez qui a vu votre portfolio'**
+  String get portfolioStatsSubtitle;
+
+  /// No description provided for @portfolioStatsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statistiques du portfolio'**
+  String get portfolioStatsTitle;
+
+  /// No description provided for @portfolioStatsVisits.
+  ///
+  /// In fr, this message translates to:
+  /// **'Visites du site'**
+  String get portfolioStatsVisits;
+
+  /// No description provided for @portfolioStatsClicks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clics « Voir mon portfolio »'**
+  String get portfolioStatsClicks;
+
+  /// No description provided for @portfolioStatsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les chiffres apparaissent dès les premières visites.'**
+  String get portfolioStatsHint;
+
+  /// No description provided for @portfolioStatsClose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fermer'**
+  String get portfolioStatsClose;
+
+  /// No description provided for @portfolioEmptySubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Publiez votre parcours et vos compétences pour vous démarquer.'**
+  String get portfolioEmptySubtitle;
+
+  /// No description provided for @portfolioCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer mon portfolio'**
+  String get portfolioCreate;
+
+  /// No description provided for @portfolioStyleTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Style du portfolio'**
+  String get portfolioStyleTitle;
+
+  /// No description provided for @portfolioStyleSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez un modèle de mise en page, puis une couleur. Vous pourrez en changer à tout moment sans perdre vos contenus.'**
+  String get portfolioStyleSubtitle;
+
+  /// No description provided for @portfolioStyleModels.
+  ///
+  /// In fr, this message translates to:
+  /// **'MODÈLE'**
+  String get portfolioStyleModels;
+
+  /// No description provided for @portfolioStyleColor.
+  ///
+  /// In fr, this message translates to:
+  /// **'COULEUR'**
+  String get portfolioStyleColor;
+
+  /// No description provided for @portfolioStyleChoose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir · {layout} · {color}'**
+  String portfolioStyleChoose(String layout, String color);
+
+  /// No description provided for @portfolioStyleContinue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer · {layout} · {color}'**
+  String portfolioStyleContinue(String layout, String color);
+
+  /// No description provided for @portfolioStyleSaved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Style du portfolio enregistré'**
+  String get portfolioStyleSaved;
+
+  /// No description provided for @portfolioStyleSaveError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'enregistrer le style du portfolio'**
+  String get portfolioStyleSaveError;
+
+  /// No description provided for @portfolioEditorTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon portfolio'**
+  String get portfolioEditorTitle;
+
+  /// No description provided for @portfolioEditorTheme.
+  ///
+  /// In fr, this message translates to:
+  /// **'Thème'**
+  String get portfolioEditorTheme;
+
+  /// No description provided for @portfolioEditorPreview.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aperçu'**
+  String get portfolioEditorPreview;
+
+  /// No description provided for @portfolioEditorPublish.
+  ///
+  /// In fr, this message translates to:
+  /// **'Publier mon portfolio'**
+  String get portfolioEditorPublish;
+
+  /// No description provided for @portfolioEditorProgress.
+  ///
+  /// In fr, this message translates to:
+  /// **'{percent} % complété'**
+  String portfolioEditorProgress(int percent);
+
+  /// No description provided for @portfolioEditorPhotoTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo du portfolio'**
+  String get portfolioEditorPhotoTitle;
+
+  /// No description provided for @portfolioEditorPhotoHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Format portrait conseillé, fond uni ou détouré pour un meilleur rendu.'**
+  String get portfolioEditorPhotoHint;
+
+  /// No description provided for @portfolioEditorPhotoChange.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer'**
+  String get portfolioEditorPhotoChange;
+
+  /// No description provided for @portfolioEditorPersonal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations personnelles'**
+  String get portfolioEditorPersonal;
+
+  /// No description provided for @portfolioEditorFirstName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prénom(s)'**
+  String get portfolioEditorFirstName;
+
+  /// No description provided for @portfolioEditorLastName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get portfolioEditorLastName;
+
+  /// No description provided for @portfolioEditorAge.
+  ///
+  /// In fr, this message translates to:
+  /// **'Âge'**
+  String get portfolioEditorAge;
+
+  /// No description provided for @portfolioEditorAgeHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex. 32'**
+  String get portfolioEditorAgeHint;
+
+  /// No description provided for @portfolioEditorPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get portfolioEditorPhone;
+
+  /// No description provided for @portfolioEditorAddress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse'**
+  String get portfolioEditorAddress;
+
+  /// No description provided for @portfolioEditorAddressHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quartier, ville, pays'**
+  String get portfolioEditorAddressHint;
+
+  /// No description provided for @portfolioEditorHidePersonal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Masquer l\'âge et l\'adresse sur le site'**
+  String get portfolioEditorHidePersonal;
+
+  /// No description provided for @portfolioEditorPresentation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Présentation'**
+  String get portfolioEditorPresentation;
+
+  /// No description provided for @portfolioEditorPortfolioTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Titre du portfolio'**
+  String get portfolioEditorPortfolioTitle;
+
+  /// No description provided for @portfolioEditorDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Description'**
+  String get portfolioEditorDescription;
+
+  /// No description provided for @portfolioEditorDescriptionHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Qui êtes-vous, que faites-vous, pour qui ? 3 à 4 phrases.'**
+  String get portfolioEditorDescriptionHint;
+
+  /// No description provided for @portfolioEditorExperience.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expérience professionnelle'**
+  String get portfolioEditorExperience;
+
+  /// No description provided for @portfolioEditorPosts.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{0 poste} =1{1 poste} other{{count} postes}}'**
+  String portfolioEditorPosts(int count);
+
+  /// No description provided for @portfolioEditorAddExperience.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une expérience'**
+  String get portfolioEditorAddExperience;
+
+  /// No description provided for @portfolioEditorTeaching.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expérience pédagogique'**
+  String get portfolioEditorTeaching;
+
+  /// No description provided for @portfolioEditorEntries.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{0 entrée} =1{1 entrée} other{{count} entrées}}'**
+  String portfolioEditorEntries(int count);
+
+  /// No description provided for @portfolioEditorAddTeaching.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une expérience pédagogique'**
+  String get portfolioEditorAddTeaching;
+
+  /// No description provided for @portfolioEditorEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier'**
+  String get portfolioEditorEdit;
+
+  /// No description provided for @portfolioEditorSkills.
+  ///
+  /// In fr, this message translates to:
+  /// **'Skills (avec niveau)'**
+  String get portfolioEditorSkills;
+
+  /// No description provided for @portfolioEditorAddSkill.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un skill'**
+  String get portfolioEditorAddSkill;
+
+  /// No description provided for @portfolioEditorCompetences.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compétences'**
+  String get portfolioEditorCompetences;
+
+  /// No description provided for @portfolioEditorCompetencesHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Savoir-faire métier'**
+  String get portfolioEditorCompetencesHint;
+
+  /// No description provided for @portfolioEditorStrengths.
+  ///
+  /// In fr, this message translates to:
+  /// **'Atouts'**
+  String get portfolioEditorStrengths;
+
+  /// No description provided for @portfolioEditorStrengthsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce qui vous distingue'**
+  String get portfolioEditorStrengthsHint;
+
+  /// No description provided for @portfolioEditorInterests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Centres d\'intérêt'**
+  String get portfolioEditorInterests;
+
+  /// No description provided for @portfolioEditorInterestsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une touche personnelle'**
+  String get portfolioEditorInterestsHint;
+
+  /// No description provided for @portfolioEditorAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter'**
+  String get portfolioEditorAdd;
+
+  /// No description provided for @portfolioEditorProjects.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réalisations'**
+  String get portfolioEditorProjects;
+
+  /// No description provided for @portfolioEditorProjectsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jusqu\'à 12 réalisations. La photo et le lien sont optionnels.'**
+  String get portfolioEditorProjectsHint;
+
+  /// No description provided for @portfolioEditorImport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Importer'**
+  String get portfolioEditorImport;
+
+  /// No description provided for @portfolioEditorRole.
+  ///
+  /// In fr, this message translates to:
+  /// **'Intitulé du poste'**
+  String get portfolioEditorRole;
+
+  /// No description provided for @portfolioEditorCompany.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entreprise'**
+  String get portfolioEditorCompany;
+
+  /// No description provided for @portfolioEditorPeriod.
+  ///
+  /// In fr, this message translates to:
+  /// **'Période'**
+  String get portfolioEditorPeriod;
+
+  /// No description provided for @portfolioEditorPeriodHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'2021 – aujourd\'hui'**
+  String get portfolioEditorPeriodHint;
+
+  /// No description provided for @portfolioEditorCourse.
+  ///
+  /// In fr, this message translates to:
+  /// **'Intitulé du cours / atelier'**
+  String get portfolioEditorCourse;
+
+  /// No description provided for @portfolioEditorSchool.
+  ///
+  /// In fr, this message translates to:
+  /// **'Établissement'**
+  String get portfolioEditorSchool;
+
+  /// No description provided for @portfolioEditorYear.
+  ///
+  /// In fr, this message translates to:
+  /// **'Année'**
+  String get portfolioEditorYear;
+
+  /// No description provided for @portfolioEditorSkillName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compétence'**
+  String get portfolioEditorSkillName;
+
+  /// No description provided for @portfolioEditorProjectTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Titre'**
+  String get portfolioEditorProjectTitle;
+
+  /// No description provided for @portfolioEditorCaption.
+  ///
+  /// In fr, this message translates to:
+  /// **'Description'**
+  String get portfolioEditorCaption;
+
+  /// No description provided for @portfolioEditorProjectPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo (optionnel)'**
+  String get portfolioEditorProjectPhoto;
+
+  /// No description provided for @portfolioEditorProjectPhotoAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une photo'**
+  String get portfolioEditorProjectPhotoAdd;
+
+  /// No description provided for @portfolioEditorProjectPhotoChange.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer la photo'**
+  String get portfolioEditorProjectPhotoChange;
+
+  /// No description provided for @portfolioEditorProjectLink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien (optionnel)'**
+  String get portfolioEditorProjectLink;
+
+  /// No description provided for @portfolioEditorProjectLinkHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'https://...'**
+  String get portfolioEditorProjectLinkHint;
+
+  /// No description provided for @portfolioEditorSave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer'**
+  String get portfolioEditorSave;
+
+  /// No description provided for @portfolioEditorDelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer'**
+  String get portfolioEditorDelete;
+
+  /// No description provided for @portfolioEditorPublished.
+  ///
+  /// In fr, this message translates to:
+  /// **'Portfolio publié'**
+  String get portfolioEditorPublished;
+
+  /// No description provided for @portfolioEditorSaveError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'enregistrer le portfolio'**
+  String get portfolioEditorSaveError;
+
+  /// No description provided for @portfolioEditorNameRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Indiquez votre prénom et votre nom'**
+  String get portfolioEditorNameRequired;
+
+  /// No description provided for @portfolioEditorMissing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez d\'abord un thème pour créer le portfolio.'**
+  String get portfolioEditorMissing;
+
+  /// No description provided for @portfolioEditorChipHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau'**
+  String get portfolioEditorChipHint;
+
+  /// No description provided for @portfolioEditorNewChip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau...'**
+  String get portfolioEditorNewChip;
+
+  /// No description provided for @portfolioEditorPoste.
+  ///
+  /// In fr, this message translates to:
+  /// **'Poste'**
+  String get portfolioEditorPoste;
+
+  /// No description provided for @portfolioEditorPosteHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex. Responsable communication'**
+  String get portfolioEditorPosteHint;
+
+  /// No description provided for @portfolioEditorCompanyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex. Mega-SN'**
+  String get portfolioEditorCompanyHint;
+
+  /// No description provided for @portfolioEditorPeriodExample.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex. 2021 – aujourd\'hui'**
+  String get portfolioEditorPeriodExample;
+
+  /// No description provided for @portfolioEditorMissions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Missions'**
+  String get portfolioEditorMissions;
+
+  /// No description provided for @portfolioEditorMissionsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Missions principales en une phrase'**
+  String get portfolioEditorMissionsHint;
+
+  /// No description provided for @portfolioEditorCourseHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex. Marketing digital'**
+  String get portfolioEditorCourseHint;
+
+  /// No description provided for @portfolioEditorSchoolHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex. ISM Dakar'**
+  String get portfolioEditorSchoolHint;
+
+  /// No description provided for @portfolioEditorYearHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex. 2023'**
+  String get portfolioEditorYearHint;
+
+  /// No description provided for @portfolioEditorAudience.
+  ///
+  /// In fr, this message translates to:
+  /// **'Public, volume horaire'**
+  String get portfolioEditorAudience;
+
+  /// No description provided for @portfolioEditorAudienceHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex. Master 1 · 20 h'**
+  String get portfolioEditorAudienceHint;
+
+  /// No description provided for @portfolioEditorSkillSheet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Skill'**
+  String get portfolioEditorSkillSheet;
+
+  /// No description provided for @portfolioEditorSkillNameLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom du skill'**
+  String get portfolioEditorSkillNameLabel;
+
+  /// No description provided for @portfolioEditorSkillHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex. Négociation'**
+  String get portfolioEditorSkillHint;
+
+  /// No description provided for @portfolioEditorLevel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Niveau'**
+  String get portfolioEditorLevel;
+
+  /// No description provided for @portfolioLayoutClassique.
+  ///
+  /// In fr, this message translates to:
+  /// **'Classique'**
+  String get portfolioLayoutClassique;
+
+  /// No description provided for @portfolioLayoutClassiqueHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo ronde, frise'**
+  String get portfolioLayoutClassiqueHint;
+
+  /// No description provided for @portfolioLayoutCouverture.
+  ///
+  /// In fr, this message translates to:
+  /// **'Couverture'**
+  String get portfolioLayoutCouverture;
+
+  /// No description provided for @portfolioLayoutCouvertureHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Grande photo en tête'**
+  String get portfolioLayoutCouvertureHint;
+
+  /// No description provided for @portfolioLayoutEditorial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Éditorial'**
+  String get portfolioLayoutEditorial;
+
+  /// No description provided for @portfolioLayoutEditorialHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Typo, sections filetées'**
+  String get portfolioLayoutEditorialHint;
+
+  /// No description provided for @portfolioLayoutGalerie.
+  ///
+  /// In fr, this message translates to:
+  /// **'Galerie'**
+  String get portfolioLayoutGalerie;
+
+  /// No description provided for @portfolioLayoutGalerieHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réalisations d\'abord'**
+  String get portfolioLayoutGalerieHint;
+
+  /// No description provided for @portfolioLayoutMinimal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Minimal'**
+  String get portfolioLayoutMinimal;
+
+  /// No description provided for @portfolioLayoutMinimalHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Épuré, centré'**
+  String get portfolioLayoutMinimalHint;
+
+  /// No description provided for @portfolioLayoutBento.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bento'**
+  String get portfolioLayoutBento;
+
+  /// No description provided for @portfolioLayoutBentoHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mosaïque de blocs'**
+  String get portfolioLayoutBentoHint;
+
+  /// No description provided for @portfolioLayoutPortrait.
+  ///
+  /// In fr, this message translates to:
+  /// **'Portrait'**
+  String get portfolioLayoutPortrait;
+
+  /// No description provided for @portfolioLayoutPortraitHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo verticale'**
+  String get portfolioLayoutPortraitHint;
+
+  /// No description provided for @portfolioLayoutCartes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cartes'**
+  String get portfolioLayoutCartes;
+
+  /// No description provided for @portfolioLayoutCartesHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sections en cartes'**
+  String get portfolioLayoutCartesHint;
+
+  /// No description provided for @portfolioColorBleu.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bleu Drop'**
+  String get portfolioColorBleu;
+
+  /// No description provided for @portfolioColorIvoire.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ivoire'**
+  String get portfolioColorIvoire;
+
+  /// No description provided for @portfolioColorNoir.
+  ///
+  /// In fr, this message translates to:
+  /// **'Noir & Or'**
+  String get portfolioColorNoir;
+
+  /// No description provided for @portfolioColorForet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Émeraude'**
+  String get portfolioColorForet;
+
+  /// No description provided for @portfolioColorNeon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Néon'**
+  String get portfolioColorNeon;
+
+  /// No description provided for @portfolioColorCorail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coucher de soleil'**
+  String get portfolioColorCorail;
+
+  /// No description provided for @portfolioColorLagon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lagune'**
+  String get portfolioColorLagon;
+
+  /// No description provided for @portfolioColorLilas.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aurore'**
+  String get portfolioColorLilas;
+
+  /// No description provided for @portfolioColorTerre.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terracotta'**
+  String get portfolioColorTerre;
+
+  /// No description provided for @portfolioColorSable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Éditorial'**
+  String get portfolioColorSable;
+
+  /// No description provided for @portfolioColorSoleil.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brutal'**
+  String get portfolioColorSoleil;
+
+  /// No description provided for @portfolioColorMinuit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Verre givré'**
+  String get portfolioColorMinuit;
+
   /// No description provided for @myCardsGreeting.
   ///
   /// In fr, this message translates to:
@@ -2184,6 +2952,78 @@ abstract class AppLocalizations {
   /// **'Faites scanner ce code - aucune app requise pour vos contacts.'**
   String get shareCardQrHint;
 
+  /// No description provided for @sharePortfolioTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager mon portfolio'**
+  String get sharePortfolioTitle;
+
+  /// No description provided for @sharePortfolioQrHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Faites scanner ce code pour ouvrir le portfolio.'**
+  String get sharePortfolioQrHint;
+
+  /// No description provided for @sharePortfolioPublishedTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Portfolio publié'**
+  String get sharePortfolioPublishedTitle;
+
+  /// No description provided for @sharePortfolioLiveTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre site est en ligne'**
+  String get sharePortfolioLiveTitle;
+
+  /// No description provided for @sharePortfolioLiveBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il apparaît désormais sur votre carte Drop One\navec le bouton « Voir mon portfolio ».'**
+  String get sharePortfolioLiveBody;
+
+  /// No description provided for @sharePortfolioCopy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier'**
+  String get sharePortfolioCopy;
+
+  /// No description provided for @sharePortfolioCardPreview.
+  ///
+  /// In fr, this message translates to:
+  /// **'APERÇU SUR VOTRE CARTE'**
+  String get sharePortfolioCardPreview;
+
+  /// No description provided for @sharePortfolioViewOnCard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir mon portfolio'**
+  String get sharePortfolioViewOnCard;
+
+  /// No description provided for @sharePortfolioExchange.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échanger mes coordonnées'**
+  String get sharePortfolioExchange;
+
+  /// No description provided for @sharePortfolioStatsRowHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Visites et clics, avec vos stats de carte'**
+  String get sharePortfolioStatsRowHint;
+
+  /// No description provided for @shareOptionQr.
+  ///
+  /// In fr, this message translates to:
+  /// **'QR code'**
+  String get shareOptionQr;
+
+  /// No description provided for @shareOptionMore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus'**
+  String get shareOptionMore;
+
   /// No description provided for @shareOptionMessage.
   ///
   /// In fr, this message translates to:
@@ -2195,6 +3035,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'AirDrop'**
   String get shareOptionAirDrop;
+
+  /// No description provided for @shareOptionLink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien'**
+  String get shareOptionLink;
 
   /// No description provided for @shareQuotaReached.
   ///
@@ -2219,6 +3065,36 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Passez à Premium pour partager sans limite.'**
   String get shareBlockedHint;
+
+  /// No description provided for @sharePortfolioLockedHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un abonnement Portfolio est nécessaire pour partager ce site.'**
+  String get sharePortfolioLockedHint;
+
+  /// No description provided for @sharePortfolioLockedCta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir les offres Portfolio'**
+  String get sharePortfolioLockedCta;
+
+  /// No description provided for @portfolioOfferExpired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un abonnement Portfolio est nécessaire'**
+  String get portfolioOfferExpired;
+
+  /// No description provided for @portfolioOfferExpiredSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partage, thème et statistiques dépendent d’une offre Portfolio.'**
+  String get portfolioOfferExpiredSubtitle;
+
+  /// No description provided for @sharePortfolioLinkLocked.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien disponible avec l’offre Portfolio'**
+  String get sharePortfolioLinkLocked;
 
   /// No description provided for @scanQuotaReached.
   ///
@@ -2490,11 +3366,23 @@ abstract class AppLocalizations {
   /// **'Personnel'**
   String get premiumAudiencePersonal;
 
+  /// No description provided for @premiumAudiencePortfolio.
+  ///
+  /// In fr, this message translates to:
+  /// **'Portfolio'**
+  String get premiumAudiencePortfolio;
+
   /// No description provided for @premiumIncludedPlaces.
   ///
   /// In fr, this message translates to:
   /// **'{count} places incluses'**
   String premiumIncludedPlaces(int count);
+
+  /// No description provided for @premiumIncludedSeats.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} places incluses'**
+  String premiumIncludedSeats(int count);
 
   /// No description provided for @premiumTeamMembers.
   ///
@@ -2649,8 +3537,32 @@ abstract class AppLocalizations {
   /// No description provided for @teamMembersSeatLimitReached.
   ///
   /// In fr, this message translates to:
-  /// **'Limite de {max} places atteinte. Chaque place supplémentaire est payante.'**
+  /// **'Les {max} places sont utilisées. Chaque place en plus est payante.'**
   String teamMembersSeatLimitReached(int max);
+
+  /// No description provided for @teamExtraSeatTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Place supplémentaire'**
+  String get teamExtraSeatTitle;
+
+  /// No description provided for @teamExtraSeatMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les places incluses sont utilisées. Chaque place en plus est payante.'**
+  String get teamExtraSeatMessage;
+
+  /// No description provided for @teamExtraSeatPay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payer une place'**
+  String get teamExtraSeatPay;
+
+  /// No description provided for @teamExtraSeatAdded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Place ajoutée. Vous pouvez inviter un membre.'**
+  String get teamExtraSeatAdded;
 
   /// No description provided for @teamMembersAddTitle.
   ///

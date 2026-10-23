@@ -34,6 +34,7 @@ import 'package:linkflutter/providers/workspace_mode_provider.dart';
 import 'package:linkflutter/core/deep_link/deep_link_parser.dart';
 import 'package:linkflutter/core/deep_link/deep_link_service.dart';
 import 'package:linkflutter/features/sharing/screens/public_card_screen.dart';
+import 'package:linkflutter/features/sharing/screens/public_portfolio_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -50,13 +51,16 @@ class AppRouter {
         cardsProvider,
       ]),
       redirect: (context, state) {
-        final publicSlug = parseCardSlugFromUri(state.uri);
-        if (publicSlug != null) {
+        final publicLink = parsePublicDeepLink(state.uri);
+        if (publicLink != null) {
           final deepLinks = context.read<DeepLinkService>();
-          if (deepLinks.isPublicCardDismissed(publicSlug)) {
+          if (deepLinks.isPublicLinkDismissed(publicLink)) {
             return RoutePaths.home;
           }
-          final target = '${RoutePaths.publicCard}/$publicSlug';
+          final base = publicLink.isPortfolio
+              ? RoutePaths.publicPortfolio
+              : RoutePaths.publicCard;
+          final target = '$base/${publicLink.slug}';
           if (state.matchedLocation != target) {
             return target;
           }
@@ -78,8 +82,15 @@ class AppRouter {
         final isPublicCard = state.matchedLocation.startsWith(
           '${RoutePaths.publicCard}/',
         );
+        final isPublicPortfolio = state.matchedLocation.startsWith(
+          '${RoutePaths.publicPortfolio}/',
+        );
 
-        if (isSplash || isOnboarding || isAccountType || isPublicCard) {
+        if (isSplash ||
+            isOnboarding ||
+            isAccountType ||
+            isPublicCard ||
+            isPublicPortfolio) {
           return null;
         }
 
@@ -150,6 +161,18 @@ class AppRouter {
               },
             ),
           ],
+        ),
+        GoRoute(
+          parentNavigatorKey: rootNavigatorKey,
+          path: '${RoutePaths.publicPortfolio}/:slug',
+          pageBuilder: (context, state) {
+            final slug = state.pathParameters['slug'] ?? '';
+            return MaterialPage<void>(
+              key: state.pageKey,
+              fullscreenDialog: true,
+              child: PublicPortfolioScreen(slug: slug),
+            );
+          },
         ),
         GoRoute(
           parentNavigatorKey: rootNavigatorKey,

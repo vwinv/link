@@ -14,15 +14,28 @@ class SharingApiService {
     return ShareQuota.fromJson(response);
   }
 
+  /// Droits de l’offre Portfolio : partage, personnalisation, stats.
+  Future<PortfolioOfferAccess> fetchPortfolioAccess() async {
+    final response = await _apiClient.get(
+      '/sharing/portfolio-access',
+      authenticated: true,
+    );
+    return PortfolioOfferAccess.fromJson(response);
+  }
+
   /// Enregistre un partage et retourne le quota mis à jour.
   /// Lève [ApiException] si le quota est atteint.
   Future<ShareQuota?> recordShare({
     required String cardId,
     required String method,
+    String? scope,
   }) async {
     final response = await _apiClient.post(
       '/sharing/cards/$cardId/share',
-      body: {'method': method},
+      body: {
+        'method': method,
+        'scope': ?scope,
+      },
       authenticated: true,
     );
     final quota = response['quota'];

@@ -74,7 +74,6 @@ abstract final class AppRadius {
 abstract final class AppSizes {
   static const logoHeight = 32.0;
   static const headerLogoHeight = 52.0;
-  static const splashIconSize = 72.0;
   static const buttonHeight = 58.0;
   static const inputHeight = 48.0;
   static const onboardingImageHeight = 280.0;
