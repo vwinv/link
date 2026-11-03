@@ -8,10 +8,12 @@ import 'package:linkflutter/config/routes/app_router.dart';
 import 'package:linkflutter/config/routes/route_paths.dart';
 import 'package:linkflutter/config/theme/app_theme.dart';
 import 'package:linkflutter/core/constants/app_assets.dart';
+import 'package:linkflutter/core/network/offline_banner.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/core/deep_link/deep_link_service.dart';
 import 'package:linkflutter/features/app_update/widgets/app_update_bottom_sheet.dart';
 import 'package:linkflutter/features/app_update/widgets/app_update_gate.dart';
+import 'package:linkflutter/features/notifications/services/notifications_api_service.dart';
 import 'package:linkflutter/features/notifications/services/push_notifications_service.dart';
 import 'package:linkflutter/providers/app_providers.dart';
 import 'package:linkflutter/providers/auth_provider.dart';
@@ -87,6 +89,13 @@ class _AppViewState extends State<_AppView> {
       await push.start();
       notifications.startPolling();
       await notifications.refreshUnreadCount();
+      try {
+        final localeCode =
+            context.read<LocaleProvider>().locale.languageCode;
+        await context
+            .read<NotificationsApiService>()
+            .updatePreferredLocale(localeCode);
+      } catch (_) {}
     } else {
       push.onForegroundMessage = null;
       await push.stop();
@@ -131,6 +140,7 @@ class _AppViewState extends State<_AppView> {
           child: Stack(
             children: [
               child ?? const SizedBox.shrink(),
+              const OfflineBanner(),
               if (incoming != null)
                 SafeArea(
                   child: Align(

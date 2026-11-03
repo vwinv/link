@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -5,14 +6,18 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:linkflutter/core/api/api_config.dart';
 import 'package:linkflutter/core/api/api_exception.dart';
+import 'package:linkflutter/core/network/network_status.dart';
 import 'package:mime/mime.dart';
 
 class ApiClient {
-  ApiClient({http.Client? client}) : _client = client ?? http.Client();
+  ApiClient({http.Client? client, NetworkStatus? networkStatus})
+    : _client = client ?? http.Client(),
+      _networkStatus = networkStatus;
 
   static const _timeout = Duration(seconds: 12);
 
   final http.Client _client;
+  final NetworkStatus? _networkStatus;
   String? _accessToken;
   void Function()? onUnauthorized;
 
@@ -112,13 +117,16 @@ class ApiClient {
     Map<String, dynamic>? body,
     bool authenticated = false,
   }) async {
-    final response = await _client
-        .send(
-          http.Request('DELETE', Uri.parse('${ApiConfig.baseUrl}$path'))
-            ..headers.addAll(_headers(authenticated: authenticated))
-            ..body = body == null ? '' : jsonEncode(body),
-        )
-        .timeout(_timeout);
+    final response = await _guard(
+      _client
+          .send(
+            http.Request('DELETE', Uri.parse('${ApiConfig.baseUrl}$path'))
+              ..headers.addAll(_headers(authenticated: authenticated))
+              ..body = body == null ? '' : jsonEncode(body),
+          )
+          .timeout(_timeout),
+    );
+    _networkStatus?.reportOnline();
     final streamed = await http.Response.fromStream(response);
     _handleResponse(streamed);
   }
@@ -166,9 +174,10 @@ class ApiClient {
       ),
     );
 
-    final streamed = await _client.send(request).timeout(
-      const Duration(seconds: 30),
+    final streamed = await _guard(
+      _client.send(request).timeout(const Duration(seconds: 30)),
     );
+    _networkStatus?.reportOnline();
     final response = await http.Response.fromStream(streamed);
     final data = _handleResponse(response);
     if (data is Map<String, dynamic>) return data;
@@ -181,13 +190,29 @@ class ApiClient {
   Future<http.Response> _timed(
     Future<http.Response> request, {
     Duration? timeout,
-  }) {
-    return request.timeout(
-      timeout ?? _timeout,
-      onTimeout: () {
-        throw ApiException('Serveur injoignable', statusCode: 0);
-      },
-    );
+  }) async {
+    final response = await _guard(request.timeout(timeout ?? _timeout));
+    _networkStatus?.reportOnline();
+    return response;
+  }
+
+  Future<T> _guard<T>(Future<T> request) async {
+    try {
+      return await request;
+    } on SocketException {
+      throw _offlineException();
+    } on TlsException {
+      throw _offlineException();
+    } on http.ClientException {
+      throw _offlineException();
+    } on TimeoutException {
+      throw _offlineException();
+    }
+  }
+
+  ApiException _offlineException() {
+    _networkStatus?.reportOffline();
+    return ApiException(NetworkStatus.offlineMessage, statusCode: 0);
   }
 
   Map<String, String> _headers({bool authenticated = false}) {

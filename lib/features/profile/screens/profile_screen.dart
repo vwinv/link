@@ -18,6 +18,7 @@ import 'package:linkflutter/providers/locale_provider.dart';
 import 'package:linkflutter/providers/subscriptions_provider.dart';
 import 'package:linkflutter/providers/notifications_provider.dart';
 import 'package:linkflutter/providers/teams_provider.dart';
+import 'package:linkflutter/features/notifications/services/notifications_api_service.dart';
 import 'package:linkflutter/features/notifications/services/push_notifications_service.dart';
 import 'package:provider/provider.dart';
 
@@ -64,8 +65,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future<void> _setLanguage(AppLanguage language) {
-    return context.read<LocaleProvider>().setLanguage(language);
+  Future<void> _setLanguage(AppLanguage language) async {
+    await context.read<LocaleProvider>().setLanguage(language);
+    if (!mounted) return;
+    if (!context.read<AuthProvider>().isAuthenticated) return;
+    try {
+      await context
+          .read<NotificationsApiService>()
+          .updatePreferredLocale(language.name);
+    } catch (_) {
+      // La langue locale reste appliquée ; la sync serveur retentera au prochain login.
+    }
   }
 
   Future<void> _logout() async {

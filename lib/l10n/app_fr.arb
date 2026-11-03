@@ -229,6 +229,8 @@
   "myCardsScans": "Scans",
   "myCardsNoContacts": "Aucun contact pour le moment",
   "myCardsProTitle": "Carte professionnelle",
+  "homePreviewMyCard": "Voir ma carte",
+  "homePreviewMyPortfolio": "Voir mon portfolio",
   "myCardsPersonalTitle": "Carte personnelle",
   "myCardsPersonalSubtitle": "Créez votre carte personnelle pour partager vos coordonnées et développer votre réseau.",
   "myCardsCreatePersonal": "Créer ma carte personnelle",
@@ -278,6 +280,7 @@
   "editCardEmail": "E-mail",
   "editCardPhone": "Téléphone",
   "editCardAddress": "Adresse de l’entreprise",
+  "editCardAddressTeamHint": "Partagée avec toute l’équipe. Seuls le propriétaire et les administrateurs peuvent la modifier.",
   "editCardCompanyLogo": "LOGO ENTREPRISE",
   "editCardChangeLogo": "Changer le logo",
   "editCardImportLogo": "Importer un logo",
@@ -286,6 +289,8 @@
   "editCardRemovePhoto": "Supprimer la photo",
   "editCardSocialTitle": "RÉSEAUX SOCIAUX",
   "editCardSocialSubtitle": "Ajoutez les liens à afficher sur votre carte.",
+  "editCardSocialTeamSubtitle": "Ces liens sont partagés avec toute l’équipe.",
+  "editCardSocialTeamLocked": "Seuls le propriétaire et les administrateurs peuvent modifier les réseaux de l’équipe.",
   "editCardSaved": "Informations de la carte enregistrées",
   "editCardSaveError": "Impossible d’enregistrer les informations",
   "editCardNameRequired": "Nom requis",
@@ -714,6 +719,41 @@
   "premiumFeatureAnalytics": "Statistiques",
   "premiumFeatureVisitors": "Visiteurs détaillés",
   "premiumFeatureSocial": "Réseaux sociaux",
+  "premiumOfferFeaturePersonalCard": "1 carte personnelle",
+  "premiumOfferFeatureTeamSeats": "À partir de {count} utilisateurs",
+  "@premiumOfferFeatureTeamSeats": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "premiumOfferFeatureTeamLimit": "{count} places incluses",
+  "@premiumOfferFeatureTeamLimit": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "premiumOfferFeatureEnterpriseDashboard": "Tableau de bord entreprise",
+  "premiumOfferFeatureShareChannels": "QR Code, lien, WhatsApp, message, AirDrop",
+  "premiumOfferFeatureSharesUnlimited": "Partages illimités",
+  "premiumOfferFeatureShares": "Jusqu’à {count} partages",
+  "@premiumOfferFeatureShares": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "premiumOfferFeatureCustomize": "Personnalisation de la carte",
+  "premiumOfferFeatureWallet": "Wallet (Apple / Google)",
+  "premiumOfferFeatureAnalytics": "Statistiques de vues",
+  "premiumOfferFeatureVisitors": "Insights visiteurs",
+  "premiumOfferFeatureSocial": "Réseaux sociaux",
+  "premiumOfferFeaturePortfolio": "Portfolio",
+  "premiumOfferFeatureAiUnlimited": "Scans IA illimités",
+  "premiumOfferFeatureAiScans": "{count} scans IA / mois",
+  "@premiumOfferFeatureAiScans": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "premiumSocialUnlock": "Ajoutez vos réseaux sociaux avec Premium",
   "premiumSocialSubtitle": "LinkedIn, Instagram, WhatsApp et plus encore.",
   "premiumNoPricing": "Aucun tarif configuré",

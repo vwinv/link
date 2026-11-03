@@ -615,6 +615,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myCardsProTitle => 'Professional card';
 
   @override
+  String get homePreviewMyCard => 'View my card';
+
+  @override
+  String get homePreviewMyPortfolio => 'View my portfolio';
+
+  @override
   String get myCardsPersonalTitle => 'Personal card';
 
   @override
@@ -730,6 +736,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editCardAddress => 'Company address';
 
   @override
+  String get editCardAddressTeamHint =>
+      'Shared with the whole team. Only the owner and admins can edit it.';
+
+  @override
   String get editCardCompanyLogo => 'COMPANY LOGO';
 
   @override
@@ -752,6 +762,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editCardSocialSubtitle => 'Add the links to display on your card.';
+
+  @override
+  String get editCardSocialTeamSubtitle =>
+      'These links are shared with the whole team.';
+
+  @override
+  String get editCardSocialTeamLocked =>
+      'Only the owner and admins can edit the team’s social networks.';
 
   @override
   String get editCardSaved => 'Card information saved';
@@ -1756,6 +1774,60 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get premiumFeatureSocial => 'Social networks';
+
+  @override
+  String get premiumOfferFeaturePersonalCard => '1 personal card';
+
+  @override
+  String premiumOfferFeatureTeamSeats(int count) {
+    return 'From $count users';
+  }
+
+  @override
+  String premiumOfferFeatureTeamLimit(int count) {
+    return '$count included seats';
+  }
+
+  @override
+  String get premiumOfferFeatureEnterpriseDashboard => 'Company dashboard';
+
+  @override
+  String get premiumOfferFeatureShareChannels =>
+      'QR Code, link, WhatsApp, message, AirDrop';
+
+  @override
+  String get premiumOfferFeatureSharesUnlimited => 'Unlimited sharing';
+
+  @override
+  String premiumOfferFeatureShares(int count) {
+    return 'Up to $count shares';
+  }
+
+  @override
+  String get premiumOfferFeatureCustomize => 'Card customization';
+
+  @override
+  String get premiumOfferFeatureWallet => 'Wallet (Apple / Google)';
+
+  @override
+  String get premiumOfferFeatureAnalytics => 'View analytics';
+
+  @override
+  String get premiumOfferFeatureVisitors => 'Visitor insights';
+
+  @override
+  String get premiumOfferFeatureSocial => 'Social links';
+
+  @override
+  String get premiumOfferFeaturePortfolio => 'Portfolio';
+
+  @override
+  String get premiumOfferFeatureAiUnlimited => 'Unlimited AI scans';
+
+  @override
+  String premiumOfferFeatureAiScans(int count) {
+    return '$count AI scans / month';
+  }
 
   @override
   String get premiumSocialUnlock => 'Add your social networks with Premium';

@@ -1,4 +1,5 @@
 import 'package:linkflutter/core/api/api_client.dart';
+import 'package:linkflutter/core/network/network_status.dart';
 import 'package:linkflutter/features/app_update/services/app_update_service.dart';
 import 'package:linkflutter/features/auth/services/auth_api_service.dart';
 import 'package:linkflutter/features/auth/services/social_auth_service.dart';
@@ -31,9 +32,11 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
 abstract final class AppProviders {
-  static final ApiClient _apiClient = ApiClient();
+  static final NetworkStatus _networkStatus = NetworkStatus();
+  static final ApiClient _apiClient = ApiClient(networkStatus: _networkStatus);
 
   static List<SingleChildWidget> get providers => [
+    ChangeNotifierProvider<NetworkStatus>.value(value: _networkStatus),
     Provider<ApiClient>.value(value: _apiClient),
     ChangeNotifierProvider(
       create: (_) => AppUpdateService(_apiClient),
@@ -98,6 +101,7 @@ abstract final class AppProviders {
     ChangeNotifierProvider(
       create: (context) => NotificationsProvider(
         api: context.read<NotificationsApiService>(),
+        push: context.read<PushNotificationsService>(),
       ),
     ),
     ChangeNotifierProvider(

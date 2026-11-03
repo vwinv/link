@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linkflutter/core/api/api_config.dart';
 import 'package:linkflutter/features/subscriptions/models/offer_entitlements.dart';
+import 'package:linkflutter/features/teams/models/team_member.dart';
 
 class Team {
   const Team({
@@ -11,6 +12,7 @@ class Team {
     this.logoUrl,
     this.brandColor,
     this.ownerId,
+    this.myRole = TeamMemberRole.member,
     this.entitlements,
   });
 
@@ -24,6 +26,7 @@ class Team {
       logoUrl: json['logoUrl'] as String?,
       brandColor: json['brandColor'] as String?,
       ownerId: json['ownerId'] as String?,
+      myRole: TeamMemberRole.fromKey(json['myRole'] as String?),
       entitlements: entitlementsJson is Map
           ? OfferEntitlements.fromJson(
               Map<String, dynamic>.from(entitlementsJson),
@@ -40,6 +43,7 @@ class Team {
         'logoUrl': logoUrl,
         'brandColor': brandColor,
         'ownerId': ownerId,
+        'myRole': myRole.name.toUpperCase(),
         if (entitlements != null) 'entitlements': entitlements!.toJson(),
       };
 
@@ -50,10 +54,14 @@ class Team {
   final String? logoUrl;
   final String? brandColor;
   final String? ownerId;
+  final TeamMemberRole myRole;
   final OfferEntitlements? entitlements;
 
   bool isOwnedBy(String? userId) =>
       userId != null && ownerId != null && ownerId == userId;
+
+  /// Propriétaire ou admin : adresse / réseaux / marque partagés.
+  bool get canManageSharedFields => myRole.isAdmin;
 
   String get initials {
     final parts = name.trim().split(RegExp(r'\s+'));
@@ -76,7 +84,10 @@ class Team {
 
   String? get logoImageUrl => ApiConfig.resolvePublicAssetUrl(logoUrl);
 
-  Team copyWith({OfferEntitlements? entitlements}) {
+  Team copyWith({
+    OfferEntitlements? entitlements,
+    TeamMemberRole? myRole,
+  }) {
     return Team(
       id: id,
       name: name,
@@ -85,6 +96,7 @@ class Team {
       logoUrl: logoUrl,
       brandColor: brandColor,
       ownerId: ownerId,
+      myRole: myRole ?? this.myRole,
       entitlements: entitlements ?? this.entitlements,
     );
   }

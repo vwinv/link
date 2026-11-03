@@ -1220,6 +1220,18 @@ abstract class AppLocalizations {
   /// **'Carte professionnelle'**
   String get myCardsProTitle;
 
+  /// No description provided for @homePreviewMyCard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir ma carte'**
+  String get homePreviewMyCard;
+
+  /// No description provided for @homePreviewMyPortfolio.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir mon portfolio'**
+  String get homePreviewMyPortfolio;
+
   /// No description provided for @myCardsPersonalTitle.
   ///
   /// In fr, this message translates to:
@@ -1430,6 +1442,12 @@ abstract class AppLocalizations {
   /// **'Adresse de l’entreprise'**
   String get editCardAddress;
 
+  /// No description provided for @editCardAddressTeamHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partagée avec toute l’équipe. Seuls le propriétaire et les administrateurs peuvent la modifier.'**
+  String get editCardAddressTeamHint;
+
   /// No description provided for @editCardCompanyLogo.
   ///
   /// In fr, this message translates to:
@@ -1477,6 +1495,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Ajoutez les liens à afficher sur votre carte.'**
   String get editCardSocialSubtitle;
+
+  /// No description provided for @editCardSocialTeamSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ces liens sont partagés avec toute l’équipe.'**
+  String get editCardSocialTeamSubtitle;
+
+  /// No description provided for @editCardSocialTeamLocked.
+  ///
+  /// In fr, this message translates to:
+  /// **'Seuls le propriétaire et les administrateurs peuvent modifier les réseaux de l’équipe.'**
+  String get editCardSocialTeamLocked;
 
   /// No description provided for @editCardSaved.
   ///
@@ -3335,6 +3365,96 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Réseaux sociaux'**
   String get premiumFeatureSocial;
+
+  /// No description provided for @premiumOfferFeaturePersonalCard.
+  ///
+  /// In fr, this message translates to:
+  /// **'1 carte personnelle'**
+  String get premiumOfferFeaturePersonalCard;
+
+  /// No description provided for @premiumOfferFeatureTeamSeats.
+  ///
+  /// In fr, this message translates to:
+  /// **'À partir de {count} utilisateurs'**
+  String premiumOfferFeatureTeamSeats(int count);
+
+  /// No description provided for @premiumOfferFeatureTeamLimit.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} places incluses'**
+  String premiumOfferFeatureTeamLimit(int count);
+
+  /// No description provided for @premiumOfferFeatureEnterpriseDashboard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tableau de bord entreprise'**
+  String get premiumOfferFeatureEnterpriseDashboard;
+
+  /// No description provided for @premiumOfferFeatureShareChannels.
+  ///
+  /// In fr, this message translates to:
+  /// **'QR Code, lien, WhatsApp, message, AirDrop'**
+  String get premiumOfferFeatureShareChannels;
+
+  /// No description provided for @premiumOfferFeatureSharesUnlimited.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partages illimités'**
+  String get premiumOfferFeatureSharesUnlimited;
+
+  /// No description provided for @premiumOfferFeatureShares.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jusqu’à {count} partages'**
+  String premiumOfferFeatureShares(int count);
+
+  /// No description provided for @premiumOfferFeatureCustomize.
+  ///
+  /// In fr, this message translates to:
+  /// **'Personnalisation de la carte'**
+  String get premiumOfferFeatureCustomize;
+
+  /// No description provided for @premiumOfferFeatureWallet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Wallet (Apple / Google)'**
+  String get premiumOfferFeatureWallet;
+
+  /// No description provided for @premiumOfferFeatureAnalytics.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statistiques de vues'**
+  String get premiumOfferFeatureAnalytics;
+
+  /// No description provided for @premiumOfferFeatureVisitors.
+  ///
+  /// In fr, this message translates to:
+  /// **'Insights visiteurs'**
+  String get premiumOfferFeatureVisitors;
+
+  /// No description provided for @premiumOfferFeatureSocial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réseaux sociaux'**
+  String get premiumOfferFeatureSocial;
+
+  /// No description provided for @premiumOfferFeaturePortfolio.
+  ///
+  /// In fr, this message translates to:
+  /// **'Portfolio'**
+  String get premiumOfferFeaturePortfolio;
+
+  /// No description provided for @premiumOfferFeatureAiUnlimited.
+  ///
+  /// In fr, this message translates to:
+  /// **'Scans IA illimités'**
+  String get premiumOfferFeatureAiUnlimited;
+
+  /// No description provided for @premiumOfferFeatureAiScans.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} scans IA / mois'**
+  String premiumOfferFeatureAiScans(int count);
 
   /// No description provided for @premiumSocialUnlock.
   ///

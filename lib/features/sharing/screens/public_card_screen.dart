@@ -9,6 +9,7 @@ import 'package:linkflutter/core/api/api_exception.dart';
 import 'package:linkflutter/core/bootstrap/user_workspace_bootstrap.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/core/deep_link/deep_link_service.dart';
+import 'package:linkflutter/core/network/network_status.dart';
 import 'package:linkflutter/features/sharing/public_card_web_bridge.dart';
 import 'package:linkflutter/features/sharing/services/sharing_api_service.dart';
 import 'package:linkflutter/providers/auth_provider.dart';
@@ -34,6 +35,7 @@ class _PublicCardScreenState extends State<PublicCardScreen> {
   Timer? _loadTimer;
   var _isLoading = true;
   var _hasError = false;
+  var _offline = false;
   var _isSaving = false;
   var _savedInLink = false;
 
@@ -76,22 +78,37 @@ class _PublicCardScreenState extends State<PublicCardScreen> {
             setState(() {
               _isLoading = true;
               _hasError = false;
+              _offline = false;
             });
           },
           onPageFinished: (_) async {
             _cancelLoadTimeout();
             if (!mounted) return;
             setState(() => _isLoading = false);
+            if (mounted) context.read<NetworkStatus>().reportOnline();
             try {
               await _controller.runJavaScript(PublicCardWebBridge.injectScript);
             } catch (_) {}
           },
-          onWebResourceError: (_) {
+          onWebResourceError: (error) {
             _cancelLoadTimeout();
             if (!mounted) return;
+            if (!isFatalPageLoadError(
+              isForMainFrame: error.isForMainFrame,
+              errorCode: error.errorCode,
+            )) {
+              return;
+            }
+            final offline = looksLikeOfflineWebError(
+              errorCode: error.errorCode,
+              description: error.description,
+              errorTypeName: error.errorType?.name,
+            );
+            if (offline) context.read<NetworkStatus>().reportOffline();
             setState(() {
               _isLoading = false;
               _hasError = true;
+              _offline = offline;
             });
           },
         ),
@@ -109,9 +126,11 @@ class _PublicCardScreenState extends State<PublicCardScreen> {
     _cancelLoadTimeout();
     _loadTimer = Timer(_loadTimeout, () {
       if (!mounted || !_isLoading) return;
+      context.read<NetworkStatus>().reportOffline();
       setState(() {
         _isLoading = false;
         _hasError = true;
+        _offline = true;
       });
     });
   }
@@ -125,6 +144,7 @@ class _PublicCardScreenState extends State<PublicCardScreen> {
     setState(() {
       _isLoading = true;
       _hasError = false;
+      _offline = false;
     });
     _startLoadTimeout();
 
@@ -253,7 +273,9 @@ class _PublicCardScreenState extends State<PublicCardScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'Impossible d’afficher cette carte.',
+                            _offline
+                                ? NetworkStatus.offlineMessage
+                                : 'Impossible d’afficher cette carte.',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: AppColors.onPrimary.withValues(
@@ -335,27 +357,6 @@ class _PublicCardScreenState extends State<PublicCardScreen> {
                                     ? 'Enregistrer dans DropOne'
                                     : 'Se connecter pour enregistrer',
                           ),
-                  ),
-                ),
-              ),
-            ),
-          if (!_hasError && isOwnCard)
-            SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  AppSpacing.sm,
-                  AppSpacing.lg,
-                  AppSpacing.md,
-                ),
-                child: Text(
-                  'C’est votre carte. Partagez ce lien pour qu’une autre personne vous enregistre dans ses contacts DropOne.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: AppColors.onPrimary.withValues(alpha: 0.72),
-                    fontSize: 14,
-                    height: 1.4,
                   ),
                 ),
               ),

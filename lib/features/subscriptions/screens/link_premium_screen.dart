@@ -857,72 +857,13 @@ class _OfferPackageCard extends StatelessWidget {
                     ),
                   ],
                   const SizedBox(height: AppSpacing.md),
-                  _OfferDetailRow(
-                    icon: Icons.category_outlined,
-                    label: l10n.premiumFeatureType,
-                    value: _audienceLabel(l10n, offer.audience),
+                  ..._offerFeatures(l10n, offer).expand(
+                    (feature) => [
+                      _OfferFeatureRow(label: feature),
+                      const SizedBox(height: AppSpacing.sm),
+                    ],
                   ),
-                  const SizedBox(height: AppSpacing.sm),
-                  _OfferDetailRow(
-                    icon: Icons.document_scanner_outlined,
-                    label: l10n.premiumFeatureScans,
-                    value: _scansLabel(l10n, offer.maxAiScans),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  _OfferDetailRow(
-                    icon: Icons.groups_outlined,
-                    label: l10n.premiumFeatureUsers,
-                    value: _usersLabel(l10n, offer),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  _OfferDetailRow(
-                    icon: Icons.brush_outlined,
-                    label: l10n.premiumFeatureCustomization,
-                    value: offer.canCustomize
-                        ? l10n.commonIncludedFeminine
-                        : l10n.commonNotIncluded,
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  _OfferDetailRow(
-                    icon: Icons.account_balance_wallet_outlined,
-                    label: l10n.premiumFeatureWallet,
-                    value: offer.hasWallet
-                        ? l10n.commonIncluded
-                        : l10n.commonNotIncluded,
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  _OfferDetailRow(
-                    icon: Icons.bar_chart_outlined,
-                    label: l10n.premiumFeatureAnalytics,
-                    value: offer.hasAnalytics
-                        ? l10n.commonIncludedFeminine
-                        : l10n.commonNotIncluded,
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  _OfferDetailRow(
-                    icon: Icons.people_outline,
-                    label: l10n.premiumFeatureVisitors,
-                    value: offer.hasVisitorInsights
-                        ? l10n.commonIncluded
-                        : l10n.commonNotIncluded,
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  _OfferDetailRow(
-                    icon: Icons.share_outlined,
-                    label: l10n.premiumFeatureSocial,
-                    value: offer.hasSocialLinks
-                        ? l10n.commonIncluded
-                        : l10n.commonNotIncluded,
-                  ),
-                  // const SizedBox(height: AppSpacing.sm),
-                  // _OfferDetailRow(
-                  //   icon: Icons.badge_outlined,
-                  //   label: l10n.premiumFeaturePortfolio,
-                  //   value: offer.hasPortfolio
-                  //       ? l10n.commonIncluded
-                  //       : l10n.commonNotIncluded,
-                  // ),
-                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.md),
                   if (offer.prices.isEmpty)
                     Text(
                       l10n.premiumNoPricing,
@@ -954,68 +895,85 @@ class _OfferPackageCard extends StatelessWidget {
     );
   }
 
-  static String _audienceLabel(AppLocalizations l10n, OfferAudience audience) {
-    if (audience.isTeam) return l10n.premiumAudienceTeam;
-    if (audience.isPortfolio) return l10n.premiumAudiencePortfolio;
-    return l10n.premiumAudiencePersonal;
-  }
+  /// Checklist positive (comme la landing) : uniquement ce qui est inclus.
+  static List<String> _offerFeatures(
+    AppLocalizations l10n,
+    PremiumOffer offer,
+  ) {
+    final features = <String>[];
 
-  static String _scansLabel(AppLocalizations l10n, int maxAiScans) {
-    if (maxAiScans < 0) return l10n.commonUnlimited;
-    if (maxAiScans == 0) return l10n.commonNotIncluded;
-    return l10n.premiumScansPerPeriod(maxAiScans);
-  }
-
-  static String _usersLabel(AppLocalizations l10n, PremiumOffer offer) {
     if (offer.audience.isTeam) {
-      if (offer.hasPerSeatPricing) {
-        if (offer.maxTeamMembers > 0) {
-          return l10n.premiumIncludedPlaces(offer.maxTeamMembers);
-        }
-        return l10n.premiumSeatsFrom(offer.includedSeats);
+      if (offer.maxTeamMembers > 0) {
+        features.add(l10n.premiumOfferFeatureTeamLimit(offer.maxTeamMembers));
+      } else {
+        features.add(
+          l10n.premiumOfferFeatureTeamSeats(offer.includedSeats.clamp(1, 9999)),
+        );
       }
-      if (offer.maxTeamMembers < 0) return l10n.commonUnlimited;
-      return l10n.premiumTeamMembers(offer.maxTeamMembers);
+      features.add(l10n.premiumOfferFeatureEnterpriseDashboard);
+    } else if (offer.audience.isPortfolio) {
+      features.add(l10n.premiumOfferFeaturePortfolio);
+    } else {
+      features.add(l10n.premiumOfferFeaturePersonalCard);
     }
-    return l10n.premiumOneUser;
+
+    features.add(l10n.premiumOfferFeatureShareChannels);
+
+    if (offer.maxShares < 0) {
+      features.add(l10n.premiumOfferFeatureSharesUnlimited);
+    } else if (offer.maxShares > 0) {
+      features.add(l10n.premiumOfferFeatureShares(offer.maxShares));
+    }
+
+    if (offer.canCustomize) {
+      features.add(l10n.premiumOfferFeatureCustomize);
+    }
+    if (offer.hasWallet) {
+      features.add(l10n.premiumOfferFeatureWallet);
+    }
+    if (offer.hasAnalytics) {
+      features.add(l10n.premiumOfferFeatureAnalytics);
+    }
+    if (offer.hasVisitorInsights) {
+      features.add(l10n.premiumOfferFeatureVisitors);
+    }
+    if (offer.hasSocialLinks) {
+      features.add(l10n.premiumOfferFeatureSocial);
+    }
+    if (offer.maxAiScans < 0) {
+      features.add(l10n.premiumOfferFeatureAiUnlimited);
+    } else if (offer.maxAiScans > 0) {
+      features.add(l10n.premiumOfferFeatureAiScans(offer.maxAiScans));
+    }
+
+    return features;
   }
 }
 
-class _OfferDetailRow extends StatelessWidget {
-  const _OfferDetailRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
+class _OfferFeatureRow extends StatelessWidget {
+  const _OfferFeatureRow({required this.label});
 
-  final IconData icon;
   final String label;
-  final String value;
 
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(
-          icon,
+          Icons.check_rounded,
           size: 16,
-          color: AppColors.onPrimary.withValues(alpha: 0.45),
+          color: AppColors.or.withValues(alpha: 0.9),
         ),
         const SizedBox(width: AppSpacing.sm),
-        Text(
-          '$label - ',
-          style: TextStyle(
-            color: AppColors.onPrimary.withValues(alpha: 0.45),
-            fontSize: context.rs(12),
-          ),
-        ),
         Expanded(
           child: Text(
-            value,
+            label,
             style: TextStyle(
               color: AppColors.onPrimary.withValues(alpha: 0.88),
               fontSize: context.rs(12),
               fontWeight: AppFontWeight.medium,
+              height: 1.35,
             ),
           ),
         ),

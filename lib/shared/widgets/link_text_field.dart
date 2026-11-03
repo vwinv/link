@@ -18,6 +18,8 @@ class LinkTextField extends StatelessWidget {
     super.key,
     this.hint,
     this.obscureText = false,
+    this.enabled = true,
+    this.readOnly = false,
     this.keyboardType = TextInputType.text,
     this.textCapitalization = TextCapitalization.none,
     this.validator,
@@ -29,6 +31,8 @@ class LinkTextField extends StatelessWidget {
   final TextEditingController controller;
   final String? hint;
   final bool obscureText;
+  final bool enabled;
+  final bool readOnly;
   final TextInputType keyboardType;
   final TextCapitalization textCapitalization;
   final String? Function(String?)? validator;
@@ -53,11 +57,13 @@ class LinkTextField extends StatelessWidget {
         TextFormField(
           controller: controller,
           obscureText: obscureText,
+          enabled: enabled,
+          readOnly: readOnly,
           keyboardType: keyboardType,
           textCapitalization: textCapitalization,
           textInputAction: textInputAction,
           onFieldSubmitted: onFieldSubmitted,
-          validator: validator,
+          validator: enabled && !readOnly ? validator : null,
           style: const TextStyle(
             fontSize: AppFontSize.md,
             fontWeight: AppFontWeight.medium,

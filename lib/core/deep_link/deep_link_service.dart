@@ -17,6 +17,7 @@ class DeepLinkService {
   StreamSubscription<Uri>? _subscription;
   var _initialized = false;
   var _nativeLinksAvailable = true;
+  var _splashOwnsInitialLink = true;
 
   bool get isAvailable => _nativeLinksAvailable;
 
@@ -26,6 +27,7 @@ class DeepLinkService {
       _dismissedSlug == link.dismissKey;
 
   PublicDeepLink? consumePendingLink() {
+    _splashOwnsInitialLink = false;
     final link = _pendingLink;
     _pendingLink = null;
     return link;
@@ -78,6 +80,20 @@ class DeepLinkService {
     if (_initialized) return;
     _initialized = true;
 
+    _subscription = _appLinks.uriLinkStream.listen(
+      (uri) async {
+        final link = parsePublicDeepLink(uri);
+        if (link == null) return;
+        await _clearDismissedSlug();
+        if (_splashOwnsInitialLink) {
+          _pendingLink = link;
+          return;
+        }
+        onLink(link);
+      },
+      onError: (_) {},
+    );
+
     await _loadDismissedSlug();
 
     try {
@@ -86,22 +102,12 @@ class DeepLinkService {
         onTimeout: () => null,
       );
       final initialLink = parsePublicDeepLink(initialUri);
-      if (initialLink != null) {
+      if (initialLink != null && _pendingLink == null) {
         // Une ouverture via deep link doit toujours pouvoir réafficher la page
         // (même si l’utilisateur l’avait fermée précédemment).
         await _clearDismissedSlug();
         _pendingLink = initialLink;
       }
-
-      _subscription = _appLinks.uriLinkStream.listen(
-        (uri) async {
-          final link = parsePublicDeepLink(uri);
-          if (link == null) return;
-          await _clearDismissedSlug();
-          onLink(link);
-        },
-        onError: (_) {},
-      );
     } on MissingPluginException {
       _nativeLinksAvailable = false;
       if (kDebugMode) {

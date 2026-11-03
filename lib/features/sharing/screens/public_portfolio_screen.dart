@@ -7,6 +7,7 @@ import 'package:linkflutter/core/api/api_config.dart';
 import 'package:linkflutter/core/api/api_exception.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/core/deep_link/deep_link_service.dart';
+import 'package:linkflutter/core/network/network_status.dart';
 import 'package:linkflutter/core/l10n/l10n_extensions.dart';
 import 'package:linkflutter/features/cards/services/cards_api_service.dart';
 import 'package:linkflutter/features/subscriptions/models/offer_entitlements.dart';
@@ -41,6 +42,7 @@ class _PublicPortfolioScreenState extends State<PublicPortfolioScreen> {
   late final WebViewController _controller;
   var _isLoading = true;
   var _hasError = false;
+  var _offline = false;
   var _saving = false;
 
   @override
@@ -54,12 +56,26 @@ class _PublicPortfolioScreenState extends State<PublicPortfolioScreen> {
           onPageFinished: (_) {
             if (!mounted) return;
             setState(() => _isLoading = false);
+            context.read<NetworkStatus>().reportOnline();
           },
-          onWebResourceError: (_) {
+          onWebResourceError: (error) {
             if (!mounted) return;
+            if (!isFatalPageLoadError(
+              isForMainFrame: error.isForMainFrame,
+              errorCode: error.errorCode,
+            )) {
+              return;
+            }
+            final offline = looksLikeOfflineWebError(
+              errorCode: error.errorCode,
+              description: error.description,
+              errorTypeName: error.errorType?.name,
+            );
+            if (offline) context.read<NetworkStatus>().reportOffline();
             setState(() {
               _isLoading = false;
               _hasError = true;
+              _offline = offline;
             });
           },
         ),
@@ -73,16 +89,26 @@ class _PublicPortfolioScreenState extends State<PublicPortfolioScreen> {
     if (token != null && token.isNotEmpty) {
       headers['Authorization'] = 'Bearer $token';
     }
-    await _controller.loadRequest(
-      Uri.parse(
-        ApiConfig.portfolioPageLoadUrl(
-          widget.slug,
-          layout: widget.layout,
-          color: widget.color,
+    try {
+      await _controller.loadRequest(
+        Uri.parse(
+          ApiConfig.portfolioPageLoadUrl(
+            widget.slug,
+            layout: widget.layout,
+            color: widget.color,
+          ),
         ),
-      ),
-      headers: headers,
-    );
+        headers: headers,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _hasError = true;
+        _offline = true;
+      });
+      context.read<NetworkStatus>().reportOffline();
+    }
   }
 
   Future<void> _saveStyle() async {
@@ -144,7 +170,9 @@ class _PublicPortfolioScreenState extends State<PublicPortfolioScreen> {
       backgroundColor: const Color(0xFF070B18),
       body: Stack(
         children: [
-          Positioned.fill(child: WebViewWidget(controller: _controller)),
+          Positioned.fill(
+            child: WebViewWidget(controller: _controller),
+          ),
           SafeArea(
             child: Align(
               alignment: Alignment.topRight,
@@ -171,10 +199,16 @@ class _PublicPortfolioScreenState extends State<PublicPortfolioScreen> {
               child: CircularProgressIndicator(color: Colors.white),
             ),
           if (_hasError)
-            const Center(
-              child: Text(
-                'Portfolio introuvable',
-                style: TextStyle(color: Colors.white),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  _offline
+                      ? NetworkStatus.offlineMessage
+                      : 'Portfolio introuvable',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                ),
               ),
             ),
           if (showSave)

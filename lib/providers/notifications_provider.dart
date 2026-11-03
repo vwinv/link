@@ -3,11 +3,17 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:linkflutter/features/notifications/models/app_notification.dart';
 import 'package:linkflutter/features/notifications/services/notifications_api_service.dart';
+import 'package:linkflutter/features/notifications/services/push_notifications_service.dart';
 
 class NotificationsProvider extends ChangeNotifier {
-  NotificationsProvider({required NotificationsApiService api}) : _api = api;
+  NotificationsProvider({
+    required NotificationsApiService api,
+    PushNotificationsService? push,
+  })  : _api = api,
+        _push = push;
 
   final NotificationsApiService _api;
+  final PushNotificationsService? _push;
 
   final List<AppNotification> _items = [];
   int _unreadCount = 0;
@@ -62,12 +68,22 @@ class NotificationsProvider extends ChangeNotifier {
     _latestIncoming = null;
     _lastSeenId = null;
     notifyListeners();
+    unawaited(_syncAppIconBadge());
+  }
+
+  Future<void> _syncAppIconBadge() async {
+    try {
+      await _push?.syncAppIconBadge(_unreadCount);
+    } catch (_) {
+      // Badge optionnel.
+    }
   }
 
   Future<void> refreshUnreadCount() async {
     try {
       _unreadCount = await _api.fetchUnreadCount();
       notifyListeners();
+      await _syncAppIconBadge();
     } catch (_) {
       // Ignore: badge optionnel.
     }
@@ -90,6 +106,7 @@ class NotificationsProvider extends ChangeNotifier {
         }
       }
       notifyListeners();
+      await _syncAppIconBadge();
     } catch (_) {
       // Ignore polling errors.
     }
@@ -117,6 +134,7 @@ class NotificationsProvider extends ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
+      await _syncAppIconBadge();
     }
   }
 
@@ -136,6 +154,7 @@ class NotificationsProvider extends ChangeNotifier {
     } finally {
       _isLoadingMore = false;
       notifyListeners();
+      await _syncAppIconBadge();
     }
   }
 
@@ -148,6 +167,7 @@ class NotificationsProvider extends ChangeNotifier {
     _items[index] = current.copyWith(isRead: true, readAt: DateTime.now());
     if (_unreadCount > 0) _unreadCount -= 1;
     notifyListeners();
+    await _syncAppIconBadge();
 
     try {
       await _api.markRead(id);
@@ -155,6 +175,7 @@ class NotificationsProvider extends ChangeNotifier {
       _items[index] = current;
       _unreadCount += 1;
       notifyListeners();
+      await _syncAppIconBadge();
     }
   }
 
@@ -172,6 +193,7 @@ class NotificationsProvider extends ChangeNotifier {
       );
     _unreadCount = 0;
     notifyListeners();
+    await _syncAppIconBadge();
 
     try {
       await _api.markAllRead();
@@ -181,6 +203,7 @@ class NotificationsProvider extends ChangeNotifier {
         ..addAll(previous);
       _unreadCount = previousUnread;
       notifyListeners();
+      await _syncAppIconBadge();
     }
   }
 }

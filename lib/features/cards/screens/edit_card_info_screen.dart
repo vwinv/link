@@ -280,12 +280,26 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
     return false;
   }
 
-  bool get _canEditSocial {
+  bool get _canManageTeamSharedFields {
+    if (!_card.kind.isTeamLinked) return true;
+    final team = context.read<TeamsProvider>().teamById(_card.teamId);
+    final userId = context.read<AuthProvider>().user?.id;
+    if (team != null) {
+      if (team.canManageSharedFields || team.isOwnedBy(userId)) return true;
+    }
+    // Carte pro = propriétaire de l’équipe.
+    return _card.kind.isProfessional;
+  }
+
+  bool get _hasSocialEntitlement {
     final team = context.read<TeamsProvider>().teamById(_card.teamId);
     return context
         .read<SubscriptionsProvider>()
         .canEditSocialLinksFor(_card, team: team);
   }
+
+  bool get _canEditSocial =>
+      _hasSocialEntitlement && _canManageTeamSharedFields;
 
   bool get _hasChanges {
     final draft = _buildDraft();
@@ -298,6 +312,7 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
         draft.email.trim() != (_card.email?.trim() ?? '') ||
         draft.phone.trim() != (_card.phone?.trim() ?? '') ||
         (_card.kind.isTeamLinked &&
+            _canManageTeamSharedFields &&
             _addressController.text.trim() != (_card.address?.trim() ?? '')) ||
         _hasAvatarChanges ||
         _hasLogoChanges ||
@@ -360,12 +375,14 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
             company: draft.company.isEmpty ? null : draft.company,
             email: draft.email.isEmpty ? null : draft.email,
             phone: draft.phone.isEmpty ? null : draft.phone,
-            address: _card.kind.isTeamLinked
+            address: _card.kind.isTeamLinked && _canManageTeamSharedFields
                 ? _addressController.text.trim()
                 : null,
-            includeAddress: _card.kind.isTeamLinked,
-            website: _websitePayload(),
-            includeWebsite: _card.kind.isTeamLinked,
+            includeAddress:
+                _card.kind.isTeamLinked && _canManageTeamSharedFields,
+            website: _canManageTeamSharedFields ? _websitePayload() : null,
+            includeWebsite:
+                _card.kind.isTeamLinked && _canManageTeamSharedFields,
             avatarUrl: avatarUrl,
             includeAvatar: includeAvatar,
             logoUrl: logoUrl,
@@ -674,7 +691,18 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
                           label: l10n.editCardAddress,
                           controller: _addressController,
                           keyboardType: TextInputType.streetAddress,
+                          readOnly: !_canManageTeamSharedFields,
                         ),
+                        if (!_canManageTeamSharedFields) ...[
+                          const SizedBox(height: AppSpacing.sm),
+                          Text(
+                            l10n.editCardAddressTeamHint,
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: context.rs(AppFontSize.sm),
+                            ),
+                          ),
+                        ],
                       ],
                       const SizedBox(height: AppSpacing.xxl),
                       Text(
@@ -688,14 +716,16 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       Text(
-                        l10n.editCardSocialSubtitle,
+                        _card.kind.isTeamLinked
+                            ? l10n.editCardSocialTeamSubtitle
+                            : l10n.editCardSocialSubtitle,
                         style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: context.rs(AppFontSize.md),
                         ),
                       ),
                       const SizedBox(height: AppSpacing.lg),
-                      if (!_canEditSocial)
+                      if (!_hasSocialEntitlement)
                         _SocialPremiumLock(
                           onUnlock: () => openLinkPremium(context),
                         )
@@ -706,7 +736,18 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
                             child: CircularProgressIndicator(),
                           ),
                         )
-                      else
+                      else ...[
+                        if (_card.kind.isTeamLinked &&
+                            !_canManageTeamSharedFields) ...[
+                          Text(
+                            l10n.editCardSocialTeamLocked,
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: context.rs(AppFontSize.sm),
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                        ],
                         ..._socialLinks.map((link) {
                           final controller = _socialControllers[link.platform]!;
 
@@ -716,6 +757,7 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
                             child: SocialNetworkTile(
                               draft: link,
                               controller: controller,
+                              readOnly: !_canEditSocial,
                               onToggle: (selected) =>
                                   _toggleSocialLink(link.platform, selected),
                               onValueChanged: (value) =>
@@ -723,6 +765,7 @@ class _EditCardInfoScreenState extends State<EditCardInfoScreen> {
                             ),
                           );
                         }),
+                      ],
                       const SizedBox(height: AppSpacing.xxl),
                     ],
                   ),

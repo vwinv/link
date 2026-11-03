@@ -624,6 +624,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get myCardsProTitle => 'Carte professionnelle';
 
   @override
+  String get homePreviewMyCard => 'Voir ma carte';
+
+  @override
+  String get homePreviewMyPortfolio => 'Voir mon portfolio';
+
+  @override
   String get myCardsPersonalTitle => 'Carte personnelle';
 
   @override
@@ -740,6 +746,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get editCardAddress => 'Adresse de l’entreprise';
 
   @override
+  String get editCardAddressTeamHint =>
+      'Partagée avec toute l’équipe. Seuls le propriétaire et les administrateurs peuvent la modifier.';
+
+  @override
   String get editCardCompanyLogo => 'LOGO ENTREPRISE';
 
   @override
@@ -763,6 +773,14 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get editCardSocialSubtitle =>
       'Ajoutez les liens à afficher sur votre carte.';
+
+  @override
+  String get editCardSocialTeamSubtitle =>
+      'Ces liens sont partagés avec toute l’équipe.';
+
+  @override
+  String get editCardSocialTeamLocked =>
+      'Seuls le propriétaire et les administrateurs peuvent modifier les réseaux de l’équipe.';
 
   @override
   String get editCardSaved => 'Informations de la carte enregistrées';
@@ -1776,6 +1794,61 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get premiumFeatureSocial => 'Réseaux sociaux';
+
+  @override
+  String get premiumOfferFeaturePersonalCard => '1 carte personnelle';
+
+  @override
+  String premiumOfferFeatureTeamSeats(int count) {
+    return 'À partir de $count utilisateurs';
+  }
+
+  @override
+  String premiumOfferFeatureTeamLimit(int count) {
+    return '$count places incluses';
+  }
+
+  @override
+  String get premiumOfferFeatureEnterpriseDashboard =>
+      'Tableau de bord entreprise';
+
+  @override
+  String get premiumOfferFeatureShareChannels =>
+      'QR Code, lien, WhatsApp, message, AirDrop';
+
+  @override
+  String get premiumOfferFeatureSharesUnlimited => 'Partages illimités';
+
+  @override
+  String premiumOfferFeatureShares(int count) {
+    return 'Jusqu’à $count partages';
+  }
+
+  @override
+  String get premiumOfferFeatureCustomize => 'Personnalisation de la carte';
+
+  @override
+  String get premiumOfferFeatureWallet => 'Wallet (Apple / Google)';
+
+  @override
+  String get premiumOfferFeatureAnalytics => 'Statistiques de vues';
+
+  @override
+  String get premiumOfferFeatureVisitors => 'Insights visiteurs';
+
+  @override
+  String get premiumOfferFeatureSocial => 'Réseaux sociaux';
+
+  @override
+  String get premiumOfferFeaturePortfolio => 'Portfolio';
+
+  @override
+  String get premiumOfferFeatureAiUnlimited => 'Scans IA illimités';
+
+  @override
+  String premiumOfferFeatureAiScans(int count) {
+    return '$count scans IA / mois';
+  }
 
   @override
   String get premiumSocialUnlock => 'Ajoutez vos réseaux sociaux avec Premium';

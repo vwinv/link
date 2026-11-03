@@ -11,6 +11,7 @@ class SocialNetworkTile extends StatelessWidget {
     required this.controller,
     required this.onToggle,
     required this.onValueChanged,
+    this.readOnly = false,
     super.key,
   });
 
@@ -18,6 +19,7 @@ class SocialNetworkTile extends StatelessWidget {
   final TextEditingController controller;
   final ValueChanged<bool> onToggle;
   final ValueChanged<String> onValueChanged;
+  final bool readOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +42,7 @@ class SocialNetworkTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           InkWell(
-            onTap: () => onToggle(!isSelected),
+            onTap: readOnly ? null : () => onToggle(!isSelected),
             borderRadius: BorderRadius.circular(AppRadius.sm),
             child: Row(
               children: [
@@ -56,7 +58,7 @@ class SocialNetworkTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                _SelectionIndicator(isSelected: isSelected),
+                if (!readOnly) _SelectionIndicator(isSelected: isSelected),
               ],
             ),
           ),
@@ -64,8 +66,10 @@ class SocialNetworkTile extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
             TextFormField(
               controller: controller,
+              enabled: !readOnly,
+              readOnly: readOnly,
               keyboardType: platform.keyboardType,
-              onChanged: onValueChanged,
+              onChanged: readOnly ? null : onValueChanged,
               style: const TextStyle(
                 fontSize: AppFontSize.md,
                 fontWeight: AppFontWeight.medium,

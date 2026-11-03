@@ -51,6 +51,16 @@ class NotificationsApiService {
     );
   }
 
+  /// Enregistre la langue de l’app pour les notifications in-app et push.
+  Future<void> updatePreferredLocale(String locale) async {
+    final code = locale.trim().toLowerCase().startsWith('en') ? 'en' : 'fr';
+    await _apiClient.put(
+      '/users/me/locale',
+      authenticated: true,
+      body: {'locale': code},
+    );
+  }
+
   Future<void> unregisterPushToken(String token) async {
     await _apiClient.deleteWithBody(
       '/devices/push-token',

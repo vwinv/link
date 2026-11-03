@@ -406,7 +406,17 @@ class _MyCardsScreenState extends State<MyCardsScreen>
                     ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
-                  _LivePortfolioPreview(card: card, profile: _portfolioProfile),
+                  _HomePreviewBadge(
+                    dark: true,
+                    label: context.l10n.homePreviewMyPortfolio,
+                    onPreview: () => context.push(
+                      '${RoutePaths.publicPortfolio}/${card.slug}',
+                    ),
+                    child: _LivePortfolioPreview(
+                      card: card,
+                      profile: _portfolioProfile,
+                    ),
+                  ),
                   const SizedBox(height: AppSpacing.md),
                   _PortfolioActionRow(
                     shareLocked: _portfolioAccess != null &&
@@ -460,30 +470,36 @@ class _MyCardsScreenState extends State<MyCardsScreen>
                 ],
                 const SizedBox(height: AppSpacing.xxl),
               ] else if (card != null) ...[
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => _afterCardAction(
-                      card,
-                      () => openMyCardScreen(context, card),
-                    ),
-                    borderRadius: BorderRadius.circular(AppRadius.xl),
-                    child: CardPreview(
-                      fullName: card.fullName,
-                      initials: card.initials,
-                      avatarUrl: card.avatarImageUrl,
-                      email: card.email ?? '',
-                      phone: card.phone,
-                      address: card.kind.isTeamLinked ? card.address : null,
-                      subtitle: card.subtitle,
-                      style: card.theme.style,
-                      showQr: card.theme.showQrCode,
-                      qrData: ShareCardHelper.publicUrl(card.slug),
-                      companyLogoUrl: card.isProfessional
-                          ? card.companyLogoImageUrl(team)
-                          : null,
-                      tagLabel: card.kind.tagLabelL10n(context.l10n),
-                      cardBadge: card.theme.cardBadge,
+                _HomePreviewBadge(
+                  label: context.l10n.homePreviewMyCard,
+                  onPreview: () => context.push(
+                    '${RoutePaths.publicCard}/${card.slug}',
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => _afterCardAction(
+                        card,
+                        () => openMyCardScreen(context, card),
+                      ),
+                      borderRadius: BorderRadius.circular(AppRadius.xl),
+                      child: CardPreview(
+                        fullName: card.fullName,
+                        initials: card.initials,
+                        avatarUrl: card.avatarImageUrl,
+                        email: card.email ?? '',
+                        phone: card.phone,
+                        address: card.kind.isTeamLinked ? card.address : null,
+                        subtitle: card.subtitle,
+                        style: card.theme.style,
+                        showQr: card.theme.showQrCode,
+                        qrData: ShareCardHelper.publicUrl(card.slug),
+                        companyLogoUrl: card.isProfessional
+                            ? card.companyLogoImageUrl(team)
+                            : null,
+                        tagLabel: card.kind.tagLabelL10n(context.l10n),
+                        cardBadge: card.theme.cardBadge,
+                      ),
                     ),
                   ),
                 ),
@@ -534,6 +550,80 @@ class _MyCardsScreenState extends State<MyCardsScreen>
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Libellé blanc à cheval sur le coin haut droit : une moitié au-dessus, l’autre sur la carte.
+class _HomePreviewBadge extends StatelessWidget {
+  const _HomePreviewBadge({
+    required this.child,
+    required this.onPreview,
+    required this.label,
+    this.dark = false,
+  });
+
+  final Widget child;
+  final VoidCallback onPreview;
+  final String label;
+  final bool dark;
+
+  /// Partie du bouton qui dépasse au-dessus de la carte.
+  static const _overhang = 28.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: _overhang),
+          child: child,
+        ),
+        Positioned(
+          top: 0,
+          right: 10,
+          child: Material(
+            color: dark ? Colors.black : Colors.white,
+            elevation: 2,
+            shadowColor: const Color(0x330C0D10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppRadius.sm),
+              side: BorderSide(
+                color: dark ? Colors.black : AppColors.border,
+              ),
+            ),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(AppRadius.sm),
+              onTap: onPreview,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.visibility_outlined,
+                      size: 16,
+                      color: dark ? Colors.white : Colors.black,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      label,
+                      style: TextStyle(
+                        color: dark ? Colors.white : Colors.black,
+                        fontSize: 13,
+                        fontWeight: AppFontWeight.semiBold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

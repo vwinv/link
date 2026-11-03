@@ -213,6 +213,8 @@
   "myCardsScans": "Scans",
   "myCardsNoContacts": "No contacts yet",
   "myCardsProTitle": "Professional card",
+  "homePreviewMyCard": "View my card",
+  "homePreviewMyPortfolio": "View my portfolio",
   "myCardsPersonalTitle": "Personal card",
   "myCardsPersonalSubtitle": "Create your personal card to share your details and grow your network.",
   "myCardsCreatePersonal": "Create my personal card",
@@ -252,6 +254,7 @@
   "editCardEmail": "Email",
   "editCardPhone": "Phone",
   "editCardAddress": "Company address",
+  "editCardAddressTeamHint": "Shared with the whole team. Only the owner and admins can edit it.",
   "editCardCompanyLogo": "COMPANY LOGO",
   "editCardChangeLogo": "Change logo",
   "editCardImportLogo": "Import a logo",
@@ -260,6 +263,8 @@
   "editCardRemovePhoto": "Remove photo",
   "editCardSocialTitle": "SOCIAL NETWORKS",
   "editCardSocialSubtitle": "Add the links to display on your card.",
+  "editCardSocialTeamSubtitle": "These links are shared with the whole team.",
+  "editCardSocialTeamLocked": "Only the owner and admins can edit the team’s social networks.",
   "editCardSaved": "Card information saved",
   "editCardSaveError": "Unable to save information",
   "editCardNameRequired": "Name required",
@@ -661,6 +666,41 @@
   "premiumFeatureAnalytics": "Analytics",
   "premiumFeatureVisitors": "Detailed visitors",
   "premiumFeatureSocial": "Social networks",
+  "premiumOfferFeaturePersonalCard": "1 personal card",
+  "premiumOfferFeatureTeamSeats": "From {count} users",
+  "@premiumOfferFeatureTeamSeats": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "premiumOfferFeatureTeamLimit": "{count} included seats",
+  "@premiumOfferFeatureTeamLimit": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "premiumOfferFeatureEnterpriseDashboard": "Company dashboard",
+  "premiumOfferFeatureShareChannels": "QR Code, link, WhatsApp, message, AirDrop",
+  "premiumOfferFeatureSharesUnlimited": "Unlimited sharing",
+  "premiumOfferFeatureShares": "Up to {count} shares",
+  "@premiumOfferFeatureShares": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "premiumOfferFeatureCustomize": "Card customization",
+  "premiumOfferFeatureWallet": "Wallet (Apple / Google)",
+  "premiumOfferFeatureAnalytics": "View analytics",
+  "premiumOfferFeatureVisitors": "Visitor insights",
+  "premiumOfferFeatureSocial": "Social links",
+  "premiumOfferFeaturePortfolio": "Portfolio",
+  "premiumOfferFeatureAiUnlimited": "Unlimited AI scans",
+  "premiumOfferFeatureAiScans": "{count} AI scans / month",
+  "@premiumOfferFeatureAiScans": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "premiumSocialUnlock": "Add your social networks with Premium",
   "premiumSocialSubtitle": "LinkedIn, Instagram, WhatsApp and more.",
   "premiumNoPricing": "No pricing configured",
