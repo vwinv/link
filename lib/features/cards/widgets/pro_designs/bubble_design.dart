@@ -4,6 +4,7 @@ import 'package:linkflutter/core/utils/responsive.dart';
 import 'package:linkflutter/features/cards/models/pro_design_template.dart';
 
 import 'package:linkflutter/features/cards/widgets/pro_designs/pro_design_avatar.dart';
+import 'package:linkflutter/features/cards/widgets/pro_designs/pro_design_guest_lead.dart';
 import 'package:linkflutter/features/cards/widgets/pro_designs/pro_design_metrics.dart';
 import 'package:linkflutter/features/cards/widgets/pro_designs/pro_design_team_line.dart';
 
@@ -19,6 +20,7 @@ class BubbleDesign extends StatelessWidget {
     this.avatarUrl,
     this.logoUrl,
     this.showHeader = true,
+    this.showGuestLead = true,
     super.key,
   });
 
@@ -31,6 +33,7 @@ class BubbleDesign extends StatelessWidget {
   final String? avatarUrl;
   final String? logoUrl;
   final bool showHeader;
+  final bool showGuestLead;
 
   Color get _themeColor => template.themeColor;
 
@@ -135,6 +138,7 @@ class BubbleDesign extends StatelessWidget {
           _SocialIcon(asset: 'assets/whatsapp.png'),
         ],
       ),
+      if (showGuestLead) ProDesignGuestLeadPreview(template: template),
       const SizedBox(height: AppSpacing.lg),
     ];
   }

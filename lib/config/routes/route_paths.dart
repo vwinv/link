@@ -24,4 +24,5 @@ abstract final class RoutePaths {
   static const publicCard = '/public-card';
   static const publicPortfolio = '/public-portfolio';
   static const notifications = '/notifications';
+  static const referral = '/referral';
 }

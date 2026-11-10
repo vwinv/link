@@ -46,6 +46,7 @@ import 'package:linkflutter/providers/workspace_mode_provider.dart';
 import 'package:linkflutter/features/uploads/services/uploads_api_service.dart';
 import 'package:linkflutter/features/wallet/screens/add_to_wallet_screen.dart';
 import 'package:linkflutter/features/wallet/services/wallet_platform_service.dart';
+import 'package:linkflutter/features/points/widgets/referral_code_prompt.dart';
 import 'package:provider/provider.dart';
 
 /// Après connexion ou inscription : charge l'espace utilisateur puis enchaîne
@@ -56,6 +57,12 @@ Future<void> completePostAuthNavigation(
 }) async {
   await bootstrapUserWorkspace(context);
   if (!context.mounted) return;
+
+  final auth = context.read<AuthProvider>();
+  if (auth.consumeReferralPrompt()) {
+    await showReferralCodePromptIfNeeded(context);
+    if (!context.mounted) return;
+  }
 
   final subscriptions = context.read<SubscriptionsProvider>();
   await subscriptions.refresh();
@@ -86,7 +93,9 @@ Future<void> completePostAuthNavigation(
 
   final wantsTeamOnboarding = intent == AccountType.team;
   final hasTeamSubscription = subscriptions.hasTeamSubscription;
-  final needsTeamWorkspace = !teams.hasTeam || !cards.hasProfessionalCard;
+  // Membre d’une autre équipe ≠ propriétaire : on ne saute pas la création.
+  final needsTeamWorkspace =
+      !teams.isTeamOwner || !cards.hasProfessionalCard;
 
   // En review Apple (HIDE_IN_APP_PAYMENTS), hasTeamSubscription est forcé
   // à true pour débloquer les features — ne pas en déduire le parcours équipe.
@@ -319,7 +328,9 @@ Future<BusinessCard?> openSetupProfessionalTeam(BuildContext context) async {
     await teamsProvider.load();
   }
 
-  Team? team = teamsProvider.myTeam;
+  // Uniquement l’équipe dont l’utilisateur est propriétaire.
+  // Être membre d’une autre équipe ne remplace pas « mon » espace pro.
+  Team? team = teamsProvider.ownedTeam;
 
   if (team == null) {
     team = await openSetupTeam(context);

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:linkflutter/config/routes/app_navigation.dart';
+import 'package:linkflutter/config/routes/route_paths.dart';
 import 'package:linkflutter/core/api/api_config.dart';
 import 'package:linkflutter/core/api/api_exception.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
@@ -11,6 +13,7 @@ import 'package:linkflutter/features/cards/models/card_analytics.dart';
 import 'package:linkflutter/features/cards/models/card_visitors.dart';
 import 'package:linkflutter/features/cards/services/cards_api_service.dart';
 import 'package:linkflutter/features/cards/widgets/card_preview.dart';
+import 'package:linkflutter/features/cards/widgets/card_preview_badge.dart';
 import 'package:linkflutter/features/sharing/share_card_helper.dart';
 import 'package:linkflutter/features/teams/buy_extra_seat.dart';
 import 'package:linkflutter/features/teams/models/team.dart';
@@ -570,20 +573,26 @@ class _CardTab extends StatelessWidget {
                   ),
           )
         else ...[
-          CardPreview(
-            fullName: card!.fullName,
-            initials: card!.initials,
-            avatarUrl: card!.avatarImageUrl,
-            email: card!.email ?? '',
-            phone: card!.phone,
-            address: card!.address,
-            subtitle: card!.subtitle,
-            style: card!.theme.style,
-            showQr: card!.theme.showQrCode,
-            qrData: ShareCardHelper.publicUrl(card!.slug),
-            companyLogoUrl: card!.companyLogoImageUrl(team),
-            tagLabel: card!.kind.tagLabelL10n(l10n),
-            cardBadge: card!.theme.cardBadge,
+          CardPreviewBadge(
+            label: l10n.homePreviewMyCard,
+            onPreview: () => context.push(
+              '${RoutePaths.publicCard}/${card!.slug}?preview=1',
+            ),
+            child: CardPreview(
+              fullName: card!.fullName,
+              initials: card!.initials,
+              avatarUrl: card!.avatarImageUrl,
+              email: card!.email ?? '',
+              phone: card!.phone,
+              address: card!.address,
+              subtitle: card!.subtitle,
+              style: card!.theme.style,
+              showQr: card!.theme.showQrCode,
+              qrData: ShareCardHelper.publicUrl(card!.slug),
+              companyLogoUrl: card!.companyLogoImageUrl(team),
+              tagLabel: card!.kind.tagLabelL10n(l10n),
+              cardBadge: card!.theme.cardBadge,
+            ),
           ),
           const SizedBox(height: 14),
           Row(

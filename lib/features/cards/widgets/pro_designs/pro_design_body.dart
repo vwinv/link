@@ -10,6 +10,7 @@ import 'package:linkflutter/features/cards/widgets/pro_designs/degrade_noir_desi
 import 'package:linkflutter/features/cards/widgets/pro_designs/legacy_pro_design_preview.dart';
 import 'package:linkflutter/features/cards/widgets/pro_designs/nuit_design.dart';
 import 'package:linkflutter/features/cards/widgets/pro_designs/or_design.dart';
+import 'package:linkflutter/features/cards/widgets/pro_designs/pro_design_guest_lead.dart';
 
 /// Contenu de la carte - partagé entre l’aperçu plein écran et la grille.
 class ProDesignBody extends StatelessWidget {
@@ -22,6 +23,7 @@ class ProDesignBody extends StatelessWidget {
     this.address,
     this.avatarUrl,
     this.logoUrl,
+    this.showGuestLead = true,
     super.key,
   });
 
@@ -33,12 +35,12 @@ class ProDesignBody extends StatelessWidget {
   final String? address;
   final String? avatarUrl;
   final String? logoUrl;
+  final bool showGuestLead;
 
   @override
   Widget build(BuildContext context) {
-    switch (template.layout) {
-      case ProDesignLayout.azurCentered:
-        return AzurCenteredDesign(
+    final body = switch (template.layout) {
+      ProDesignLayout.azurCentered => AzurCenteredDesign(
           template: template,
           fullName: fullName,
           initials: initials,
@@ -47,9 +49,8 @@ class ProDesignBody extends StatelessWidget {
           address: address,
           avatarUrl: avatarUrl,
           logoUrl: logoUrl,
-        );
-      case ProDesignLayout.corailGradient:
-        return CorailGradientDesign(
+        ),
+      ProDesignLayout.corailGradient => CorailGradientDesign(
           template: template,
           fullName: fullName,
           initials: initials,
@@ -58,9 +59,8 @@ class ProDesignBody extends StatelessWidget {
           address: address,
           avatarUrl: avatarUrl,
           logoUrl: logoUrl,
-        );
-      case ProDesignLayout.blancLight:
-        return BlancLightDesign(
+        ),
+      ProDesignLayout.blancLight => BlancLightDesign(
           template: template,
           fullName: fullName,
           initials: initials,
@@ -69,9 +69,8 @@ class ProDesignBody extends StatelessWidget {
           address: address,
           avatarUrl: avatarUrl,
           logoUrl: logoUrl,
-        );
-      case ProDesignLayout.degradeNoir:
-        return DegradeNoirDesign(
+        ),
+      ProDesignLayout.degradeNoir => DegradeNoirDesign(
           template: template,
           fullName: fullName,
           initials: initials,
@@ -80,9 +79,8 @@ class ProDesignBody extends StatelessWidget {
           address: address,
           avatarUrl: avatarUrl,
           logoUrl: logoUrl,
-        );
-      case ProDesignLayout.bubble:
-        return BubbleDesign(
+        ),
+      ProDesignLayout.bubble => BubbleDesign(
           template: template,
           fullName: fullName,
           initials: initials,
@@ -91,9 +89,9 @@ class ProDesignBody extends StatelessWidget {
           address: address,
           avatarUrl: avatarUrl,
           logoUrl: logoUrl,
-        );
-      case ProDesignLayout.arc:
-        return ArcDesign(
+          showGuestLead: showGuestLead,
+        ),
+      ProDesignLayout.arc => ArcDesign(
           template: template,
           fullName: fullName,
           initials: initials,
@@ -102,9 +100,9 @@ class ProDesignBody extends StatelessWidget {
           address: address,
           avatarUrl: avatarUrl,
           logoUrl: logoUrl,
-        );
-      case ProDesignLayout.nuit:
-        return NuitDesign(
+          showGuestLead: showGuestLead,
+        ),
+      ProDesignLayout.nuit => NuitDesign(
           template: template,
           fullName: fullName,
           initials: initials,
@@ -113,9 +111,8 @@ class ProDesignBody extends StatelessWidget {
           address: address,
           avatarUrl: avatarUrl,
           logoUrl: logoUrl,
-        );
-      case ProDesignLayout.or:
-        return OrDesign(
+        ),
+      ProDesignLayout.or => OrDesign(
           template: template,
           fullName: fullName,
           initials: initials,
@@ -124,9 +121,8 @@ class ProDesignBody extends StatelessWidget {
           address: address,
           avatarUrl: avatarUrl,
           logoUrl: logoUrl,
-        );
-      case ProDesignLayout.legacy:
-        return LegacyProDesignPreview(
+        ),
+      ProDesignLayout.legacy => LegacyProDesignPreview(
           template: template,
           fullName: fullName,
           initials: initials,
@@ -136,7 +132,23 @@ class ProDesignBody extends StatelessWidget {
           compact: false,
           avatarUrl: avatarUrl,
           logoUrl: logoUrl,
-        );
+        ),
+    };
+
+    // Bubble / Arc gèrent le formulaire dans leur propre body.
+    if (!showGuestLead ||
+        template.layout == ProDesignLayout.bubble ||
+        template.layout == ProDesignLayout.arc) {
+      return body;
     }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        body,
+        ProDesignGuestLeadPreview(template: template),
+      ],
+    );
   }
 }

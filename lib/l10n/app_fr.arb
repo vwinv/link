@@ -1,6 +1,7 @@
 {
   "@@locale": "fr",
   "appTitle": "DropOne",
+  "createdByMega": "Créé par MEGA",
 
   "navCards": "Cartes",
   "navScan": "Scan IA",
@@ -10,7 +11,60 @@
   "profileTitle": "Profil",
   "profileSectionAccount": "COMPTE",
   "profileSectionSettings": "RÉGLAGES",
-  "profileTeamSpace": "Espace équipe",
+  "profileTeamSpace": "Mon équipe",
+  "profileRefer": "Parrainer",
+  "profileReferSubtitle": "Gagnez des points",
+  "referralTitle": "Parrainage",
+  "referralLoadError": "Impossible de charger le parrainage.",
+  "referralBalanceLabel": "Votre solde",
+  "referralPointsUnit": "points",
+  "referralBalanceFcfa": "≈ {amount} FCFA",
+  "@referralBalanceFcfa": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "referralYourCode": "Votre code de parrainage",
+  "referralInvitedCount": "{count} personne(s) invitée(s)",
+  "@referralInvitedCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "referralShare": "Parrainer",
+  "referralShareText": "Télécharge DropOne et inscris-toi avec mon code {code} :\n{storeUrl}",
+  "@referralShareText": {
+    "placeholders": {
+      "code": { "type": "String" },
+      "storeUrl": { "type": "String" }
+    }
+  },
+  "referralHowTitle": "Comment gagner des points ?",
+  "referralHowBody": "• {referralPoints} point quand un filleul souscrit avec votre code\n• {visitPoints} point par personne qui visite votre carte (une seule fois)\n• 1 point = {fcfa} FCFA",
+  "@referralHowBody": {
+    "placeholders": {
+      "referralPoints": { "type": "String" },
+      "visitPoints": { "type": "String" },
+      "fcfa": { "type": "String" }
+    }
+  },
+  "referralEnterCodeTitle": "Vous avez un code ?",
+  "referralEnterCodeHint": "DROP-XXXX",
+  "referralFirstLoginHint": "Saisissez le code de votre parrain à la création du compte. Vous ne pourrez plus le faire ensuite.",
+  "referralSkipCode": "Passer",
+  "referralApply": "Valider",
+  "referralCodeApplied": "Code de parrainage enregistré",
+  "referralCodeApplyError": "Impossible d’appliquer ce code",
+  "referralHistoryTitle": "Historique",
+  "referralHistoryEmpty": "Aucun mouvement pour le moment.",
+  "referralLedgerReferral": "Parrainage (abonnement)",
+  "referralLedgerVisit": "Nouveau visiteur",
+  "referralLedgerPurchase": "Achat avec points",
+  "referralLedgerAdjustment": "Ajustement",
+  "referralLedgerCredit": "Crédit",
+  "referralLedgerDebit": "Débit",
+  "referralCodeFieldLabel": "Code parrainage (optionnel)",
+
   "profileManageWallet": "Gérer le Wallet",
   "profileNotifications": "Notifications",
   "notificationsTitle": "Notifications",
@@ -123,6 +177,12 @@
   "portfolioEditorPortfolioTitle": "Titre du portfolio",
   "portfolioEditorDescription": "Description",
   "portfolioEditorDescriptionHint": "Qui êtes-vous, que faites-vous, pour qui ? 3 à 4 phrases.",
+  "portfolioEditorSocialTitle": "Réseaux du portfolio",
+  "portfolioEditorSocialSubtitle": "Distincts des réseaux de votre carte. Affichés sur le site public.",
+  "portfolioEditorSocialChoice": "Comment renseigner vos réseaux ?",
+  "portfolioEditorSocialCopyCard": "Copier ceux de ma carte",
+  "portfolioEditorSocialRetype": "Les saisir à nouveau",
+  "portfolioEditorSocialNoCardLinks": "Aucun réseau configuré sur cette carte.",
   "portfolioEditorExperience": "Expérience professionnelle",
   "portfolioEditorPosts": "{count, plural, =0{0 poste} =1{1 poste} other{{count} postes}}",
   "@portfolioEditorPosts": {
@@ -148,6 +208,14 @@
   "portfolioEditorProjects": "Réalisations",
   "portfolioEditorProjectsHint": "Jusqu'à 12 réalisations. La photo et le lien sont optionnels.",
   "portfolioEditorImport": "Importer",
+  "portfolioEditorImportCv": "Importer mon CV (PDF)",
+  "portfolioEditorImportCvHint": "L’app lit votre CV et préremplit les champs. Rien n’est enregistré tant que vous ne publiez pas.",
+  "portfolioEditorImportCvConfirmTitle": "Remplacer le contenu ?",
+  "portfolioEditorImportCvConfirmBody": "Les champs actuels du portfolio seront remplacés par ceux extraits du CV. La photo est conservée. Vous pourrez tout relire avant d’enregistrer.",
+  "portfolioEditorImportCvLoading": "Analyse du CV…",
+  "portfolioEditorImportCvReady": "CV importé. Vérifiez les champs puis publiez pour enregistrer.",
+  "portfolioEditorImportCvError": "Impossible d’analyser ce CV",
+  "portfolioEditorImportCvPickError": "Sélectionnez un fichier PDF",
   "portfolioEditorRole": "Intitulé du poste",
   "portfolioEditorCompany": "Entreprise",
   "portfolioEditorPeriod": "Période",
@@ -231,6 +299,8 @@
   "myCardsProTitle": "Carte professionnelle",
   "homePreviewMyCard": "Voir ma carte",
   "homePreviewMyPortfolio": "Voir mon portfolio",
+  "previewShareLinksHint": "Partagez votre carte. Vos visiteurs bénéficieront de cette fonctionnalité.",
+  "previewSharePortfolioLinksHint": "Partagez votre portfolio. Vos visiteurs bénéficieront de cette fonctionnalité.",
   "myCardsPersonalTitle": "Carte personnelle",
   "myCardsPersonalSubtitle": "Créez votre carte personnelle pour partager vos coordonnées et développer votre réseau.",
   "myCardsCreatePersonal": "Créer ma carte personnelle",
@@ -482,6 +552,13 @@
   },
   "cardVisitorDetailMessageShareText": "Voici le profil Drop One de {name} : {url}",
   "@cardVisitorDetailMessageShareText": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "url": { "type": "String" }
+    }
+  },
+  "cardVisitorDetailGuestMessageShareText": "Bonjour {name}, merci d’avoir consulté ma carte Drop One. Voici mon lien : {url}",
+  "@cardVisitorDetailGuestMessageShareText": {
     "placeholders": {
       "name": { "type": "String" },
       "url": { "type": "String" }

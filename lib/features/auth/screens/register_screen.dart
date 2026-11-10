@@ -11,6 +11,7 @@ import 'package:linkflutter/core/utils/responsive.dart';
 import 'package:linkflutter/features/auth/utils/social_sign_in_helper.dart';
 import 'package:linkflutter/config/routes/app_navigation.dart';
 import 'package:linkflutter/providers/auth_provider.dart';
+import 'package:linkflutter/shared/widgets/created_by_mega.dart';
 import 'package:linkflutter/shared/widgets/link_auth_divider.dart';
 import 'package:linkflutter/shared/widgets/link_back_button.dart';
 import 'package:linkflutter/shared/widgets/link_logo.dart';
@@ -34,12 +35,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _referralCodeController = TextEditingController();
 
   @override
   void dispose() {
     _fullNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _referralCodeController.dispose();
     super.dispose();
   }
 
@@ -63,6 +66,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           password: _passwordController.text,
           firstName: name.firstName,
           lastName: name.lastName,
+          referralCode: _referralCodeController.text.trim(),
         );
 
     if (!mounted) return;
@@ -134,6 +138,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xxl),
+                  LinkTextField(
+                    label: l10n.referralCodeFieldLabel,
+                    controller: _referralCodeController,
+                    hint: l10n.referralEnterCodeHint,
+                    textCapitalization: TextCapitalization.characters,
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
                   if (_showAppleSignIn) ...[
                     LinkSocialButton(
                       type: SocialButtonType.apple,
@@ -142,7 +153,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ? () {}
                           : () => handleOAuthSignIn(
                                 context,
-                                context.read<AuthProvider>().signInWithApple,
+                                () => context
+                                    .read<AuthProvider>()
+                                    .signInWithApple(
+                                      referralCode:
+                                          _referralCodeController.text.trim(),
+                                    ),
                               ),
                     ),
                     const SizedBox(height: AppSpacing.md),
@@ -154,7 +170,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ? () {}
                         : () => handleOAuthSignIn(
                               context,
-                              context.read<AuthProvider>().signInWithGoogle,
+                              () => context
+                                  .read<AuthProvider>()
+                                  .signInWithGoogle(
+                                    referralCode:
+                                        _referralCodeController.text.trim(),
+                                  ),
                             ),
                   ),
                   const SizedBox(height: AppSpacing.xxl),
@@ -231,6 +252,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ],
                     ),
                   ),
+                  const SizedBox(height: AppSpacing.md),
+                  const CreatedByMega(),
                   const SizedBox(height: AppSpacing.lg),
                 ],
               ),

@@ -31,11 +31,21 @@ class AuthProvider extends ChangeNotifier {
   bool _isLoading = true;
   String? _errorMessage;
   User? _user;
+  var _pendingReferralPrompt = false;
 
   bool get isAuthenticated => _isAuthenticated;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   User? get user => _user;
+
+  /// Compte OAuth créé sans code : proposer la saisie à la création.
+  bool get pendingReferralPrompt => _pendingReferralPrompt;
+
+  bool consumeReferralPrompt() {
+    if (!_pendingReferralPrompt) return false;
+    _pendingReferralPrompt = false;
+    return true;
+  }
 
   /// Restaure la session locale puis la valide auprès du serveur.
   Future<void> checkAuthStatus() async {
@@ -84,6 +94,7 @@ class AuthProvider extends ChangeNotifier {
     required String password,
     required String firstName,
     required String lastName,
+    String? referralCode,
   }) async {
     return _authenticate(
       () => _authApi.register(
@@ -91,19 +102,27 @@ class AuthProvider extends ChangeNotifier {
         password: password,
         firstName: firstName,
         lastName: lastName,
+        referralCode: referralCode,
       ),
     );
   }
 
-  Future<bool> signInWithGoogle() async {
+  Future<bool> signInWithGoogle({String? referralCode}) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
       final idToken = await _socialAuth.signInWithGoogle();
-      final result = await _authApi.loginWithGoogle(idToken: idToken);
-      await _persistSession(result.accessToken, result.user);
+      final result = await _authApi.loginWithGoogle(
+        idToken: idToken,
+        referralCode: referralCode,
+      );
+      await _persistSession(
+        result.accessToken,
+        result.user,
+        pendingReferralPrompt: result.needsReferralPrompt,
+      );
       _isLoading = false;
       notifyListeners();
       return true;
@@ -129,7 +148,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> signInWithApple() async {
+  Future<bool> signInWithApple({String? referralCode}) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -140,8 +159,13 @@ class AuthProvider extends ChangeNotifier {
         idToken: credential.idToken,
         firstName: credential.firstName,
         lastName: credential.lastName,
+        referralCode: referralCode,
       );
-      await _persistSession(result.accessToken, result.user);
+      await _persistSession(
+        result.accessToken,
+        result.user,
+        pendingReferralPrompt: result.needsReferralPrompt,
+      );
       _isLoading = false;
       notifyListeners();
       return true;
@@ -168,7 +192,9 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> _authenticate(
-    Future<({String accessToken, User user})> Function() request,
+    Future<({String accessToken, User user, bool needsReferralPrompt})>
+            Function()
+        request,
   ) async {
     _isLoading = true;
     _errorMessage = null;
@@ -193,7 +219,11 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> _persistSession(String token, User user) async {
+  Future<void> _persistSession(
+    String token,
+    User user, {
+    bool pendingReferralPrompt = false,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tokenKey, token);
     await prefs.setString(_userKey, jsonEncode(user.toJson()));
@@ -201,6 +231,7 @@ class AuthProvider extends ChangeNotifier {
     _apiClient.setAccessToken(token);
     _user = user;
     _isAuthenticated = true;
+    _pendingReferralPrompt = pendingReferralPrompt;
   }
 
   void _restoreLocalSession(String token, String userJson) {

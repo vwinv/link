@@ -155,6 +155,7 @@ class ApiClient {
     required String filePath,
     bool authenticated = false,
     String? contentType,
+    Duration timeout = const Duration(seconds: 30),
   }) async {
     final request = http.MultipartRequest(
       'POST',
@@ -175,7 +176,7 @@ class ApiClient {
     );
 
     final streamed = await _guard(
-      _client.send(request).timeout(const Duration(seconds: 30)),
+      _client.send(request).timeout(timeout),
     );
     _networkStatus?.reportOnline();
     final response = await http.Response.fromStream(streamed);

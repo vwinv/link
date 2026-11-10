@@ -12,6 +12,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'DropOne';
 
   @override
+  String get createdByMega => 'Created by MEGA';
+
+  @override
   String get navCards => 'Cards';
 
   @override
@@ -33,7 +36,107 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileSectionSettings => 'SETTINGS';
 
   @override
-  String get profileTeamSpace => 'Team space';
+  String get profileTeamSpace => 'My team';
+
+  @override
+  String get profileRefer => 'Refer';
+
+  @override
+  String get profileReferSubtitle => 'Earn points';
+
+  @override
+  String get referralTitle => 'Referrals';
+
+  @override
+  String get referralLoadError => 'Unable to load referrals.';
+
+  @override
+  String get referralBalanceLabel => 'Your balance';
+
+  @override
+  String get referralPointsUnit => 'points';
+
+  @override
+  String referralBalanceFcfa(String amount) {
+    return '≈ $amount FCFA';
+  }
+
+  @override
+  String get referralYourCode => 'Your referral code';
+
+  @override
+  String referralInvitedCount(int count) {
+    return '$count invited';
+  }
+
+  @override
+  String get referralShare => 'Refer';
+
+  @override
+  String referralShareText(String code, String storeUrl) {
+    return 'Download DropOne and sign up with my code $code:\n$storeUrl';
+  }
+
+  @override
+  String get referralHowTitle => 'How to earn points?';
+
+  @override
+  String referralHowBody(
+    String referralPoints,
+    String visitPoints,
+    String fcfa,
+  ) {
+    return '• $referralPoints point when a referral subscribes with your code\n• $visitPoints point per person who visits your card (once only)\n• 1 point = $fcfa FCFA';
+  }
+
+  @override
+  String get referralEnterCodeTitle => 'Have a code?';
+
+  @override
+  String get referralEnterCodeHint => 'DROP-XXXX';
+
+  @override
+  String get referralFirstLoginHint =>
+      'Enter your referrer’s code when creating your account. You won’t be able to do it later.';
+
+  @override
+  String get referralSkipCode => 'Skip';
+
+  @override
+  String get referralApply => 'Apply';
+
+  @override
+  String get referralCodeApplied => 'Referral code saved';
+
+  @override
+  String get referralCodeApplyError => 'Unable to apply this code';
+
+  @override
+  String get referralHistoryTitle => 'History';
+
+  @override
+  String get referralHistoryEmpty => 'No activity yet.';
+
+  @override
+  String get referralLedgerReferral => 'Referral (subscription)';
+
+  @override
+  String get referralLedgerVisit => 'New visitor';
+
+  @override
+  String get referralLedgerPurchase => 'Points purchase';
+
+  @override
+  String get referralLedgerAdjustment => 'Adjustment';
+
+  @override
+  String get referralLedgerCredit => 'Credit';
+
+  @override
+  String get referralLedgerDebit => 'Debit';
+
+  @override
+  String get referralCodeFieldLabel => 'Referral code (optional)';
 
   @override
   String get profileManageWallet => 'Manage Wallet';
@@ -310,6 +413,27 @@ class AppLocalizationsEn extends AppLocalizations {
       'Who you are, what you do, and for whom. 3 to 4 sentences.';
 
   @override
+  String get portfolioEditorSocialTitle => 'Portfolio socials';
+
+  @override
+  String get portfolioEditorSocialSubtitle =>
+      'Separate from your card socials. Shown on the public site.';
+
+  @override
+  String get portfolioEditorSocialChoice =>
+      'How do you want to set your socials?';
+
+  @override
+  String get portfolioEditorSocialCopyCard => 'Copy from my card';
+
+  @override
+  String get portfolioEditorSocialRetype => 'Enter them again';
+
+  @override
+  String get portfolioEditorSocialNoCardLinks =>
+      'No socials configured on this card.';
+
+  @override
   String get portfolioEditorExperience => 'Work experience';
 
   @override
@@ -384,6 +508,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get portfolioEditorImport => 'Import';
+
+  @override
+  String get portfolioEditorImportCv => 'Import my CV (PDF)';
+
+  @override
+  String get portfolioEditorImportCvHint =>
+      'The app reads your CV and prefills the fields. Nothing is saved until you publish.';
+
+  @override
+  String get portfolioEditorImportCvConfirmTitle => 'Replace current content?';
+
+  @override
+  String get portfolioEditorImportCvConfirmBody =>
+      'Current portfolio fields will be replaced with data extracted from the CV. Your photo is kept. You can review everything before saving.';
+
+  @override
+  String get portfolioEditorImportCvLoading => 'Analyzing CV…';
+
+  @override
+  String get portfolioEditorImportCvReady =>
+      'CV imported. Review the fields, then publish to save.';
+
+  @override
+  String get portfolioEditorImportCvError => 'Unable to analyze this CV';
+
+  @override
+  String get portfolioEditorImportCvPickError => 'Please select a PDF file';
 
   @override
   String get portfolioEditorRole => 'Job title';
@@ -619,6 +770,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homePreviewMyPortfolio => 'View my portfolio';
+
+  @override
+  String get previewShareLinksHint =>
+      'Share your card. Your visitors will get this feature.';
+
+  @override
+  String get previewSharePortfolioLinksHint =>
+      'Share your portfolio. Your visitors will get this feature.';
 
   @override
   String get myCardsPersonalTitle => 'Personal card';
@@ -1231,6 +1390,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String cardVisitorDetailMessageShareText(String name, String url) {
     return 'Here\'s $name\'s Drop One profile: $url';
+  }
+
+  @override
+  String cardVisitorDetailGuestMessageShareText(String name, String url) {
+    return 'Hi $name, thanks for checking my Drop One card. Here\'s my link: $url';
   }
 
   @override

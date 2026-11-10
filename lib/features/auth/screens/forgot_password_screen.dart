@@ -6,6 +6,7 @@ import 'package:linkflutter/core/l10n/auth_error_l10n.dart';
 import 'package:linkflutter/core/l10n/l10n_extensions.dart';
 import 'package:linkflutter/core/utils/responsive.dart';
 import 'package:linkflutter/providers/auth_provider.dart';
+import 'package:linkflutter/shared/widgets/created_by_mega.dart';
 import 'package:linkflutter/shared/widgets/link_back_button.dart';
 import 'package:linkflutter/shared/widgets/link_logo.dart';
 import 'package:linkflutter/shared/widgets/link_primary_button.dart';
@@ -145,6 +146,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       onPressed: () => context.go(RoutePaths.login),
                     ),
                   ],
+                  const SizedBox(height: AppSpacing.xxl),
+                  const CreatedByMega(),
+                  const SizedBox(height: AppSpacing.lg),
                 ],
               ),
             ),

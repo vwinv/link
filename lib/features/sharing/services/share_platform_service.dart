@@ -78,25 +78,45 @@ abstract final class SharePlatformService {
     }
   }
 
+  /// Normalise un numéro pour WhatsApp / SMS (chiffres, + optionnel conservé en digits).
+  static String? normalizePhoneDigits(String? raw) {
+    if (raw == null) return null;
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) return null;
+    final digits = trimmed.replaceAll(RegExp(r'\D'), '');
+    if (digits.length < 6) return null;
+    return digits;
+  }
+
   static Future<bool> shareWhatsApp(
     BuildContext context, {
     required String url,
+    String? phone,
   }) async {
+    final phoneDigits = normalizePhoneDigits(phone);
     try {
       if (!kIsWeb && Platform.isAndroid) {
-        final opened = await _openWhatsAppAndroid(url);
+        final opened = await _openWhatsAppAndroid(url, phoneDigits: phoneDigits);
         if (opened) return true;
       } else if (!kIsWeb && Platform.isIOS) {
-        final opened = await _openWhatsAppIos(url);
+        final opened = await _openWhatsAppIos(url, phoneDigits: phoneDigits);
         if (opened) return true;
       }
 
       final encoded = Uri.encodeComponent(url);
-      final webCandidates = [
-        Uri.parse('whatsapp://send?text=$encoded'),
-        Uri.parse('https://api.whatsapp.com/send?text=$encoded'),
-        Uri.parse('https://wa.me/?text=$encoded'),
-      ];
+      final webCandidates = phoneDigits != null
+          ? [
+              Uri.parse('whatsapp://send?phone=$phoneDigits&text=$encoded'),
+              Uri.parse(
+                'https://api.whatsapp.com/send?phone=$phoneDigits&text=$encoded',
+              ),
+              Uri.parse('https://wa.me/$phoneDigits?text=$encoded'),
+            ]
+          : [
+              Uri.parse('whatsapp://send?text=$encoded'),
+              Uri.parse('https://api.whatsapp.com/send?text=$encoded'),
+              Uri.parse('https://wa.me/?text=$encoded'),
+            ];
 
       for (final uri in webCandidates) {
         for (final mode in [
@@ -123,9 +143,36 @@ abstract final class SharePlatformService {
     return false;
   }
 
-  static Future<bool> _openWhatsAppAndroid(String url) async {
+  static Future<bool> sendSms(
+    BuildContext context, {
+    required String phone,
+    required String body,
+  }) async {
+    final digits = normalizePhoneDigits(phone);
+    if (digits == null) return false;
+    final encoded = Uri.encodeComponent(body);
+    final candidates = [
+      Uri.parse('sms:$digits?body=$encoded'),
+      Uri.parse('sms:$digits&body=$encoded'),
+    ];
+    for (final uri in candidates) {
+      if (await _tryLaunchUrl(uri, LaunchMode.externalApplication)) {
+        return true;
+      }
+    }
+    if (!context.mounted) return false;
+    await _copyToClipboard(context, body, 'Message copié dans le presse-papiers');
+    return false;
+  }
+
+  static Future<bool> _openWhatsAppAndroid(
+    String url, {
+    String? phoneDigits,
+  }) async {
     final encoded = Uri.encodeComponent(url);
-    final whatsappUri = Uri.parse('whatsapp://send?text=$encoded');
+    final whatsappUri = phoneDigits != null
+        ? Uri.parse('whatsapp://send?phone=$phoneDigits&text=$encoded')
+        : Uri.parse('whatsapp://send?text=$encoded');
 
     for (final mode in [
       LaunchMode.externalNonBrowserApplication,
@@ -137,43 +184,49 @@ abstract final class SharePlatformService {
       }
     }
 
-    for (final entry in _whatsappShareComponents.entries) {
-      if (await _launchAndroidIntent(
-        AndroidIntent(
-          action: 'android.intent.action.SEND',
-          type: 'text/plain',
-          package: entry.key,
-          componentName: entry.value,
-          arguments: <String, dynamic>{
-            'android.intent.extra.TEXT': url,
-          },
-        ),
-      )) {
-        return true;
+    // Avec un destinataire précis, on évite le sélecteur de contacts générique.
+    if (phoneDigits == null) {
+      for (final entry in _whatsappShareComponents.entries) {
+        if (await _launchAndroidIntent(
+          AndroidIntent(
+            action: 'android.intent.action.SEND',
+            type: 'text/plain',
+            package: entry.key,
+            componentName: entry.value,
+            arguments: <String, dynamic>{
+              'android.intent.extra.TEXT': url,
+            },
+          ),
+        )) {
+          return true;
+        }
+      }
+
+      for (final package in _whatsappPackages) {
+        if (await _launchAndroidIntent(
+          AndroidIntent(
+            action: 'android.intent.action.SEND',
+            type: 'text/plain',
+            package: package,
+            arguments: <String, dynamic>{
+              'android.intent.extra.TEXT': url,
+            },
+          ),
+        )) {
+          return true;
+        }
       }
     }
 
     for (final package in _whatsappPackages) {
-      if (await _launchAndroidIntent(
-        AndroidIntent(
-          action: 'android.intent.action.SEND',
-          type: 'text/plain',
-          package: package,
-          arguments: <String, dynamic>{
-            'android.intent.extra.TEXT': url,
-          },
-        ),
-      )) {
-        return true;
-      }
-    }
-
-    for (final package in _whatsappPackages) {
+      final data = phoneDigits != null
+          ? 'whatsapp://send?phone=$phoneDigits&text=$encoded'
+          : 'whatsapp://send?text=$encoded';
       if (await _launchAndroidIntent(
         AndroidIntent(
           action: 'android.intent.action.VIEW',
           package: package,
-          data: 'whatsapp://send?text=$encoded',
+          data: data,
         ),
       )) {
         return true;
@@ -194,12 +247,23 @@ abstract final class SharePlatformService {
     }
   }
 
-  static Future<bool> _openWhatsAppIos(String url) async {
+  static Future<bool> _openWhatsAppIos(
+    String url, {
+    String? phoneDigits,
+  }) async {
     final encoded = Uri.encodeComponent(url);
-    final candidates = [
-      Uri.parse('whatsapp://send?text=$encoded'),
-      Uri.parse('https://api.whatsapp.com/send?text=$encoded'),
-    ];
+    final candidates = phoneDigits != null
+        ? [
+            Uri.parse('whatsapp://send?phone=$phoneDigits&text=$encoded'),
+            Uri.parse(
+              'https://api.whatsapp.com/send?phone=$phoneDigits&text=$encoded',
+            ),
+            Uri.parse('https://wa.me/$phoneDigits?text=$encoded'),
+          ]
+        : [
+            Uri.parse('whatsapp://send?text=$encoded'),
+            Uri.parse('https://api.whatsapp.com/send?text=$encoded'),
+          ];
 
     for (final uri in candidates) {
       if (await _tryLaunchUrl(uri, LaunchMode.externalNonBrowserApplication)) {

@@ -13,6 +13,7 @@ import 'package:linkflutter/features/subscriptions/models/payment_config.dart';
 import 'package:linkflutter/features/subscriptions/models/offer_entitlements.dart';
 import 'package:linkflutter/features/subscriptions/models/premium_offer.dart';
 import 'package:linkflutter/features/subscriptions/models/premium_offer_price.dart';
+import 'package:linkflutter/features/points/services/points_api_service.dart';
 import 'package:linkflutter/features/subscriptions/services/apple_iap_service.dart';
 import 'package:linkflutter/features/subscriptions/services/subscriptions_api_service.dart';
 import 'package:linkflutter/features/subscriptions/widgets/payment_billing_picker_sheet.dart';
@@ -183,7 +184,7 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
 
     final messenger = ScaffoldMessenger.of(context);
     final teamId = selectedOffer.audience.isTeam
-        ? context.read<TeamsProvider>().myTeam?.id
+        ? context.read<TeamsProvider>().ownedTeam?.id
         : null;
     final seats = selectedOffer.hasPerSeatPricing && selectedPrice.isPerSeat
         ? selectedOffer.includedSeats
@@ -227,6 +228,30 @@ class _LinkPremiumScreenState extends State<LinkPremiumScreen> {
           : baseAmount;
       final isFree = amount <= 0;
       final montantLabel = billingChoice.amountLabel;
+
+      if (billingChoice.payWithPoints) {
+        await context.read<PointsApiService>().redeemSubscription(
+              offerSlug: selectedOffer.slug,
+              billingType: billingType,
+              teamId: teamId,
+              seats: seats,
+            );
+        if (!mounted) return;
+        await context.read<SubscriptionsProvider>().refresh();
+        if (!mounted) return;
+        context.pop();
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(
+              context.l10n.premiumActivated(
+                selectedOffer.title,
+                'Drop-Points',
+              ),
+            ),
+          ),
+        );
+        return;
+      }
 
       // Offre payante → bottom sheet SoftPay (Wave / OM / Free)
       if (!isFree) {

@@ -8,6 +8,7 @@ import 'package:linkflutter/features/auth/models/account_type.dart';
 import 'package:linkflutter/features/auth/widgets/account_type_card.dart';
 import 'package:linkflutter/providers/account_type_provider.dart';
 import 'package:linkflutter/providers/workspace_mode_provider.dart';
+import 'package:linkflutter/shared/widgets/created_by_mega.dart';
 import 'package:linkflutter/shared/widgets/link_logo.dart';
 import 'package:linkflutter/shared/widgets/link_primary_button.dart';
 import 'package:linkflutter/shared/widgets/responsive_layout.dart';
@@ -136,6 +137,8 @@ class AccountTypeScreen extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: AppSpacing.md),
+              const CreatedByMega(),
               const SizedBox(height: AppSpacing.lg),
             ],
           ),

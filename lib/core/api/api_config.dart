@@ -12,8 +12,8 @@ abstract final class ApiConfig {
   /* static String get defaultPublicBaseUrl {
     if (kIsWeb) return 'http://localhost:$_port';
     if (Platform.isAndroid) return 'http://10.0.2.2:$_port';
-    // iOS simulator : 10.0.2.2 n’existe pas, et `localhost` peut résoudre en IPv6.
-    return 'http://0.0.0.0:$_port';
+    // iOS simulator : 10.0.2.2 n’existe pas ; 0.0.0.0 n’est pas navigable en WebView.
+    return 'http://127.0.0.1:$_port';
   } */
 
   /// Backend local uniquement si tu passes :
@@ -102,24 +102,23 @@ abstract final class ApiConfig {
         'https://play.google.com/store/apps/details?id=com.mega.dropone',
   );
 
-  /// Page HTML chargée dans l’app (WebView), mode plein écran.
-  static String publicPageLoadUrl(String slug) {
-    final base = _useLocalApi ? '$_apiOrigin/cards/$slug' : publicUrl(slug);
-    return '$base?embed=1';
+  /// Page HTML chargée dans l’app (WebView).
+  /// [asGuestPreview] : même rendu qu’un visiteur sans DropOne (« Voir ma carte »).
+  static String publicPageLoadUrl(String slug, {bool asGuestPreview = false}) {
+    if (asGuestPreview) {
+      return '${defaultPublicBaseUrl}/cards/$slug?preview=1';
+    }
+    return '${defaultPublicBaseUrl}/cards/$slug?embed=1';
   }
-
-  /// Origine lisible par la WebView. `0.0.0.0` est une adresse d’écoute,
-  /// le simulateur ne charge pas une page dessus.
-  static String get webViewOrigin =>
-      _apiOrigin.replaceFirst('://0.0.0.0', '://127.0.0.1');
 
   static String portfolioPageLoadUrl(
     String slug, {
     String? layout,
     String? color,
+    bool asOwnerPreview = false,
   }) {
     final params = <String, String>{
-      'embed': '1',
+      if (asOwnerPreview) 'preview': '1' else 'embed': '1',
       'v': DateTime.now().millisecondsSinceEpoch.toString(),
     };
     if (layout != null && layout.isNotEmpty) params['layout'] = layout;
@@ -127,7 +126,7 @@ abstract final class ApiConfig {
     final query = params.entries
         .map((entry) => '${entry.key}=${Uri.encodeQueryComponent(entry.value)}')
         .join('&');
-    return '$webViewOrigin/portfolios/$slug?$query';
+    return '${defaultPublicBaseUrl}/portfolios/$slug?$query';
   }
 
   /// Alias conservé pour compatibilité.

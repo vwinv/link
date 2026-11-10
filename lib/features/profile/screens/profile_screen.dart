@@ -56,8 +56,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (team == null) return;
 
     try {
-      final result =
-          await context.read<TeamsApiService>().fetchTeamMembers(team.id);
+      final result = await context.read<TeamsApiService>().fetchTeamMembers(
+        team.id,
+      );
       if (!mounted) return;
       setState(() => _teamMemberCount = result.seats.used);
     } catch (_) {
@@ -70,9 +71,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (!mounted) return;
     if (!context.read<AuthProvider>().isAuthenticated) return;
     try {
-      await context
-          .read<NotificationsApiService>()
-          .updatePreferredLocale(language.name);
+      await context.read<NotificationsApiService>().updatePreferredLocale(
+        language.name,
+      );
     } catch (_) {
       // La langue locale reste appliquée ; la sync serveur retentera au prochain login.
     }
@@ -137,12 +138,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final user = context.watch<AuthProvider>().user;
-    final team = context.watch<TeamsProvider>().myTeam;
+    final team = context.watch<TeamsProvider>().ownedTeam;
     final cards = context.watch<CardsProvider>().cards;
-    final hasPremium =
-        context.watch<SubscriptionsProvider>().hasActiveSubscription;
-    final hidePremium =
-        context.watch<SubscriptionsProvider>().hidePremiumUpsells;
+    final hasPremium = context
+        .watch<SubscriptionsProvider>()
+        .hasActiveSubscription;
+    final hidePremium = context
+        .watch<SubscriptionsProvider>()
+        .hidePremiumUpsells;
     final language = context.watch<LocaleProvider>().language;
 
     return Scaffold(
@@ -169,19 +172,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
             if (user != null) ...[
               _ProfileUserCard(
                 user: user,
-                avatarImageUrl:
-                    context.watch<CardsProvider>().primaryCard?.avatarImageUrl,
+                avatarImageUrl: context
+                    .watch<CardsProvider>()
+                    .primaryCard
+                    ?.avatarImageUrl,
                 onEdit: () => openEditCardInfo(context),
               ),
               const SizedBox(height: AppSpacing.lg),
             ],
             if (!hasPremium && !hidePremium) ...[
-              _PremiumUpgradeBanner(
-                onTap: () => openLinkPremium(context),
-              ),
-              const SizedBox(height: AppSpacing.xxl),
-            ] else
-              const SizedBox(height: AppSpacing.md),
+              _PremiumUpgradeBanner(onTap: () => openLinkPremium(context)),
+              const SizedBox(height: AppSpacing.xs),
+            ],
+            _ProfileMenuTile(
+              icon: Icons.card_giftcard_rounded,
+              title: l10n.profileRefer,
+              subtitle: l10n.profileReferSubtitle,
+              onTap: () => context.push(RoutePaths.referral),
+              isBlue: true,
+            ),
+            const SizedBox(height: AppSpacing.xxl),
             _SectionLabel(l10n.profileSectionAccount),
             const SizedBox(height: AppSpacing.md),
             _ProfileMenuTile(
@@ -189,6 +199,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               title: l10n.profileTeamSpace,
               subtitle: _teamSubtitle(context, team),
               onTap: () => _openTeamSpace(context, team),
+              isDark: true,
             ),
             const SizedBox(height: AppSpacing.sm),
             _ProfileMenuTile(
@@ -213,10 +224,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: AppSpacing.xxl),
             _SectionLabel(l10n.profileSectionSettings),
             const SizedBox(height: AppSpacing.md),
-            _LanguageMenuTile(
-              language: language,
-              onChanged: _setLanguage,
-            ),
+            _LanguageMenuTile(language: language, onChanged: _setLanguage),
             const SizedBox(height: AppSpacing.sm),
             _ProfileMenuTile(
               icon: Icons.lock_outline_rounded,
@@ -260,12 +268,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _openTeamSpace(BuildContext context, Team? team) async {
     final teams = context.read<TeamsProvider>();
 
-    // Membre invité (pas owner) → espace membre, pas la gestion owner / Premium.
-    if (teams.canAccessMemberSpace && teams.ownedTeam == null) {
-      await enterMemberWorkspace(context);
-      return;
-    }
-
+    // Espace profil = équipe dont on est propriétaire (indépendant d’une
+    // invitation membre ailleurs). L’espace membre reste accessible depuis l’accueil.
     final hasTeamSubscription = await ensureTeamSubscription(context);
     if (!hasTeamSubscription || !mounted) return;
 
@@ -331,7 +335,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     openMyCardScreen(context, card);
   }
 
-  Future<void> _openWallet(BuildContext context, List<BusinessCard> cards) async {
+  Future<void> _openWallet(
+    BuildContext context,
+    List<BusinessCard> cards,
+  ) async {
     await context.read<CardsProvider>().load(force: true);
     if (!context.mounted) return;
     final latest = context.read<CardsProvider>().cards;
@@ -646,6 +653,8 @@ class _ProfileMenuTile extends StatelessWidget {
     this.subtitle,
     this.badgeCount = 0,
     this.isDestructive = false,
+    this.isDark = false,
+    this.isBlue = false,
     this.showChevron = true,
   });
 
@@ -655,42 +664,74 @@ class _ProfileMenuTile extends StatelessWidget {
   final int badgeCount;
   final VoidCallback onTap;
   final bool isDestructive;
+  final bool isDark;
+  final bool isBlue;
   final bool showChevron;
 
   @override
   Widget build(BuildContext context) {
-    final titleColor =
-        isDestructive ? AppColors.error : AppColors.textPrimary;
-    final iconColor =
-        isDestructive ? AppColors.error : AppColors.textSecondary;
+    const darkBg = Color(0xFF0C0D10);
+    final isAccent = isDark || isBlue;
+    final titleColor = isDestructive
+        ? AppColors.error
+        : isAccent
+        ? AppColors.onPrimary
+        : AppColors.textPrimary;
+    final subtitleColor = isAccent
+        ? AppColors.onPrimary.withValues(alpha: 0.75)
+        : AppColors.textSecondary;
+    final iconColor = isDestructive
+        ? AppColors.error
+        : isBlue || isDark
+        ? Colors.white
+        : AppColors.textSecondary;
+    final iconBoxColor = isDestructive
+        ? AppColors.rouge_clair
+        : isBlue
+        ? Colors.black.withValues(alpha: 0.18)
+        : isDark
+        ? AppColors.bleu_primaire
+        : AppColors.iconBgMutedDark;
+    final chevronColor = isAccent
+        ? AppColors.onPrimary.withValues(alpha: 0.55)
+        : AppColors.textTertiaire;
+    final tileColor = isBlue
+        ? AppColors.bleu_primaire
+        : isDark
+        ? darkBg
+        : AppColors.iconBgMuted;
+    final iconSize = isBlue ? 34.0 : 40.0;
+    final verticalPadding = isBlue ? AppSpacing.sm : AppSpacing.md;
 
     return Material(
-      color: AppColors.iconBgMuted,
+      color: tileColor,
       borderRadius: BorderRadius.circular(AppRadius.lg),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.lg),
         child: Container(
-          padding: const EdgeInsets.symmetric(
+          padding: EdgeInsets.symmetric(
             horizontal: AppSpacing.lg,
-            vertical: AppSpacing.md,
+            vertical: verticalPadding,
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.lg),
-            border: Border.all(color: AppColors.border.withValues(alpha: 0.6)),
+            border: Border.all(
+              color: isAccent
+                  ? Colors.transparent
+                  : AppColors.border.withValues(alpha: 0.6),
+            ),
           ),
           child: Row(
             children: [
               Container(
-                width: 40,
-                height: 40,
+                width: iconSize,
+                height: iconSize,
                 decoration: BoxDecoration(
-                  color: isDestructive
-                      ? AppColors.rouge_clair
-                      : AppColors.iconBgMutedDark,
+                  color: iconBoxColor,
                   borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
-                child: Icon(icon, color: iconColor, size: 22),
+                child: Icon(icon, color: iconColor, size: isBlue ? 18 : 22),
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
@@ -701,17 +742,20 @@ class _ProfileMenuTile extends StatelessWidget {
                       title,
                       style: TextStyle(
                         color: titleColor,
-                        fontSize: context.rs(AppFontSize.md),
+                        fontSize: context.rs(
+                          isBlue ? AppFontSize.sm : AppFontSize.md,
+                        ),
                         fontWeight: AppFontWeight.semiBold,
                       ),
                     ),
                     if (subtitle != null) ...[
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 1),
                       Text(
                         subtitle!,
                         style: TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: context.rs(AppFontSize.sm),
+                          color: subtitleColor,
+                          fontSize: context.rs(isBlue ? 11 : AppFontSize.sm),
+                          height: isBlue ? 1.15 : null,
                         ),
                       ),
                     ],
@@ -720,8 +764,10 @@ class _ProfileMenuTile extends StatelessWidget {
               ),
               if (badgeCount > 0) ...[
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.or,
                     borderRadius: BorderRadius.circular(AppRadius.full),
@@ -738,10 +784,7 @@ class _ProfileMenuTile extends StatelessWidget {
                 const SizedBox(width: AppSpacing.sm),
               ],
               if (showChevron)
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: AppColors.textTertiaire,
-                ),
+                Icon(Icons.chevron_right_rounded, color: chevronColor),
             ],
           ),
         ),
@@ -751,10 +794,7 @@ class _ProfileMenuTile extends StatelessWidget {
 }
 
 class _LanguageMenuTile extends StatelessWidget {
-  const _LanguageMenuTile({
-    required this.language,
-    required this.onChanged,
-  });
+  const _LanguageMenuTile({required this.language, required this.onChanged});
 
   final AppLanguage language;
   final ValueChanged<AppLanguage> onChanged;
@@ -797,10 +837,7 @@ class _LanguageMenuTile extends StatelessWidget {
               ),
             ),
           ),
-          _LanguageToggle(
-            language: language,
-            onChanged: onChanged,
-          ),
+          _LanguageToggle(language: language, onChanged: onChanged),
         ],
       ),
     );
@@ -808,10 +845,7 @@ class _LanguageMenuTile extends StatelessWidget {
 }
 
 class _LanguageToggle extends StatelessWidget {
-  const _LanguageToggle({
-    required this.language,
-    required this.onChanged,
-  });
+  const _LanguageToggle({required this.language, required this.onChanged});
 
   final AppLanguage language;
   final ValueChanged<AppLanguage> onChanged;

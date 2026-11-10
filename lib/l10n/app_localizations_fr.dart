@@ -12,6 +12,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get appTitle => 'DropOne';
 
   @override
+  String get createdByMega => 'Créé par MEGA';
+
+  @override
   String get navCards => 'Cartes';
 
   @override
@@ -33,7 +36,107 @@ class AppLocalizationsFr extends AppLocalizations {
   String get profileSectionSettings => 'RÉGLAGES';
 
   @override
-  String get profileTeamSpace => 'Espace équipe';
+  String get profileTeamSpace => 'Mon équipe';
+
+  @override
+  String get profileRefer => 'Parrainer';
+
+  @override
+  String get profileReferSubtitle => 'Gagnez des points';
+
+  @override
+  String get referralTitle => 'Parrainage';
+
+  @override
+  String get referralLoadError => 'Impossible de charger le parrainage.';
+
+  @override
+  String get referralBalanceLabel => 'Votre solde';
+
+  @override
+  String get referralPointsUnit => 'points';
+
+  @override
+  String referralBalanceFcfa(String amount) {
+    return '≈ $amount FCFA';
+  }
+
+  @override
+  String get referralYourCode => 'Votre code de parrainage';
+
+  @override
+  String referralInvitedCount(int count) {
+    return '$count personne(s) invitée(s)';
+  }
+
+  @override
+  String get referralShare => 'Parrainer';
+
+  @override
+  String referralShareText(String code, String storeUrl) {
+    return 'Télécharge DropOne et inscris-toi avec mon code $code :\n$storeUrl';
+  }
+
+  @override
+  String get referralHowTitle => 'Comment gagner des points ?';
+
+  @override
+  String referralHowBody(
+    String referralPoints,
+    String visitPoints,
+    String fcfa,
+  ) {
+    return '• $referralPoints point quand un filleul souscrit avec votre code\n• $visitPoints point par personne qui visite votre carte (une seule fois)\n• 1 point = $fcfa FCFA';
+  }
+
+  @override
+  String get referralEnterCodeTitle => 'Vous avez un code ?';
+
+  @override
+  String get referralEnterCodeHint => 'DROP-XXXX';
+
+  @override
+  String get referralFirstLoginHint =>
+      'Saisissez le code de votre parrain à la création du compte. Vous ne pourrez plus le faire ensuite.';
+
+  @override
+  String get referralSkipCode => 'Passer';
+
+  @override
+  String get referralApply => 'Valider';
+
+  @override
+  String get referralCodeApplied => 'Code de parrainage enregistré';
+
+  @override
+  String get referralCodeApplyError => 'Impossible d’appliquer ce code';
+
+  @override
+  String get referralHistoryTitle => 'Historique';
+
+  @override
+  String get referralHistoryEmpty => 'Aucun mouvement pour le moment.';
+
+  @override
+  String get referralLedgerReferral => 'Parrainage (abonnement)';
+
+  @override
+  String get referralLedgerVisit => 'Nouveau visiteur';
+
+  @override
+  String get referralLedgerPurchase => 'Achat avec points';
+
+  @override
+  String get referralLedgerAdjustment => 'Ajustement';
+
+  @override
+  String get referralLedgerCredit => 'Crédit';
+
+  @override
+  String get referralLedgerDebit => 'Débit';
+
+  @override
+  String get referralCodeFieldLabel => 'Code parrainage (optionnel)';
 
   @override
   String get profileManageWallet => 'Gérer le Wallet';
@@ -317,6 +420,26 @@ class AppLocalizationsFr extends AppLocalizations {
       'Qui êtes-vous, que faites-vous, pour qui ? 3 à 4 phrases.';
 
   @override
+  String get portfolioEditorSocialTitle => 'Réseaux du portfolio';
+
+  @override
+  String get portfolioEditorSocialSubtitle =>
+      'Distincts des réseaux de votre carte. Affichés sur le site public.';
+
+  @override
+  String get portfolioEditorSocialChoice => 'Comment renseigner vos réseaux ?';
+
+  @override
+  String get portfolioEditorSocialCopyCard => 'Copier ceux de ma carte';
+
+  @override
+  String get portfolioEditorSocialRetype => 'Les saisir à nouveau';
+
+  @override
+  String get portfolioEditorSocialNoCardLinks =>
+      'Aucun réseau configuré sur cette carte.';
+
+  @override
   String get portfolioEditorExperience => 'Expérience professionnelle';
 
   @override
@@ -391,6 +514,33 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get portfolioEditorImport => 'Importer';
+
+  @override
+  String get portfolioEditorImportCv => 'Importer mon CV (PDF)';
+
+  @override
+  String get portfolioEditorImportCvHint =>
+      'L’app lit votre CV et préremplit les champs. Rien n’est enregistré tant que vous ne publiez pas.';
+
+  @override
+  String get portfolioEditorImportCvConfirmTitle => 'Remplacer le contenu ?';
+
+  @override
+  String get portfolioEditorImportCvConfirmBody =>
+      'Les champs actuels du portfolio seront remplacés par ceux extraits du CV. La photo est conservée. Vous pourrez tout relire avant d’enregistrer.';
+
+  @override
+  String get portfolioEditorImportCvLoading => 'Analyse du CV…';
+
+  @override
+  String get portfolioEditorImportCvReady =>
+      'CV importé. Vérifiez les champs puis publiez pour enregistrer.';
+
+  @override
+  String get portfolioEditorImportCvError => 'Impossible d’analyser ce CV';
+
+  @override
+  String get portfolioEditorImportCvPickError => 'Sélectionnez un fichier PDF';
 
   @override
   String get portfolioEditorRole => 'Intitulé du poste';
@@ -628,6 +778,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get homePreviewMyPortfolio => 'Voir mon portfolio';
+
+  @override
+  String get previewShareLinksHint =>
+      'Partagez votre carte. Vos visiteurs bénéficieront de cette fonctionnalité.';
+
+  @override
+  String get previewSharePortfolioLinksHint =>
+      'Partagez votre portfolio. Vos visiteurs bénéficieront de cette fonctionnalité.';
 
   @override
   String get myCardsPersonalTitle => 'Carte personnelle';
@@ -1246,6 +1404,11 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String cardVisitorDetailMessageShareText(String name, String url) {
     return 'Voici le profil Drop One de $name : $url';
+  }
+
+  @override
+  String cardVisitorDetailGuestMessageShareText(String name, String url) {
+    return 'Bonjour $name, merci d’avoir consulté ma carte Drop One. Voici mon lien : $url';
   }
 
   @override

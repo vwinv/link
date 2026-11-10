@@ -60,6 +60,10 @@ class CardVisitor {
     this.avatarUrl,
     this.viewerUserId,
     this.viewerCardSlug,
+    this.guestFirstName,
+    this.guestLastName,
+    this.guestEmail,
+    this.guestPhone,
     this.durationSeconds,
     this.locationLabel,
     this.deviceLabel,
@@ -78,6 +82,10 @@ class CardVisitor {
       avatarUrl: json['avatarUrl'] as String?,
       viewerUserId: json['viewerUserId'] as String?,
       viewerCardSlug: json['viewerCardSlug'] as String?,
+      guestFirstName: json['guestFirstName'] as String?,
+      guestLastName: json['guestLastName'] as String?,
+      guestEmail: json['guestEmail'] as String?,
+      guestPhone: json['guestPhone'] as String?,
       hasSaved: json['hasSaved'] as bool? ?? false,
       hasShared: json['hasShared'] as bool? ?? false,
       durationSeconds: _asNullableInt(json['durationSeconds']),
@@ -96,11 +104,22 @@ class CardVisitor {
   final String? avatarUrl;
   final String? viewerUserId;
   final String? viewerCardSlug;
+  final String? guestFirstName;
+  final String? guestLastName;
+  final String? guestEmail;
+  final String? guestPhone;
   final bool hasSaved;
   final bool hasShared;
   final int? durationSeconds;
   final String? locationLabel;
   final String? deviceLabel;
+
+  /// Numéro laissé via le formulaire public (visiteur sans DropOne).
+  String? get contactPhone {
+    final value = guestPhone?.trim();
+    if (value == null || value.isEmpty) return null;
+    return value;
+  }
 }
 
 class CardVisitorsResult {

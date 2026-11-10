@@ -9,6 +9,7 @@ import 'package:linkflutter/providers/account_type_provider.dart';
 import 'package:linkflutter/providers/auth_provider.dart';
 import 'package:linkflutter/providers/onboarding_provider.dart';
 import 'package:linkflutter/providers/workspace_mode_provider.dart';
+import 'package:linkflutter/shared/widgets/created_by_mega.dart';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -88,17 +89,29 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: SafeArea(
+        child: Stack(
           children: [
-            Image.asset(
-              AppAssets.logo,
-              width: 200,
-              fit: BoxFit.contain,
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    AppAssets.logo,
+                    width: 200,
+                    fit: BoxFit.contain,
+                  ),
+                  const SizedBox(height: AppSpacing.xxxl),
+                  const CircularProgressIndicator(),
+                ],
+              ),
             ),
-            const SizedBox(height: AppSpacing.xxxl),
-            const CircularProgressIndicator(),
+            const Positioned(
+              left: 0,
+              right: 0,
+              bottom: AppSpacing.lg,
+              child: CreatedByMega(),
+            ),
           ],
         ),
       ),

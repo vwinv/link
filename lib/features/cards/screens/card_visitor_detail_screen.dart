@@ -91,7 +91,19 @@ class _CardVisitorDetailScreenState extends State<CardVisitorDetailScreen> {
       ApiConfig.playStoreUrl,
       ApiConfig.publicUrl(widget.card.slug),
     );
-    await SharePlatformService.shareWhatsApp(context, url: message);
+    final phone = visitor.contactPhone;
+    final opened = await SharePlatformService.shareWhatsApp(
+      context,
+      url: message,
+      phone: phone,
+    );
+    if (!opened && phone != null && mounted) {
+      await SharePlatformService.sendSms(
+        context,
+        phone: phone,
+        body: message,
+      );
+    }
   }
 
   Future<void> _sendMessage() async {
@@ -104,6 +116,28 @@ class _CardVisitorDetailScreenState extends State<CardVisitorDetailScreen> {
       );
       return;
     }
+
+    final phone = visitor.contactPhone;
+    if (phone != null) {
+      final message = l10n.cardVisitorDetailGuestMessageShareText(
+        visitor.displayName,
+        ApiConfig.publicUrl(widget.card.slug),
+      );
+      final opened = await SharePlatformService.shareWhatsApp(
+        context,
+        url: message,
+        phone: phone,
+      );
+      if (!opened && mounted) {
+        await SharePlatformService.sendSms(
+          context,
+          phone: phone,
+          body: message,
+        );
+      }
+      return;
+    }
+
     await _invite();
   }
 

@@ -254,7 +254,7 @@ class _ProDesignPreviewScreenState extends State<ProDesignPreviewScreen> {
                             maxWidth: context.contentMaxWidth,
                           ),
                           child: ProDesignCanvas(
-                            referenceHeight: 720,
+                            referenceHeight: null,
                             child: BubbleDesign(
                               template: template,
                               fullName: card.fullName,
@@ -418,6 +418,7 @@ class _ProDesignPreviewScreenState extends State<ProDesignPreviewScreen> {
                     ),
                     child: Center(
                       child: ProDesignCanvas(
+                        referenceHeight: null,
                         child: ProDesignBody(
                           template: template,
                           fullName: card.fullName,

@@ -1,6 +1,7 @@
 {
   "@@locale": "en",
   "appTitle": "DropOne",
+  "createdByMega": "Created by MEGA",
 
   "navCards": "Cards",
   "navScan": "AI Scan",
@@ -10,7 +11,59 @@
   "profileTitle": "Profile",
   "profileSectionAccount": "ACCOUNT",
   "profileSectionSettings": "SETTINGS",
-  "profileTeamSpace": "Team space",
+  "profileTeamSpace": "My team",
+  "profileRefer": "Refer",
+  "profileReferSubtitle": "Earn points",
+  "referralTitle": "Referrals",
+  "referralLoadError": "Unable to load referrals.",
+  "referralBalanceLabel": "Your balance",
+  "referralPointsUnit": "points",
+  "referralBalanceFcfa": "≈ {amount} FCFA",
+  "@referralBalanceFcfa": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "referralYourCode": "Your referral code",
+  "referralInvitedCount": "{count} invited",
+  "@referralInvitedCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "referralShare": "Refer",
+  "referralShareText": "Download DropOne and sign up with my code {code}:\n{storeUrl}",
+  "@referralShareText": {
+    "placeholders": {
+      "code": { "type": "String" },
+      "storeUrl": { "type": "String" }
+    }
+  },
+  "referralHowTitle": "How to earn points?",
+  "referralHowBody": "• {referralPoints} point when a referral subscribes with your code\n• {visitPoints} point per person who visits your card (once only)\n• 1 point = {fcfa} FCFA",
+  "@referralHowBody": {
+    "placeholders": {
+      "referralPoints": { "type": "String" },
+      "visitPoints": { "type": "String" },
+      "fcfa": { "type": "String" }
+    }
+  },
+  "referralEnterCodeTitle": "Have a code?",
+  "referralEnterCodeHint": "DROP-XXXX",
+  "referralFirstLoginHint": "Enter your referrer’s code when creating your account. You won’t be able to do it later.",
+  "referralSkipCode": "Skip",
+  "referralApply": "Apply",
+  "referralCodeApplied": "Referral code saved",
+  "referralCodeApplyError": "Unable to apply this code",
+  "referralHistoryTitle": "History",
+  "referralHistoryEmpty": "No activity yet.",
+  "referralLedgerReferral": "Referral (subscription)",
+  "referralLedgerVisit": "New visitor",
+  "referralLedgerPurchase": "Points purchase",
+  "referralLedgerAdjustment": "Adjustment",
+  "referralLedgerCredit": "Credit",
+  "referralLedgerDebit": "Debit",
+  "referralCodeFieldLabel": "Referral code (optional)",
   "profileManageWallet": "Manage Wallet",
   "profileNotifications": "Notifications",
   "notificationsTitle": "Notifications",
@@ -112,6 +165,12 @@
   "portfolioEditorPortfolioTitle": "Portfolio title",
   "portfolioEditorDescription": "Description",
   "portfolioEditorDescriptionHint": "Who you are, what you do, and for whom. 3 to 4 sentences.",
+  "portfolioEditorSocialTitle": "Portfolio socials",
+  "portfolioEditorSocialSubtitle": "Separate from your card socials. Shown on the public site.",
+  "portfolioEditorSocialChoice": "How do you want to set your socials?",
+  "portfolioEditorSocialCopyCard": "Copy from my card",
+  "portfolioEditorSocialRetype": "Enter them again",
+  "portfolioEditorSocialNoCardLinks": "No socials configured on this card.",
   "portfolioEditorExperience": "Work experience",
   "portfolioEditorPosts": "{count, plural, =0{0 roles} =1{1 role} other{{count} roles}}",
   "@portfolioEditorPosts": {
@@ -137,6 +196,14 @@
   "portfolioEditorProjects": "Work",
   "portfolioEditorProjectsHint": "Up to 12 works. Photo and link are optional.",
   "portfolioEditorImport": "Import",
+  "portfolioEditorImportCv": "Import my CV (PDF)",
+  "portfolioEditorImportCvHint": "The app reads your CV and prefills the fields. Nothing is saved until you publish.",
+  "portfolioEditorImportCvConfirmTitle": "Replace current content?",
+  "portfolioEditorImportCvConfirmBody": "Current portfolio fields will be replaced with data extracted from the CV. Your photo is kept. You can review everything before saving.",
+  "portfolioEditorImportCvLoading": "Analyzing CV…",
+  "portfolioEditorImportCvReady": "CV imported. Review the fields, then publish to save.",
+  "portfolioEditorImportCvError": "Unable to analyze this CV",
+  "portfolioEditorImportCvPickError": "Please select a PDF file",
   "portfolioEditorRole": "Job title",
   "portfolioEditorCompany": "Company",
   "portfolioEditorPeriod": "Period",
@@ -215,6 +282,8 @@
   "myCardsProTitle": "Professional card",
   "homePreviewMyCard": "View my card",
   "homePreviewMyPortfolio": "View my portfolio",
+  "previewShareLinksHint": "Share your card. Your visitors will get this feature.",
+  "previewSharePortfolioLinksHint": "Share your portfolio. Your visitors will get this feature.",
   "myCardsPersonalTitle": "Personal card",
   "myCardsPersonalSubtitle": "Create your personal card to share your details and grow your network.",
   "myCardsCreatePersonal": "Create my personal card",
@@ -446,6 +515,13 @@
   },
   "cardVisitorDetailMessageShareText": "Here's {name}'s Drop One profile: {url}",
   "@cardVisitorDetailMessageShareText": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "url": { "type": "String" }
+    }
+  },
+  "cardVisitorDetailGuestMessageShareText": "Hi {name}, thanks for checking my Drop One card. Here's my link: {url}",
+  "@cardVisitorDetailGuestMessageShareText": {
     "placeholders": {
       "name": { "type": "String" },
       "url": { "type": "String" }

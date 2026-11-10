@@ -9,6 +9,7 @@ import 'package:linkflutter/core/api/api_exception.dart';
 import 'package:linkflutter/core/bootstrap/user_workspace_bootstrap.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/core/deep_link/deep_link_service.dart';
+import 'package:linkflutter/core/l10n/l10n_extensions.dart';
 import 'package:linkflutter/core/network/network_status.dart';
 import 'package:linkflutter/features/sharing/public_card_web_bridge.dart';
 import 'package:linkflutter/features/sharing/services/sharing_api_service.dart';
@@ -20,9 +21,16 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class PublicCardScreen extends StatefulWidget {
-  const PublicCardScreen({required this.slug, super.key});
+  const PublicCardScreen({
+    required this.slug,
+    this.asGuestPreview = false,
+    super.key,
+  });
 
   final String slug;
+
+  /// « Voir ma carte » : même rendu qu’un visiteur sans DropOne.
+  final bool asGuestPreview;
 
   @override
   State<PublicCardScreen> createState() => _PublicCardScreenState();
@@ -47,9 +55,11 @@ class _PublicCardScreenState extends State<PublicCardScreen> {
       if (context.read<AuthProvider>().isAuthenticated) {
         unawaited(ensureUserWorkspaceLoaded(context));
       }
-      unawaited(
-        context.read<SharingApiService>().recordPublicCardView(widget.slug),
-      );
+      if (!widget.asGuestPreview) {
+        unawaited(
+          context.read<SharingApiService>().recordPublicCardView(widget.slug),
+        );
+      }
     });
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -57,6 +67,10 @@ class _PublicCardScreenState extends State<PublicCardScreen> {
       ..addJavaScriptChannel(
         PublicCardWebBridge.channelName,
         onMessageReceived: (message) {
+          if (message.message == PublicCardWebBridge.previewLink) {
+            _showPreviewShareHint();
+            return;
+          }
           if (message.message == PublicCardWebBridge.saveContact) {
             _registerContactInLink();
           }
@@ -66,7 +80,23 @@ class _PublicCardScreenState extends State<PublicCardScreen> {
         NavigationDelegate(
           onNavigationRequest: (request) {
             final uri = Uri.tryParse(request.url);
-            if (uri != null && _shouldOpenExternally(uri)) {
+            if (uri == null) return NavigationDecision.navigate;
+
+            final portfolioSlug = _portfolioSlugFromUri(uri);
+            if (portfolioSlug != null) {
+              if (widget.asGuestPreview) {
+                _showPreviewShareHint();
+              } else {
+                unawaited(_openVisitorPortfolio(portfolioSlug));
+              }
+              return NavigationDecision.prevent;
+            }
+
+            if (widget.asGuestPreview && _shouldBlockInPreview(uri)) {
+              _showPreviewShareHint();
+              return NavigationDecision.prevent;
+            }
+            if (_shouldOpenExternally(uri)) {
               unawaited(_openExternalUri(uri));
               return NavigationDecision.prevent;
             }
@@ -87,7 +117,11 @@ class _PublicCardScreenState extends State<PublicCardScreen> {
             setState(() => _isLoading = false);
             if (mounted) context.read<NetworkStatus>().reportOnline();
             try {
-              await _controller.runJavaScript(PublicCardWebBridge.injectScript);
+              await _controller.runJavaScript(
+                PublicCardWebBridge.injectScript(
+                  asGuestPreview: widget.asGuestPreview,
+                ),
+              );
             } catch (_) {}
           },
           onWebResourceError: (error) {
@@ -149,13 +183,21 @@ class _PublicCardScreenState extends State<PublicCardScreen> {
     _startLoadTimeout();
 
     final headers = <String, String>{};
-    final token = context.read<ApiClient>().accessToken;
-    if (token != null && token.isNotEmpty) {
-      headers['Authorization'] = 'Bearer $token';
+    // Aperçu propriétaire : pas de token → même page qu’un visiteur anonyme.
+    if (!widget.asGuestPreview) {
+      final token = context.read<ApiClient>().accessToken;
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
     }
 
     await _controller.loadRequest(
-      Uri.parse(ApiConfig.publicPageLoadUrl(widget.slug)),
+      Uri.parse(
+        ApiConfig.publicPageLoadUrl(
+          widget.slug,
+          asGuestPreview: widget.asGuestPreview,
+        ),
+      ),
       headers: headers,
     );
   }
@@ -212,11 +254,41 @@ class _PublicCardScreenState extends State<PublicCardScreen> {
     return uri.scheme == 'tel' || uri.scheme == 'mailto' || uri.scheme == 'sms';
   }
 
+  bool _shouldBlockInPreview(Uri uri) {
+    if (_shouldOpenExternally(uri)) return true;
+    if (uri.scheme == 'http' || uri.scheme == 'https') {
+      final path = uri.path;
+      final isCardPage =
+          path.contains('/cards/') || path.contains('/sharing/public/');
+      return !isCardPage;
+    }
+    return false;
+  }
+
+  /// Extrait le slug depuis `/portfolios/{slug}`.
+  String? _portfolioSlugFromUri(Uri uri) {
+    final segments = uri.pathSegments.where((s) => s.isNotEmpty).toList();
+    final index = segments.indexOf('portfolios');
+    if (index < 0 || index + 1 >= segments.length) return null;
+    final slug = segments[index + 1].trim();
+    return slug.isEmpty ? null : slug;
+  }
+
+  /// Ouvre le portfolio dans l’écran dédié (style à jour, sans cache WebView carte).
+  Future<void> _openVisitorPortfolio(String slug) async {
+    if (!mounted) return;
+    await context.push('${RoutePaths.publicPortfolio}/$slug');
+  }
+
   Future<void> _openExternalUri(Uri uri) async {
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!launched && mounted) {
       _showSnackBar('Impossible d’ouvrir ce lien.');
     }
+  }
+
+  void _showPreviewShareHint() {
+    _showSnackBar(context.l10n.previewShareLinksHint);
   }
 
   void _showSnackBar(String message) {

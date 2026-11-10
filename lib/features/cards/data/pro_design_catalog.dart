@@ -5,14 +5,16 @@ import 'package:linkflutter/features/cards/models/pro_design_layout.dart';
 import 'package:linkflutter/features/cards/models/pro_design_template.dart';
 
 abstract final class ProDesignCatalog {
+  /// Fallback interne (plus proposé dans la grille premium).
+  static const _uniFallback = ProDesignTemplate(
+    id: 'uni',
+    name: 'Uni',
+    background: Color(0xFF0A6BFF),
+    layout: ProDesignLayout.azurCentered,
+  );
+
   /// Grille = aperçu miniature de `ProDesignBody` (même rendu que « Ouvrir »).
   static const templates = [
-    ProDesignTemplate(
-      id: 'uni',
-      name: 'Uni',
-      background: Color(0xFF0A6BFF),
-      layout: ProDesignLayout.azurCentered,
-    ),
     ProDesignTemplate(
       id: 'degrade',
       name: 'Degrade',
@@ -74,6 +76,7 @@ abstract final class ProDesignCatalog {
   static ProDesignTemplate? byId(String? id) {
     if (id == null) return null;
     final resolvedId = _legacyIds[id] ?? id;
+    if (resolvedId == _uniFallback.id) return _uniFallback;
     for (final template in templates) {
       if (template.id == resolvedId) return template;
     }

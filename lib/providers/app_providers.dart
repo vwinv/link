@@ -13,6 +13,7 @@ import 'package:linkflutter/features/subscriptions/services/subscriptions_api_se
 import 'package:linkflutter/features/subscriptions/services/apple_iap_service.dart';
 import 'package:linkflutter/features/wallet/services/wallet_api_service.dart';
 import 'package:linkflutter/features/wallet/services/wallet_platform_service.dart';
+import 'package:linkflutter/features/points/services/points_api_service.dart';
 import 'package:linkflutter/features/notifications/services/notifications_api_service.dart';
 import 'package:linkflutter/features/notifications/services/push_notifications_service.dart';
 import 'package:linkflutter/providers/account_type_provider.dart';
@@ -60,6 +61,7 @@ abstract final class AppProviders {
     Provider(create: (_) => ContactsApiService(_apiClient)),
     Provider(create: (_) => SharingApiService(_apiClient)),
     Provider(create: (_) => WalletApiService(_apiClient)),
+    Provider(create: (_) => PointsApiService(_apiClient)),
     Provider(create: (_) => NotificationsApiService(_apiClient)),
     Provider(
       create: (context) =>

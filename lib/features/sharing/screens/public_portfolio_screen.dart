@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkflutter/config/routes/app_navigation.dart';
@@ -10,10 +12,12 @@ import 'package:linkflutter/core/deep_link/deep_link_service.dart';
 import 'package:linkflutter/core/network/network_status.dart';
 import 'package:linkflutter/core/l10n/l10n_extensions.dart';
 import 'package:linkflutter/features/cards/services/cards_api_service.dart';
+import 'package:linkflutter/features/sharing/public_card_web_bridge.dart';
 import 'package:linkflutter/features/subscriptions/models/offer_entitlements.dart';
 import 'package:linkflutter/providers/auth_provider.dart';
 import 'package:linkflutter/shared/widgets/link_primary_button.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class PublicPortfolioScreen extends StatefulWidget {
@@ -23,6 +27,7 @@ class PublicPortfolioScreen extends StatefulWidget {
     this.color,
     this.cardId,
     this.canSaveStyle = false,
+    this.asOwnerPreview = false,
     super.key,
   });
 
@@ -33,6 +38,9 @@ class PublicPortfolioScreen extends StatefulWidget {
 
   /// Aperçu depuis Personnaliser : Enregistrer applique le thème choisi.
   final bool canSaveStyle;
+
+  /// « Voir mon portfolio » : les liens affichent un message au lieu de s’ouvrir.
+  final bool asOwnerPreview;
 
   @override
   State<PublicPortfolioScreen> createState() => _PublicPortfolioScreenState();
@@ -48,15 +56,46 @@ class _PublicPortfolioScreenState extends State<PublicPortfolioScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = WebViewController()
+    final controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0xFF070B18))
+      ..setBackgroundColor(const Color(0xFF070B18));
+    if (widget.asOwnerPreview) {
+      controller.addJavaScriptChannel(
+        PublicCardWebBridge.channelName,
+        onMessageReceived: (message) {
+          if (message.message == PublicCardWebBridge.previewLink) {
+            _showPreviewShareHint();
+          }
+        },
+      );
+    }
+    _controller = controller
       ..setNavigationDelegate(
         NavigationDelegate(
-          onPageFinished: (_) {
+          onNavigationRequest: (request) {
+            final uri = Uri.tryParse(request.url);
+            if (uri == null) return NavigationDecision.navigate;
+            if (widget.asOwnerPreview && _shouldBlockInPreview(uri)) {
+              _showPreviewShareHint();
+              return NavigationDecision.prevent;
+            }
+            if (_shouldOpenExternally(uri)) {
+              unawaited(_openExternalUri(uri));
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
+          },
+          onPageFinished: (_) async {
             if (!mounted) return;
             setState(() => _isLoading = false);
             context.read<NetworkStatus>().reportOnline();
+            if (widget.asOwnerPreview) {
+              try {
+                await _controller.runJavaScript(
+                  PublicCardWebBridge.injectPortfolioPreviewScript(),
+                );
+              } catch (_) {}
+            }
           },
           onWebResourceError: (error) {
             if (!mounted) return;
@@ -83,6 +122,36 @@ class _PublicPortfolioScreenState extends State<PublicPortfolioScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
   }
 
+  bool _shouldOpenExternally(Uri uri) {
+    return uri.scheme == 'tel' || uri.scheme == 'mailto' || uri.scheme == 'sms';
+  }
+
+  bool _shouldBlockInPreview(Uri uri) {
+    if (_shouldOpenExternally(uri)) return true;
+    if (uri.scheme == 'http' || uri.scheme == 'https') {
+      final path = uri.path;
+      final isPortfolioPage = path.contains('/portfolios/');
+      return !isPortfolioPage;
+    }
+    return false;
+  }
+
+  Future<void> _openExternalUri(Uri uri) async {
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Impossible d’ouvrir ce lien.')),
+      );
+    }
+  }
+
+  void _showPreviewShareHint() {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(context.l10n.previewShareLinksHint)),
+    );
+  }
+
   Future<void> _load() async {
     final headers = <String, String>{};
     final token = context.read<ApiClient>().accessToken;
@@ -96,6 +165,7 @@ class _PublicPortfolioScreenState extends State<PublicPortfolioScreen> {
             widget.slug,
             layout: widget.layout,
             color: widget.color,
+            asOwnerPreview: widget.asOwnerPreview,
           ),
         ),
         headers: headers,

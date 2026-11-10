@@ -3,6 +3,7 @@ import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/core/utils/responsive.dart';
 import 'package:linkflutter/features/cards/models/pro_design_template.dart';
 import 'package:linkflutter/features/cards/widgets/pro_designs/pro_design_avatar.dart';
+import 'package:linkflutter/features/cards/widgets/pro_designs/pro_design_guest_lead.dart';
 import 'package:linkflutter/features/cards/widgets/pro_designs/pro_design_metrics.dart';
 import 'package:linkflutter/features/cards/widgets/pro_designs/pro_design_team_line.dart';
 
@@ -20,6 +21,7 @@ class ArcDesign extends StatelessWidget {
     this.topBar,
     this.topInset = 0,
     this.expand = false,
+    this.showGuestLead = true,
     super.key,
   });
 
@@ -34,6 +36,7 @@ class ArcDesign extends StatelessWidget {
   final Widget? topBar;
   final double topInset;
   final bool expand;
+  final bool showGuestLead;
 
   static const avatarRadius = 62.0;
   static const avatarBorderWidth = 8.0;
@@ -250,6 +253,7 @@ class ArcDesign extends StatelessWidget {
           _SocialIcon(asset: 'assets/whatsapp.png'),
         ],
       ),
+      if (showGuestLead) ProDesignGuestLeadPreview(template: template),
       const SizedBox(height: AppSpacing.lg),
     ];
   }

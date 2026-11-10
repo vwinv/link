@@ -15,7 +15,9 @@ class ProDesignCanvas extends StatelessWidget {
 
   final Widget child;
   final double referenceWidth;
-  final double referenceHeight;
+
+  /// Si `null`, la hauteur suit le contenu (aperçu avec formulaire, etc.).
+  final double? referenceHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +36,15 @@ class ProDesignCanvas extends StatelessWidget {
         final targetWidth = parentWidth > maxWidth ? maxWidth : parentWidth;
         if (targetWidth <= 0) return child;
 
+        final mediaHeight = referenceHeight ?? 2000.0;
+        final framedChild = MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            size: Size(referenceWidth, mediaHeight),
+            textScaler: TextScaler.noScaling,
+          ),
+          child: child,
+        );
+
         return Align(
           alignment: Alignment.topCenter,
           child: SizedBox(
@@ -42,17 +53,16 @@ class ProDesignCanvas extends StatelessWidget {
               fit: BoxFit.fitWidth,
               alignment: Alignment.topCenter,
               clipBehavior: Clip.hardEdge,
-              child: SizedBox(
-                width: referenceWidth,
-                height: referenceHeight,
-                child: MediaQuery(
-                  data: MediaQuery.of(context).copyWith(
-                    size: Size(referenceWidth, referenceHeight),
-                    textScaler: TextScaler.noScaling,
-                  ),
-                  child: child,
-                ),
-              ),
+              child: referenceHeight == null
+                  ? SizedBox(
+                      width: referenceWidth,
+                      child: framedChild,
+                    )
+                  : SizedBox(
+                      width: referenceWidth,
+                      height: referenceHeight,
+                      child: framedChild,
+                    ),
             ),
           ),
         );

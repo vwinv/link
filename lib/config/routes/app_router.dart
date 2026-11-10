@@ -18,6 +18,7 @@ import 'package:linkflutter/features/cards/screens/create_card_success_screen.da
 import 'package:linkflutter/providers/cards_provider.dart';
 import 'package:linkflutter/providers/create_card_provider.dart';
 import 'package:linkflutter/features/home/screens/home_screen.dart';
+import 'package:linkflutter/features/points/screens/referral_screen.dart';
 import 'package:linkflutter/features/profile/screens/profile_screen.dart';
 import 'package:linkflutter/features/notifications/screens/notifications_screen.dart';
 import 'package:linkflutter/features/onboarding/screens/onboarding_screen.dart';
@@ -167,10 +168,14 @@ class AppRouter {
           path: '${RoutePaths.publicPortfolio}/:slug',
           pageBuilder: (context, state) {
             final slug = state.pathParameters['slug'] ?? '';
+            final preview = state.uri.queryParameters['preview'] == '1';
             return MaterialPage<void>(
               key: state.pageKey,
               fullscreenDialog: true,
-              child: PublicPortfolioScreen(slug: slug),
+              child: PublicPortfolioScreen(
+                slug: slug,
+                asOwnerPreview: preview,
+              ),
             );
           },
         ),
@@ -179,10 +184,14 @@ class AppRouter {
           path: '${RoutePaths.publicCard}/:slug',
           pageBuilder: (context, state) {
             final slug = state.pathParameters['slug'] ?? '';
+            final preview = state.uri.queryParameters['preview'] == '1';
             return MaterialPage<void>(
               key: state.pageKey,
               fullscreenDialog: true,
-              child: PublicCardScreen(slug: slug),
+              child: PublicCardScreen(
+                slug: slug,
+                asGuestPreview: preview,
+              ),
             );
           },
         ),
@@ -204,6 +213,11 @@ class AppRouter {
           parentNavigatorKey: rootNavigatorKey,
           path: RoutePaths.createProfessionalTeam,
           builder: (context, state) => const SetupTeamScreen(),
+        ),
+        GoRoute(
+          parentNavigatorKey: rootNavigatorKey,
+          path: RoutePaths.referral,
+          builder: (context, state) => const ReferralScreen(),
         ),
         GoRoute(
           parentNavigatorKey: rootNavigatorKey,

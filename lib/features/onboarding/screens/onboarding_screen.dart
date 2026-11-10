@@ -5,6 +5,7 @@ import 'package:linkflutter/core/constants/app_assets.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/core/l10n/l10n_extensions.dart';
 import 'package:linkflutter/core/utils/responsive.dart';
+import 'package:linkflutter/shared/widgets/created_by_mega.dart';
 import 'package:linkflutter/shared/widgets/responsive_layout.dart';
 import 'package:linkflutter/features/onboarding/models/onboarding_item.dart';
 import 'package:linkflutter/features/onboarding/widgets/onboarding_animated_image.dart';
@@ -130,7 +131,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
               Padding(
-                padding: context.screenPadding.copyWith(bottom: AppSpacing.lg),
+                padding: context.screenPadding.copyWith(bottom: AppSpacing.sm),
                 child: SizedBox(
                   width: double.infinity,
                   height: Responsive.buttonHeight(context),
@@ -156,6 +157,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ),
                 ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(bottom: AppSpacing.lg),
+                child: CreatedByMega(),
               ),
             ],
           ),

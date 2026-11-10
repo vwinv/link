@@ -11,6 +11,7 @@ import 'package:linkflutter/core/utils/responsive.dart';
 import 'package:linkflutter/features/auth/utils/social_sign_in_helper.dart';
 import 'package:linkflutter/config/routes/app_navigation.dart';
 import 'package:linkflutter/providers/auth_provider.dart';
+import 'package:linkflutter/shared/widgets/created_by_mega.dart';
 import 'package:linkflutter/shared/widgets/link_auth_divider.dart';
 import 'package:linkflutter/shared/widgets/link_logo.dart';
 import 'package:linkflutter/shared/widgets/link_primary_button.dart';
@@ -223,6 +224,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                   ),
+                  const SizedBox(height: AppSpacing.md),
+                  const CreatedByMega(),
                   const SizedBox(height: AppSpacing.lg),
                 ],
               ),

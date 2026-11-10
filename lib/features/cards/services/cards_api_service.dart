@@ -202,6 +202,22 @@ class CardsApiService {
     return PortfolioProfile.fromJson(response);
   }
 
+  /// Analyse un CV PDF et renvoie un brouillon (non enregistré).
+  Future<PortfolioProfile> importPortfolioCv({
+    required String cardId,
+    required String filePath,
+  }) async {
+    final response = await _apiClient.uploadMultipart(
+      '/portfolios/card/$cardId/import-cv',
+      fieldName: 'file',
+      filePath: filePath,
+      authenticated: true,
+      contentType: 'application/pdf',
+      timeout: const Duration(seconds: 90),
+    );
+    return PortfolioProfile.fromJson(response);
+  }
+
   Future<PortfolioStats> fetchPortfolioStats(String cardId) async {
     final response = await _apiClient.get(
       '/portfolios/card/$cardId/stats',

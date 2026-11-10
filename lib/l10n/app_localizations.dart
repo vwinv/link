@@ -104,6 +104,12 @@ abstract class AppLocalizations {
   /// **'DropOne'**
   String get appTitle;
 
+  /// No description provided for @createdByMega.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créé par MEGA'**
+  String get createdByMega;
+
   /// No description provided for @navCards.
   ///
   /// In fr, this message translates to:
@@ -149,8 +155,186 @@ abstract class AppLocalizations {
   /// No description provided for @profileTeamSpace.
   ///
   /// In fr, this message translates to:
-  /// **'Espace équipe'**
+  /// **'Mon équipe'**
   String get profileTeamSpace;
+
+  /// No description provided for @profileRefer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Parrainer'**
+  String get profileRefer;
+
+  /// No description provided for @profileReferSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gagnez des points'**
+  String get profileReferSubtitle;
+
+  /// No description provided for @referralTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Parrainage'**
+  String get referralTitle;
+
+  /// No description provided for @referralLoadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger le parrainage.'**
+  String get referralLoadError;
+
+  /// No description provided for @referralBalanceLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre solde'**
+  String get referralBalanceLabel;
+
+  /// No description provided for @referralPointsUnit.
+  ///
+  /// In fr, this message translates to:
+  /// **'points'**
+  String get referralPointsUnit;
+
+  /// No description provided for @referralBalanceFcfa.
+  ///
+  /// In fr, this message translates to:
+  /// **'≈ {amount} FCFA'**
+  String referralBalanceFcfa(String amount);
+
+  /// No description provided for @referralYourCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre code de parrainage'**
+  String get referralYourCode;
+
+  /// No description provided for @referralInvitedCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} personne(s) invitée(s)'**
+  String referralInvitedCount(int count);
+
+  /// No description provided for @referralShare.
+  ///
+  /// In fr, this message translates to:
+  /// **'Parrainer'**
+  String get referralShare;
+
+  /// No description provided for @referralShareText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Télécharge DropOne et inscris-toi avec mon code {code} :\n{storeUrl}'**
+  String referralShareText(String code, String storeUrl);
+
+  /// No description provided for @referralHowTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comment gagner des points ?'**
+  String get referralHowTitle;
+
+  /// No description provided for @referralHowBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'• {referralPoints} point quand un filleul souscrit avec votre code\n• {visitPoints} point par personne qui visite votre carte (une seule fois)\n• 1 point = {fcfa} FCFA'**
+  String referralHowBody(
+    String referralPoints,
+    String visitPoints,
+    String fcfa,
+  );
+
+  /// No description provided for @referralEnterCodeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous avez un code ?'**
+  String get referralEnterCodeTitle;
+
+  /// No description provided for @referralEnterCodeHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'DROP-XXXX'**
+  String get referralEnterCodeHint;
+
+  /// No description provided for @referralFirstLoginHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez le code de votre parrain à la création du compte. Vous ne pourrez plus le faire ensuite.'**
+  String get referralFirstLoginHint;
+
+  /// No description provided for @referralSkipCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Passer'**
+  String get referralSkipCode;
+
+  /// No description provided for @referralApply.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valider'**
+  String get referralApply;
+
+  /// No description provided for @referralCodeApplied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code de parrainage enregistré'**
+  String get referralCodeApplied;
+
+  /// No description provided for @referralCodeApplyError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d’appliquer ce code'**
+  String get referralCodeApplyError;
+
+  /// No description provided for @referralHistoryTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Historique'**
+  String get referralHistoryTitle;
+
+  /// No description provided for @referralHistoryEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun mouvement pour le moment.'**
+  String get referralHistoryEmpty;
+
+  /// No description provided for @referralLedgerReferral.
+  ///
+  /// In fr, this message translates to:
+  /// **'Parrainage (abonnement)'**
+  String get referralLedgerReferral;
+
+  /// No description provided for @referralLedgerVisit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau visiteur'**
+  String get referralLedgerVisit;
+
+  /// No description provided for @referralLedgerPurchase.
+  ///
+  /// In fr, this message translates to:
+  /// **'Achat avec points'**
+  String get referralLedgerPurchase;
+
+  /// No description provided for @referralLedgerAdjustment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajustement'**
+  String get referralLedgerAdjustment;
+
+  /// No description provided for @referralLedgerCredit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Crédit'**
+  String get referralLedgerCredit;
+
+  /// No description provided for @referralLedgerDebit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Débit'**
+  String get referralLedgerDebit;
+
+  /// No description provided for @referralCodeFieldLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code parrainage (optionnel)'**
+  String get referralCodeFieldLabel;
 
   /// No description provided for @profileManageWallet.
   ///
@@ -656,6 +840,42 @@ abstract class AppLocalizations {
   /// **'Qui êtes-vous, que faites-vous, pour qui ? 3 à 4 phrases.'**
   String get portfolioEditorDescriptionHint;
 
+  /// No description provided for @portfolioEditorSocialTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réseaux du portfolio'**
+  String get portfolioEditorSocialTitle;
+
+  /// No description provided for @portfolioEditorSocialSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Distincts des réseaux de votre carte. Affichés sur le site public.'**
+  String get portfolioEditorSocialSubtitle;
+
+  /// No description provided for @portfolioEditorSocialChoice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comment renseigner vos réseaux ?'**
+  String get portfolioEditorSocialChoice;
+
+  /// No description provided for @portfolioEditorSocialCopyCard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier ceux de ma carte'**
+  String get portfolioEditorSocialCopyCard;
+
+  /// No description provided for @portfolioEditorSocialRetype.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les saisir à nouveau'**
+  String get portfolioEditorSocialRetype;
+
+  /// No description provided for @portfolioEditorSocialNoCardLinks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun réseau configuré sur cette carte.'**
+  String get portfolioEditorSocialNoCardLinks;
+
   /// No description provided for @portfolioEditorExperience.
   ///
   /// In fr, this message translates to:
@@ -769,6 +989,54 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Importer'**
   String get portfolioEditorImport;
+
+  /// No description provided for @portfolioEditorImportCv.
+  ///
+  /// In fr, this message translates to:
+  /// **'Importer mon CV (PDF)'**
+  String get portfolioEditorImportCv;
+
+  /// No description provided for @portfolioEditorImportCvHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'L’app lit votre CV et préremplit les champs. Rien n’est enregistré tant que vous ne publiez pas.'**
+  String get portfolioEditorImportCvHint;
+
+  /// No description provided for @portfolioEditorImportCvConfirmTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remplacer le contenu ?'**
+  String get portfolioEditorImportCvConfirmTitle;
+
+  /// No description provided for @portfolioEditorImportCvConfirmBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les champs actuels du portfolio seront remplacés par ceux extraits du CV. La photo est conservée. Vous pourrez tout relire avant d’enregistrer.'**
+  String get portfolioEditorImportCvConfirmBody;
+
+  /// No description provided for @portfolioEditorImportCvLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Analyse du CV…'**
+  String get portfolioEditorImportCvLoading;
+
+  /// No description provided for @portfolioEditorImportCvReady.
+  ///
+  /// In fr, this message translates to:
+  /// **'CV importé. Vérifiez les champs puis publiez pour enregistrer.'**
+  String get portfolioEditorImportCvReady;
+
+  /// No description provided for @portfolioEditorImportCvError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d’analyser ce CV'**
+  String get portfolioEditorImportCvError;
+
+  /// No description provided for @portfolioEditorImportCvPickError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionnez un fichier PDF'**
+  String get portfolioEditorImportCvPickError;
 
   /// No description provided for @portfolioEditorRole.
   ///
@@ -1231,6 +1499,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Voir mon portfolio'**
   String get homePreviewMyPortfolio;
+
+  /// No description provided for @previewShareLinksHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partagez votre carte. Vos visiteurs bénéficieront de cette fonctionnalité.'**
+  String get previewShareLinksHint;
+
+  /// No description provided for @previewSharePortfolioLinksHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partagez votre portfolio. Vos visiteurs bénéficieront de cette fonctionnalité.'**
+  String get previewSharePortfolioLinksHint;
 
   /// No description provided for @myCardsPersonalTitle.
   ///
@@ -2381,6 +2661,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Voici le profil Drop One de {name} : {url}'**
   String cardVisitorDetailMessageShareText(String name, String url);
+
+  /// No description provided for @cardVisitorDetailGuestMessageShareText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonjour {name}, merci d’avoir consulté ma carte Drop One. Voici mon lien : {url}'**
+  String cardVisitorDetailGuestMessageShareText(String name, String url);
 
   /// No description provided for @cardVisitorDetailContactAdded.
   ///

@@ -34,13 +34,13 @@ enum CardStyle {
     label: 'Ambre',
     background: Color(0xFFF0A830),
     accent: Color(0xFFFFB020),
-    previewForeground: Color(0xFF5C3D0A),
-    lightTheme: true,
+    previewForeground: Color(0xFFFFFFFF),
+    lightTheme: false,
   ),
   blanc(
     label: 'Blanc',
     background: Color(0xFFF3F3F5),
-    accent: AppColors.bleu_primaire,
+    accent: Color(0xFF121212),
     previewForeground: Color(0xFF6B7280),
     lightTheme: true,
   );

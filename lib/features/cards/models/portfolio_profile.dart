@@ -146,6 +146,28 @@ class PortfolioWorkItem {
   }
 }
 
+class PortfolioSocialLinkItem {
+  PortfolioSocialLinkItem({
+    required this.platform,
+    required this.url,
+  });
+
+  final String platform;
+  String url;
+
+  Map<String, dynamic> toJson() => {
+        'platform': platform,
+        'url': url,
+      };
+
+  factory PortfolioSocialLinkItem.fromJson(Map<String, dynamic> json) {
+    return PortfolioSocialLinkItem(
+      platform: (json['platform'] as String? ?? '').toUpperCase(),
+      url: json['url'] as String? ?? '',
+    );
+  }
+}
+
 class PortfolioProfile {
   const PortfolioProfile({
     required this.exists,
@@ -164,6 +186,7 @@ class PortfolioProfile {
     this.competences = const [],
     this.strengths = const [],
     this.interests = const [],
+    this.socialLinks = const [],
     this.projects = const [],
   });
 
@@ -183,6 +206,7 @@ class PortfolioProfile {
   final List<String> competences;
   final List<String> strengths;
   final List<String> interests;
+  final List<PortfolioSocialLinkItem> socialLinks;
   final List<PortfolioWorkItem> projects;
 
   factory PortfolioProfile.fromJson(Map<String, dynamic> json) {
@@ -220,6 +244,9 @@ class PortfolioProfile {
       competences: chips('competences'),
       strengths: chips('strengths'),
       interests: chips('interests'),
+      socialLinks: list('socialLinks', PortfolioSocialLinkItem.fromJson)
+          .where((item) => item.platform.isNotEmpty && item.url.trim().isNotEmpty)
+          .toList(),
       projects: list('projects', PortfolioWorkItem.fromJson),
     );
   }

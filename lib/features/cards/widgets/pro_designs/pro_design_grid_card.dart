@@ -78,6 +78,7 @@ class ProDesignGridCard extends StatelessWidget {
                       address: address,
                       avatarUrl: avatarUrl,
                       logoUrl: logoUrl,
+                      showGuestLead: false,
                     ),
                   ),
                 ),

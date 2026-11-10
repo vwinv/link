@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:linkflutter/core/api/api_config.dart';
 import 'package:linkflutter/core/api/api_exception.dart';
@@ -7,11 +8,17 @@ import 'package:linkflutter/core/constants/app_constants.dart';
 import 'package:linkflutter/core/l10n/l10n_extensions.dart';
 import 'package:linkflutter/core/media/image_pick_and_crop.dart';
 import 'package:linkflutter/features/cards/models/business_card.dart';
+import 'package:linkflutter/features/cards/models/card_social_link.dart';
+import 'package:linkflutter/features/cards/models/card_social_platform.dart';
 import 'package:linkflutter/features/cards/models/portfolio_profile.dart';
+import 'package:linkflutter/features/cards/models/social_link_draft.dart';
 import 'package:linkflutter/features/cards/services/cards_api_service.dart';
+import 'package:linkflutter/features/cards/widgets/social_network_tile.dart';
 import 'package:linkflutter/features/sharing/screens/public_portfolio_screen.dart';
 import 'package:linkflutter/features/uploads/services/uploads_api_service.dart';
 import 'package:provider/provider.dart';
+
+enum _PortfolioSocialSource { unset, fromCard, custom }
 
 class PortfolioEditorScreen extends StatefulWidget {
   const PortfolioEditorScreen({
@@ -41,6 +48,7 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
 
   var _loading = true;
   var _saving = false;
+  var _importingCv = false;
   var _exists = true;
   var _hidePersonal = false;
   String? _photoUrl;
@@ -52,6 +60,17 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
   List<String> _strengths = [];
   List<String> _interests = [];
   List<PortfolioWorkItem> _projects = [];
+  static const _portfolioSocialPlatforms = [
+    CardSocialPlatform.linkedin,
+    CardSocialPlatform.instagram,
+  ];
+  final _socialControllers = <CardSocialPlatform, TextEditingController>{};
+  List<SocialLinkDraft> _socialLinks = [
+    for (final platform in _portfolioSocialPlatforms)
+      SocialLinkDraft(platform: platform, isSelected: true),
+  ];
+  List<CardSocialLink> _cardSocialLinks = const [];
+  var _socialSource = _PortfolioSocialSource.custom;
   String? _draftChip;
   final _chipDraft = TextEditingController();
 
@@ -68,6 +87,10 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
       _description,
     ]) {
       controller.addListener(_refresh);
+    }
+    for (final link in _socialLinks) {
+      _socialControllers[link.platform] =
+          TextEditingController(text: link.value);
     }
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
   }
@@ -91,17 +114,114 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
       controller.dispose();
     }
     _chipDraft.dispose();
+    for (final controller in _socialControllers.values) {
+      controller.dispose();
+    }
     super.dispose();
+  }
+
+  void _setSocialDrafts(List<SocialLinkDraft> links) {
+    for (final controller in _socialControllers.values) {
+      controller.dispose();
+    }
+    _socialControllers.clear();
+    _socialLinks = links;
+    for (final link in _socialLinks) {
+      _socialControllers[link.platform] =
+          TextEditingController(text: link.value);
+    }
+  }
+
+  void _applySocialLinks(List<PortfolioSocialLinkItem> links) {
+    final byPlatform = <String, String>{
+      for (final item in links)
+        if (item.platform.isNotEmpty && item.url.trim().isNotEmpty)
+          item.platform: item.url.trim(),
+    };
+    _setSocialDrafts([
+      for (final platform in _portfolioSocialPlatforms)
+        SocialLinkDraft(
+          platform: platform,
+          isSelected: true,
+          value: byPlatform[platform.apiValue] ?? '',
+        ),
+    ]);
+  }
+
+  List<SocialLinkDraft> _emptySocialDrafts() {
+    return [
+      for (final platform in _portfolioSocialPlatforms)
+        SocialLinkDraft(platform: platform, isSelected: true),
+    ];
+  }
+
+  List<SocialLinkDraft> _socialDraftsFromCard() {
+    final byPlatform = <CardSocialPlatform, String>{
+      for (final saved in _cardSocialLinks)
+        if (saved.isConfigured) saved.platform: saved.url,
+    };
+    return [
+      for (final platform in _portfolioSocialPlatforms)
+        SocialLinkDraft(
+          platform: platform,
+          isSelected: true,
+          value: byPlatform[platform] ?? '',
+        ),
+    ];
+  }
+
+  bool get _cardHasCopyableSocials => _cardSocialLinks.any(
+        (link) =>
+            link.isConfigured &&
+            _portfolioSocialPlatforms.contains(link.platform),
+      );
+
+  void _chooseSocialSource(_PortfolioSocialSource source) {
+    if (source == _PortfolioSocialSource.fromCard && !_cardHasCopyableSocials) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.portfolioEditorSocialNoCardLinks)),
+      );
+      return;
+    }
+    setState(() {
+      _socialSource = source;
+      if (source == _PortfolioSocialSource.fromCard) {
+        _setSocialDrafts(_socialDraftsFromCard());
+      } else if (source == _PortfolioSocialSource.custom) {
+        _setSocialDrafts(_emptySocialDrafts());
+      }
+    });
+  }
+
+  List<Map<String, dynamic>> _socialLinksPayload() {
+    return _socialLinks
+        .where((link) => link.isSelected && link.value.trim().isNotEmpty)
+        .map(
+          (link) => {
+            'platform': link.platform.apiValue,
+            'url': link.platform.shareUrl(
+              _socialControllers[link.platform]?.text.trim() ?? link.value,
+            ),
+          },
+        )
+        .where((item) => (item['url'] as String).isNotEmpty)
+        .toList();
   }
 
   Future<void> _load() async {
     try {
-      final profile = await context
-          .read<CardsApiService>()
-          .fetchPortfolioProfile(widget.card.id);
+      final cards = context.read<CardsApiService>();
+      final profile = await cards.fetchPortfolioProfile(widget.card.id);
       if (!mounted) return;
       _apply(profile);
       setState(() => _loading = false);
+      try {
+        final cardLinks = await cards.fetchSocialLinks(widget.card.id);
+        if (!mounted) return;
+        setState(() => _cardSocialLinks = cardLinks);
+      } catch (_) {
+        // Les réseaux carte sont optionnels pour ouvrir l’éditeur.
+      }
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -131,6 +251,12 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
     _strengths = profile.strengths;
     _interests = profile.interests;
     _projects = profile.projects;
+    _socialSource = _PortfolioSocialSource.custom;
+    if (profile.socialLinks.isNotEmpty) {
+      _applySocialLinks(profile.socialLinks);
+    } else {
+      _setSocialDrafts(_emptySocialDrafts());
+    }
   }
 
   int get _percent {
@@ -159,6 +285,68 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
     final path = await _picker.pickAndCrop(kind: ImageCropKind.avatar);
     if (path == null || !mounted) return;
     setState(() => _photoPath = path);
+  }
+
+  Future<void> _importCv() async {
+    final l10n = context.l10n;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.portfolioEditorImportCvConfirmTitle),
+        content: Text(l10n.portfolioEditorImportCvConfirmBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.portfolioEditorImport),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    final picked = await openFile(
+      acceptedTypeGroups: [
+        const XTypeGroup(
+          label: 'PDF',
+          extensions: ['pdf'],
+          mimeTypes: ['application/pdf'],
+          uniformTypeIdentifiers: ['com.adobe.pdf'],
+        ),
+      ],
+    );
+    final path = picked?.path;
+    if (path == null || path.isEmpty) {
+      if (mounted) _toast(l10n.portfolioEditorImportCvPickError);
+      return;
+    }
+    if (!mounted) return;
+
+    setState(() => _importingCv = true);
+    try {
+      final draft = await context.read<CardsApiService>().importPortfolioCv(
+            cardId: widget.card.id,
+            filePath: path,
+          );
+      if (!mounted) return;
+      final keptPhotoUrl = _photoUrl;
+      final keptPhotoPath = _photoPath;
+      setState(() {
+        _apply(draft);
+        _photoUrl = keptPhotoUrl ?? draft.photoUrl;
+        _photoPath = keptPhotoPath;
+      });
+      _toast(l10n.portfolioEditorImportCvReady);
+    } on ApiException catch (error) {
+      if (mounted) _toast(error.message);
+    } catch (_) {
+      if (mounted) _toast(context.l10n.portfolioEditorImportCvError);
+    } finally {
+      if (mounted) setState(() => _importingCv = false);
+    }
   }
 
   Future<bool> _persist() async {
@@ -206,6 +394,7 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
               'competences': _competences,
               'strengths': _strengths,
               'interests': _interests,
+              'socialLinks': _socialLinksPayload(),
               'projects': projects,
             },
           );
@@ -408,7 +597,7 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
                             ),
                             const Spacer(),
                             OutlinedButton(
-                              onPressed: _saving ? null : _preview,
+                              onPressed: (_saving || _importingCv) ? null : _preview,
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: AppColors.bleu_primaire,
                                 side: const BorderSide(color: Color(0xFFD7E4FF)),
@@ -454,6 +643,62 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
                               ),
                             ),
                             const SizedBox(height: 14),
+                            _Card(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _Heading(l10n.portfolioEditorImportCv),
+                                  Text(
+                                    l10n.portfolioEditorImportCvHint,
+                                    style: const TextStyle(
+                                      color: AppColors.textSecondary,
+                                      fontSize: 13,
+                                      height: 1.35,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: OutlinedButton.icon(
+                                      onPressed: (_saving || _importingCv)
+                                          ? null
+                                          : _importCv,
+                                      icon: _importingCv
+                                          ? const SizedBox(
+                                              width: 18,
+                                              height: 18,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                              ),
+                                            )
+                                          : const Icon(
+                                              Icons.upload_file_outlined,
+                                              size: 20,
+                                            ),
+                                      label: Text(
+                                        _importingCv
+                                            ? l10n.portfolioEditorImportCvLoading
+                                            : l10n.portfolioEditorImportCv,
+                                      ),
+                                      style: OutlinedButton.styleFrom(
+                                        foregroundColor: AppColors.bleu_primaire,
+                                        side: const BorderSide(
+                                          color: Color(0xFFD7E4FF),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 14,
+                                          horizontal: 16,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(14),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 12),
                             _PhotoCard(
                               title: l10n.portfolioEditorPhotoTitle,
                               hint: l10n.portfolioEditorPhotoHint,
@@ -554,6 +799,91 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
                                     maxLines: 4,
                                     textCapitalization: TextCapitalization.sentences,
                                   ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            _Card(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _Heading(l10n.portfolioEditorSocialTitle),
+                                  Text(
+                                    l10n.portfolioEditorSocialSubtitle,
+                                    style: const TextStyle(
+                                      color: AppColors.textSecondary,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  Text(
+                                    l10n.portfolioEditorSocialChoice,
+                                    style: const TextStyle(
+                                      color: AppColors.textPrimary,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: _SocialSourceChip(
+                                          label: l10n.portfolioEditorSocialCopyCard,
+                                          selected: _socialSource ==
+                                              _PortfolioSocialSource.fromCard,
+                                          onTap: () => _chooseSocialSource(
+                                            _PortfolioSocialSource.fromCard,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: _SocialSourceChip(
+                                          label: l10n.portfolioEditorSocialRetype,
+                                          selected: _socialSource ==
+                                              _PortfolioSocialSource.custom,
+                                          onTap: () => _chooseSocialSource(
+                                            _PortfolioSocialSource.custom,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 14),
+                                  for (final link in _socialLinks) ...[
+                                    SocialNetworkTile(
+                                      draft: link,
+                                      controller:
+                                          _socialControllers[link.platform] ??
+                                              TextEditingController(),
+                                      onToggle: (selected) {
+                                        setState(() {
+                                          _socialLinks = [
+                                            for (final item in _socialLinks)
+                                              if (item.platform == link.platform)
+                                                item.copyWith(
+                                                  isSelected: selected,
+                                                )
+                                              else
+                                                item,
+                                          ];
+                                        });
+                                      },
+                                      onValueChanged: (value) {
+                                        setState(() {
+                                          _socialLinks = [
+                                            for (final item in _socialLinks)
+                                              if (item.platform == link.platform)
+                                                item.copyWith(value: value)
+                                              else
+                                                item,
+                                          ];
+                                        });
+                                      },
+                                    ),
+                                    const SizedBox(height: 10),
+                                  ],
                                 ],
                               ),
                             ),
@@ -727,7 +1057,7 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
                           children: [
                             Expanded(
                               child: OutlinedButton(
-                                onPressed: _saving ? null : _preview,
+                                onPressed: (_saving || _importingCv) ? null : _preview,
                                 style: OutlinedButton.styleFrom(
                                   minimumSize: const Size.fromHeight(52),
                                   foregroundColor: AppColors.textPrimary,
@@ -744,7 +1074,7 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
                             Expanded(
                               flex: 2,
                               child: FilledButton(
-                                onPressed: _saving ? null : _publish,
+                                onPressed: (_saving || _importingCv) ? null : _publish,
                                 style: FilledButton.styleFrom(
                                   minimumSize: const Size.fromHeight(52),
                                   backgroundColor: AppColors.bleu_primaire,
@@ -802,6 +1132,58 @@ class _Missing extends StatelessWidget {
           const SizedBox(height: 24),
           Text(message, style: const TextStyle(fontSize: 16, height: 1.4)),
         ],
+      ),
+    );
+  }
+}
+
+class _SocialSourceChip extends StatelessWidget {
+  const _SocialSourceChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = onTap != null;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          decoration: BoxDecoration(
+            color: selected
+                ? AppColors.bleu_primaire.withValues(alpha: 0.12)
+                : const Color(0xFFF6F7FB),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: selected
+                  ? AppColors.bleu_primaire
+                  : const Color(0xFFE7E8EE),
+            ),
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: !enabled
+                  ? AppColors.textSecondary.withValues(alpha: 0.55)
+                  : selected
+                      ? AppColors.bleu_primaire
+                      : AppColors.textPrimary,
+            ),
+          ),
+        ),
       ),
     );
   }

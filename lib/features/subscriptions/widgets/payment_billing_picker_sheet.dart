@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:linkflutter/core/constants/app_constants.dart';
+import 'package:linkflutter/features/points/services/points_api_service.dart';
 import 'package:linkflutter/features/subscriptions/models/premium_offer.dart';
 import 'package:linkflutter/features/subscriptions/models/premium_offer_price.dart';
+import 'package:provider/provider.dart';
 
 /// Choix de facturation avant paiement : annuel proposé en premier (mensuel × 12).
 class PaymentBillingChoice {
@@ -11,7 +13,12 @@ class PaymentBillingChoice {
     required this.subtitle,
     required this.amountLabel,
     required this.sourcePrice,
+    required this.amountFcfa,
     this.isRecommended = false,
+    this.payWithPoints = false,
+    this.enabled = true,
+    this.pointsRequired,
+    this.pointsBalance,
   });
 
   final String billingType;
@@ -19,14 +26,20 @@ class PaymentBillingChoice {
   final String subtitle;
   final String amountLabel;
   final PremiumOfferPrice sourcePrice;
+  final double amountFcfa;
   final bool isRecommended;
+  final bool payWithPoints;
+  final bool enabled;
+  final double? pointsRequired;
+  final double? pointsBalance;
 
   static List<PaymentBillingChoice> forOffer({
     required PremiumOffer offer,
     required PremiumOfferPrice selectedPrice,
     required int seats,
   }) {
-    final monthly = offer.monthlyPrice ??
+    final monthly =
+        offer.monthlyPrice ??
         (selectedPrice.billingType.toUpperCase() == 'MONTHLY'
             ? selectedPrice
             : null);
@@ -48,6 +61,7 @@ class PaymentBillingChoice {
           amountLabel:
               '${PremiumOfferPrice.formatAmount(annualAmount)} ${monthly.currency}',
           sourcePrice: monthly,
+          amountFcfa: annualAmount,
           isRecommended: true,
         ),
       );
@@ -58,6 +72,7 @@ class PaymentBillingChoice {
           subtitle: 'par mois',
           amountLabel: _amountLabel(monthly, seats, included),
           sourcePrice: monthly,
+          amountFcfa: monthlyAmount,
         ),
       );
     }
@@ -66,6 +81,10 @@ class PaymentBillingChoice {
     if (selectedType != 'MONTHLY' &&
         selectedType != 'YEARLY' &&
         choices.every((c) => c.sourcePrice.id != selectedPrice.id)) {
+      final amount = selectedPrice.totalForSeats(
+        seats,
+        includedSeats: included,
+      );
       choices.add(
         PaymentBillingChoice(
           billingType: selectedPrice.billingType,
@@ -73,11 +92,16 @@ class PaymentBillingChoice {
           subtitle: selectedPrice.subtitle ?? '',
           amountLabel: _amountLabel(selectedPrice, seats, included),
           sourcePrice: selectedPrice,
+          amountFcfa: amount,
         ),
       );
     }
 
     if (choices.isEmpty) {
+      final amount = selectedPrice.totalForSeats(
+        seats,
+        includedSeats: included,
+      );
       choices.add(
         PaymentBillingChoice(
           billingType: selectedPrice.billingType,
@@ -85,6 +109,7 @@ class PaymentBillingChoice {
           subtitle: selectedPrice.subtitle ?? '',
           amountLabel: _amountLabel(selectedPrice, seats, included),
           sourcePrice: selectedPrice,
+          amountFcfa: amount,
           isRecommended: true,
         ),
       );
@@ -92,6 +117,10 @@ class PaymentBillingChoice {
 
     return choices;
   }
+
+  /// 1 point = 10 FCFA.
+  static double pointsForFcfa(double amountFcfa) =>
+      (amountFcfa / 10).ceilToDouble();
 
   static String _amountLabel(
     PremiumOfferPrice price,
@@ -119,19 +148,107 @@ class PaymentBillingPickerSheet extends StatefulWidget {
     required BuildContext context,
     required String offerTitle,
     required List<PaymentBillingChoice> choices,
-  }) {
-    if (choices.isEmpty) return Future.value(null);
-    if (choices.length == 1) return Future.value(choices.first);
+  }) async {
+    if (choices.isEmpty) return null;
 
+    final withPoints = await _withDropPointsOption(context, choices);
+    if (withPoints.length == 1 && !withPoints.first.payWithPoints) {
+      return withPoints.first;
+    }
+
+    if (!context.mounted) return null;
     return showModalBottomSheet<PaymentBillingChoice>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => PaymentBillingPickerSheet(
         offerTitle: offerTitle,
-        choices: choices,
+        choices: withPoints,
       ),
     );
+  }
+
+  static Future<List<PaymentBillingChoice>> _withDropPointsOption(
+    BuildContext context,
+    List<PaymentBillingChoice> base,
+  ) async {
+    final periodChoices = base
+        .where((c) => !c.payWithPoints)
+        .toList(growable: false);
+    if (periodChoices.isEmpty) return base;
+
+    double? balance;
+    try {
+      final overview = await context.read<PointsApiService>().fetchOverview();
+      balance = overview.balancePoints;
+    } catch (_) {
+      balance = null;
+    }
+
+    PaymentBillingChoice? yearly;
+    PaymentBillingChoice? monthly;
+    for (final choice in periodChoices) {
+      final type = choice.billingType.toUpperCase();
+      if (type == 'YEARLY') yearly = choice;
+      if (type == 'MONTHLY') monthly = choice;
+    }
+
+    final bal = balance ?? 0;
+    final yearlyPts = yearly != null
+        ? PaymentBillingChoice.pointsForFcfa(yearly.amountFcfa)
+        : null;
+    final monthlyPts = monthly != null
+        ? PaymentBillingChoice.pointsForFcfa(monthly.amountFcfa)
+        : null;
+
+    late final PaymentBillingChoice target;
+    late final double pointsRequired;
+    if (yearly != null && yearlyPts != null && bal >= yearlyPts) {
+      target = yearly;
+      pointsRequired = yearlyPts;
+    } else if (monthly != null && monthlyPts != null && bal >= monthlyPts) {
+      target = monthly;
+      pointsRequired = monthlyPts;
+    } else if (yearly != null && yearlyPts != null) {
+      target = yearly;
+      pointsRequired = yearlyPts;
+    } else if (monthly != null && monthlyPts != null) {
+      target = monthly;
+      pointsRequired = monthlyPts;
+    } else {
+      target = periodChoices.first;
+      pointsRequired = PaymentBillingChoice.pointsForFcfa(target.amountFcfa);
+    }
+
+    final enabled = balance != null && balance >= pointsRequired;
+    final pointsLabel = pointsRequired == pointsRequired.roundToDouble()
+        ? '${pointsRequired.toInt()} pts'
+        : '$pointsRequired pts';
+
+    return [
+      ...periodChoices,
+      PaymentBillingChoice(
+        billingType: target.billingType,
+        title: 'Drop-Points',
+        subtitle: balance == null
+            ? 'Solde indisponible'
+            : enabled
+            ? 'Payer avec vos points · ${target.title.toLowerCase()}'
+            : 'Solde insuffisant (${_fmtPts(balance)} pts)',
+        amountLabel: pointsLabel,
+        sourcePrice: target.sourcePrice,
+        amountFcfa: target.amountFcfa,
+        payWithPoints: true,
+        enabled: enabled,
+        pointsRequired: pointsRequired,
+        pointsBalance: balance,
+      ),
+    ];
+  }
+
+  static String _fmtPts(double value) {
+    if (value == value.roundToDouble()) return value.toInt().toString();
+    return value.toString();
   }
 
   @override
@@ -140,21 +257,33 @@ class PaymentBillingPickerSheet extends StatefulWidget {
 }
 
 class _PaymentBillingPickerSheetState extends State<PaymentBillingPickerSheet> {
-  late String _selectedType;
+  late String _selectedKey;
 
   @override
   void initState() {
     super.initState();
-    _selectedType = widget.choices.first.billingType;
+    final firstEnabled = widget.choices.firstWhere(
+      (c) => c.enabled,
+      orElse: () => widget.choices.first,
+    );
+    _selectedKey = _keyOf(firstEnabled);
   }
 
+  String _keyOf(PaymentBillingChoice c) =>
+      '${c.payWithPoints ? 'points' : 'cash'}:${c.billingType}';
+
   PaymentBillingChoice get _selected => widget.choices.firstWhere(
-        (c) => c.billingType == _selectedType,
-        orElse: () => widget.choices.first,
-      );
+    (c) => _keyOf(c) == _selectedKey && c.enabled,
+    orElse: () => widget.choices.firstWhere(
+      (c) => c.enabled,
+      orElse: () => widget.choices.first,
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
+    final canContinue = _selected.enabled;
+
     return Container(
       decoration: const BoxDecoration(
         color: Color(0xFF151518),
@@ -195,8 +324,10 @@ class _PaymentBillingPickerSheetState extends State<PaymentBillingPickerSheet> {
             for (final choice in widget.choices) ...[
               _BillingTile(
                 choice: choice,
-                selected: choice.billingType == _selectedType,
-                onTap: () => setState(() => _selectedType = choice.billingType),
+                selected: _keyOf(choice) == _selectedKey,
+                onTap: choice.enabled
+                    ? () => setState(() => _selectedKey = _keyOf(choice))
+                    : null,
               ),
               const SizedBox(height: 10),
             ],
@@ -204,17 +335,23 @@ class _PaymentBillingPickerSheetState extends State<PaymentBillingPickerSheet> {
             SizedBox(
               height: AppSizes.buttonHeight,
               child: FilledButton(
-                onPressed: () => Navigator.of(context).pop(_selected),
+                onPressed: canContinue
+                    ? () => Navigator.of(context).pop(_selected)
+                    : null,
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.or,
+                  disabledBackgroundColor: const Color(0xFF3A3A40),
                   foregroundColor: AppColors.or_fonce,
+                  disabledForegroundColor: Colors.white38,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
                 ),
-                child: const Text(
-                  'Continuer',
-                  style: TextStyle(fontWeight: FontWeight.w700),
+                child: Text(
+                  _selected.payWithPoints
+                      ? 'Payer avec mes points'
+                      : 'Continuer',
+                  style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
               ),
             ),
@@ -234,84 +371,108 @@ class _BillingTile extends StatelessWidget {
 
   final PaymentBillingChoice choice;
   final bool selected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: const Color(0xFF1C1C20),
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        onTap: onTap,
+    final enabled = choice.enabled;
+    final titleColor = enabled ? Colors.white : Colors.white38;
+    final subColor = enabled
+        ? Colors.white.withValues(alpha: 0.5)
+        : Colors.white.withValues(alpha: 0.28);
+    final amountColor = enabled ? Colors.white : Colors.white38;
+    final borderColor = !enabled
+        ? const Color(0xFF2A2A2E)
+        : selected
+        ? AppColors.or
+        : const Color(0xFF3A3A40);
+
+    return Opacity(
+      opacity: enabled ? 1 : 0.72,
+      child: Material(
+        color: enabled ? const Color(0xFF1C1C20) : const Color(0xFF18181B),
         borderRadius: BorderRadius.circular(14),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: selected ? AppColors.or : const Color(0xFF3A3A40),
-              width: selected ? 1.5 : 1,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: borderColor,
+                width: selected && enabled ? 1.5 : 1,
+              ),
             ),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          choice.title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            choice.title,
+                            style: TextStyle(
+                              color: titleColor,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                            ),
                           ),
-                        ),
-                        if (choice.isRecommended) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.or,
-                              borderRadius: BorderRadius.circular(99),
-                            ),
-                            child: const Text(
-                              'Conseillé',
-                              style: TextStyle(
-                                color: AppColors.or_fonce,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
+                          if (choice.isRecommended) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: enabled
+                                    ? AppColors.or
+                                    : const Color(0xFF3A3A40),
+                                borderRadius: BorderRadius.circular(99),
+                              ),
+                              child: Text(
+                                'Conseillé',
+                                style: TextStyle(
+                                  color: enabled
+                                      ? AppColors.or_fonce
+                                      : Colors.white54,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ),
-                          ),
+                          ],
+                          if (choice.payWithPoints) ...[
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.stars_rounded,
+                              size: 18,
+                              color: enabled ? AppColors.or : Colors.white38,
+                            ),
+                          ],
                         ],
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      choice.subtitle,
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.5),
-                        fontSize: 13,
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 4),
+                      Text(
+                        choice.subtitle,
+                        style: TextStyle(color: subColor, fontSize: 13),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Text(
-                choice.amountLabel,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 15,
+                Text(
+                  choice.amountLabel,
+                  style: TextStyle(
+                    color: amountColor,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

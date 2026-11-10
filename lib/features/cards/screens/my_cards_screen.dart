@@ -18,6 +18,7 @@ import 'package:linkflutter/features/cards/models/portfolio_style.dart';
 import 'package:linkflutter/features/contacts/models/link_contact.dart';
 import 'package:linkflutter/features/cards/services/cards_api_service.dart';
 import 'package:linkflutter/features/cards/widgets/card_preview.dart';
+import 'package:linkflutter/features/cards/widgets/card_preview_badge.dart';
 import 'package:linkflutter/features/cards/widgets/portfolio_home_preview.dart';
 import 'package:linkflutter/features/cards/widgets/portfolio_stats_sheet.dart';
 import 'package:linkflutter/providers/auth_provider.dart';
@@ -299,7 +300,8 @@ class _MyCardsScreenState extends State<MyCardsScreen>
 
     if (!cardsProvider.hasPersonalCard && cardsProvider.hasProfessionalCard) {
       setState(() => _scope = _CardScope.professional);
-    } else if (!cardsProvider.hasProfessionalCard && teamsProvider.hasTeam) {
+    } else if (!cardsProvider.hasProfessionalCard &&
+        teamsProvider.isTeamOwner) {
       setState(() => _scope = _CardScope.professional);
     }
   }
@@ -406,11 +408,11 @@ class _MyCardsScreenState extends State<MyCardsScreen>
                     ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
-                  _HomePreviewBadge(
+                  CardPreviewBadge(
                     dark: true,
                     label: context.l10n.homePreviewMyPortfolio,
                     onPreview: () => context.push(
-                      '${RoutePaths.publicPortfolio}/${card.slug}',
+                      '${RoutePaths.publicPortfolio}/${card.slug}?preview=1',
                     ),
                     child: _LivePortfolioPreview(
                       card: card,
@@ -470,10 +472,10 @@ class _MyCardsScreenState extends State<MyCardsScreen>
                 ],
                 const SizedBox(height: AppSpacing.xxl),
               ] else if (card != null) ...[
-                _HomePreviewBadge(
+                CardPreviewBadge(
                   label: context.l10n.homePreviewMyCard,
                   onPreview: () => context.push(
-                    '${RoutePaths.publicCard}/${card.slug}',
+                    '${RoutePaths.publicCard}/${card.slug}?preview=1',
                   ),
                   child: Material(
                     color: Colors.transparent,
@@ -534,7 +536,7 @@ class _MyCardsScreenState extends State<MyCardsScreen>
                 const SizedBox(height: AppSpacing.xxl),
               ] else if (_scope == _CardScope.professional) ...[
                 _MissingProfessionalCardCard(
-                  hasTeam: context.watch<TeamsProvider>().hasTeam,
+                  hasTeam: context.watch<TeamsProvider>().isTeamOwner,
                   canEditTeam: context.watch<TeamsProvider>().isTeamOwner,
                   onCreate: _createProfessionalCard,
                   onEditTeam: () => openSetupTeam(context),
@@ -555,79 +557,6 @@ class _MyCardsScreenState extends State<MyCardsScreen>
 }
 
 /// Libellé blanc à cheval sur le coin haut droit : une moitié au-dessus, l’autre sur la carte.
-class _HomePreviewBadge extends StatelessWidget {
-  const _HomePreviewBadge({
-    required this.child,
-    required this.onPreview,
-    required this.label,
-    this.dark = false,
-  });
-
-  final Widget child;
-  final VoidCallback onPreview;
-  final String label;
-  final bool dark;
-
-  /// Partie du bouton qui dépasse au-dessus de la carte.
-  static const _overhang = 28.0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: _overhang),
-          child: child,
-        ),
-        Positioned(
-          top: 0,
-          right: 10,
-          child: Material(
-            color: dark ? Colors.black : Colors.white,
-            elevation: 2,
-            shadowColor: const Color(0x330C0D10),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppRadius.sm),
-              side: BorderSide(
-                color: dark ? Colors.black : AppColors.border,
-              ),
-            ),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(AppRadius.sm),
-              onTap: onPreview,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.visibility_outlined,
-                      size: 16,
-                      color: dark ? Colors.white : Colors.black,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      label,
-                      style: TextStyle(
-                        color: dark ? Colors.white : Colors.black,
-                        fontSize: 13,
-                        fontWeight: AppFontWeight.semiBold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 const _homeTileHeight = 76.0;
 
 class _CardActionRow extends StatelessWidget {
