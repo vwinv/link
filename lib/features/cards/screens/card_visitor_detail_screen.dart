@@ -51,6 +51,8 @@ class _CardVisitorDetailScreenState extends State<CardVisitorDetailScreen> {
 
   CardVisitor get visitor => widget.visitor;
   bool get _isDropOne => visitor.isDropOneUser;
+  bool get _hasGuestContact => visitor.hasGuestContact;
+  bool get _isAnonymousGuest => !_isDropOne && !_hasGuestContact;
 
   String _sourceLabel(BuildContext context) {
     final l10n = context.l10n;
@@ -276,6 +278,30 @@ class _CardVisitorDetailScreenState extends State<CardVisitorDetailScreen> {
                                         ),
                                       ),
                                     ],
+                                  ] else if (_hasGuestContact) ...[
+                                    Text(
+                                      visitor.displayName,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: AppColors.textPrimary,
+                                        fontSize: context.rs(18),
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    const _GuestBadge(),
+                                    if (visitor.subtitle.isNotEmpty) ...[
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        visitor.subtitle,
+                                        style: TextStyle(
+                                          color: _D.label,
+                                          fontSize: context.rs(13),
+                                          height: 1.3,
+                                        ),
+                                      ),
+                                    ],
                                   ] else ...[
                                     Text(
                                       l10n.cardVisitorDetailAnonymousName,
@@ -317,7 +343,7 @@ class _CardVisitorDetailScreenState extends State<CardVisitorDetailScreen> {
                             label: l10n.cardVisitorDetailInviteCta,
                             onPressed: _invite,
                           ),
-                        if (!_isDropOne) ...[
+                        if (_isAnonymousGuest) ...[
                           const SizedBox(height: 12),
                           Container(
                             width: double.infinity,
@@ -383,27 +409,52 @@ class _CardVisitorDetailScreenState extends State<CardVisitorDetailScreen> {
                           label: l10n.cardVisitorDetailMethod,
                           value: _sourceLabel(context),
                         ),
-                        _InfoRow(
-                          icon: Icons.timer_outlined,
-                          label: l10n.cardVisitorDetailDuration,
-                          value: _formatDuration(context),
-                        ),
+                        if (visitor.durationSeconds != null &&
+                            visitor.durationSeconds! > 0)
+                          _InfoRow(
+                            icon: Icons.timer_outlined,
+                            label: l10n.cardVisitorDetailDuration,
+                            value: _formatDuration(context),
+                          ),
                         if (!_isDropOne) ...[
-                          _InfoRow(
-                            icon: Icons.my_location_outlined,
-                            label: l10n.cardVisitorDetailLocation,
-                            value: visitor.locationLabel?.trim().isNotEmpty ==
-                                    true
-                                ? visitor.locationLabel!
-                                : l10n.cardVisitorDetailUnavailable,
+                          if (visitor.locationLabel?.trim().isNotEmpty == true)
+                            _InfoRow(
+                              icon: Icons.my_location_outlined,
+                              label: l10n.cardVisitorDetailLocation,
+                              value: visitor.locationLabel!.trim(),
+                            ),
+                          if (visitor.deviceLabel?.trim().isNotEmpty == true)
+                            _InfoRow(
+                              icon: Icons.phone_iphone_outlined,
+                              label: l10n.cardVisitorDetailDevice,
+                              value: visitor.deviceLabel!.trim(),
+                            ),
+                        ],
+                        if (visitor.guestFullName != null ||
+                            visitor.contactEmail != null ||
+                            visitor.contactPhone != null) ...[
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8),
+                            child: Divider(height: 1, color: _D.border),
                           ),
-                          _InfoRow(
-                            icon: Icons.phone_iphone_outlined,
-                            label: l10n.cardVisitorDetailDevice,
-                            value: visitor.deviceLabel?.trim().isNotEmpty == true
-                                ? visitor.deviceLabel!
-                                : l10n.cardVisitorDetailUnavailable,
-                          ),
+                          if (visitor.guestFullName != null)
+                            _InfoRow(
+                              icon: Icons.badge_outlined,
+                              label: l10n.editCardFullName,
+                              value: visitor.guestFullName!,
+                            ),
+                          if (visitor.contactEmail != null)
+                            _InfoRow(
+                              icon: Icons.mail_outline_rounded,
+                              label: l10n.editCardEmail,
+                              value: visitor.contactEmail!,
+                            ),
+                          if (visitor.contactPhone != null)
+                            _InfoRow(
+                              icon: Icons.phone_outlined,
+                              label: l10n.editCardPhone,
+                              value: visitor.contactPhone!,
+                            ),
                         ],
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 8),
@@ -425,7 +476,7 @@ class _CardVisitorDetailScreenState extends State<CardVisitorDetailScreen> {
                     ),
                   ),
 
-                  // ── Invite banner (anonymous only) ────────────────────────
+                  // ── Invite banner (guests without DropOne) ────────────────
                   if (!_isDropOne) ...[
                     const SizedBox(height: 12),
                     _InviteBanner(onInvite: _invite),
@@ -805,6 +856,7 @@ class _InfoRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, size: 18, color: _D.meta),
           const SizedBox(width: 12),
@@ -817,10 +869,11 @@ class _InfoRow extends StatelessWidget {
               ),
             ),
           ),
-          Flexible(
+          const SizedBox(width: 12),
+          Expanded(
             child: Text(
               value,
-              textAlign: TextAlign.right,
+              textAlign: TextAlign.left,
               style: TextStyle(
                 color: valueColor ?? AppColors.textPrimary,
                 fontSize: context.rs(13),

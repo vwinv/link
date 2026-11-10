@@ -479,6 +479,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get portfolioEditorEdit => 'Modifier';
 
   @override
+  String get portfolioEditorReorderHint =>
+      'Maintenez l’icône ≡ pour réordonner l’affichage';
+
+  @override
   String get portfolioEditorSkills => 'Skills (avec niveau)';
 
   @override

@@ -93,13 +93,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: ResponsiveLayout(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: ResponsiveLayout(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
                   const LinkBackButton(),
                   SizedBox(
                     height: context.responsive(
@@ -253,12 +256,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  const CreatedByMega(),
-                  const SizedBox(height: AppSpacing.lg),
-                ],
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
+            const CreatedByMega(),
+          ],
         ),
       ),
     );

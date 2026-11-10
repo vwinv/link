@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:linkflutter/core/api/api_config.dart';
 import 'package:linkflutter/core/api/api_exception.dart';
@@ -48,7 +47,6 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
 
   var _loading = true;
   var _saving = false;
-  var _importingCv = false;
   var _exists = true;
   var _hidePersonal = false;
   String? _photoUrl;
@@ -285,68 +283,6 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
     final path = await _picker.pickAndCrop(kind: ImageCropKind.avatar);
     if (path == null || !mounted) return;
     setState(() => _photoPath = path);
-  }
-
-  Future<void> _importCv() async {
-    final l10n = context.l10n;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.portfolioEditorImportCvConfirmTitle),
-        content: Text(l10n.portfolioEditorImportCvConfirmBody),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.commonCancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.portfolioEditorImport),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true || !mounted) return;
-
-    final picked = await openFile(
-      acceptedTypeGroups: [
-        const XTypeGroup(
-          label: 'PDF',
-          extensions: ['pdf'],
-          mimeTypes: ['application/pdf'],
-          uniformTypeIdentifiers: ['com.adobe.pdf'],
-        ),
-      ],
-    );
-    final path = picked?.path;
-    if (path == null || path.isEmpty) {
-      if (mounted) _toast(l10n.portfolioEditorImportCvPickError);
-      return;
-    }
-    if (!mounted) return;
-
-    setState(() => _importingCv = true);
-    try {
-      final draft = await context.read<CardsApiService>().importPortfolioCv(
-            cardId: widget.card.id,
-            filePath: path,
-          );
-      if (!mounted) return;
-      final keptPhotoUrl = _photoUrl;
-      final keptPhotoPath = _photoPath;
-      setState(() {
-        _apply(draft);
-        _photoUrl = keptPhotoUrl ?? draft.photoUrl;
-        _photoPath = keptPhotoPath;
-      });
-      _toast(l10n.portfolioEditorImportCvReady);
-    } on ApiException catch (error) {
-      if (mounted) _toast(error.message);
-    } catch (_) {
-      if (mounted) _toast(context.l10n.portfolioEditorImportCvError);
-    } finally {
-      if (mounted) setState(() => _importingCv = false);
-    }
   }
 
   Future<bool> _persist() async {
@@ -597,7 +533,7 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
                             ),
                             const Spacer(),
                             OutlinedButton(
-                              onPressed: (_saving || _importingCv) ? null : _preview,
+                              onPressed: _saving ? null : _preview,
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: AppColors.bleu_primaire,
                                 side: const BorderSide(color: Color(0xFFD7E4FF)),
@@ -643,62 +579,6 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
                               ),
                             ),
                             const SizedBox(height: 14),
-                            _Card(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _Heading(l10n.portfolioEditorImportCv),
-                                  Text(
-                                    l10n.portfolioEditorImportCvHint,
-                                    style: const TextStyle(
-                                      color: AppColors.textSecondary,
-                                      fontSize: 13,
-                                      height: 1.35,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  SizedBox(
-                                    width: double.infinity,
-                                    child: OutlinedButton.icon(
-                                      onPressed: (_saving || _importingCv)
-                                          ? null
-                                          : _importCv,
-                                      icon: _importingCv
-                                          ? const SizedBox(
-                                              width: 18,
-                                              height: 18,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2,
-                                              ),
-                                            )
-                                          : const Icon(
-                                              Icons.upload_file_outlined,
-                                              size: 20,
-                                            ),
-                                      label: Text(
-                                        _importingCv
-                                            ? l10n.portfolioEditorImportCvLoading
-                                            : l10n.portfolioEditorImportCv,
-                                      ),
-                                      style: OutlinedButton.styleFrom(
-                                        foregroundColor: AppColors.bleu_primaire,
-                                        side: const BorderSide(
-                                          color: Color(0xFFD7E4FF),
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 14,
-                                          horizontal: 16,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(14),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 12),
                             _PhotoCard(
                               title: l10n.portfolioEditorPhotoTitle,
                               hint: l10n.portfolioEditorPhotoHint,
@@ -896,14 +776,55 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
                                     l10n.portfolioEditorExperience,
                                     l10n.portfolioEditorPosts(_experiences.length),
                                   ),
-                                  for (final item in _experiences)
-                                    _EntryTile(
-                                      icon: Icons.work_outline_rounded,
-                                      title: item.role,
-                                      subtitle: item.subtitle,
-                                      editLabel: l10n.portfolioEditorEdit,
-                                      onEdit: () => _editExperience(item),
+                                  if (_experiences.length > 1)
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 8),
+                                      child: Text(
+                                        l10n.portfolioEditorReorderHint,
+                                        style: const TextStyle(
+                                          color: AppColors.textSecondary,
+                                          fontSize: 12,
+                                        ),
+                                      ),
                                     ),
+                                  ReorderableListView.builder(
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    buildDefaultDragHandles: false,
+                                    itemCount: _experiences.length,
+                                    onReorder: (oldIndex, newIndex) {
+                                      setState(() {
+                                        if (newIndex > oldIndex) newIndex -= 1;
+                                        final item =
+                                            _experiences.removeAt(oldIndex);
+                                        _experiences.insert(newIndex, item);
+                                      });
+                                    },
+                                    itemBuilder: (context, index) {
+                                      final item = _experiences[index];
+                                      return _EntryTile(
+                                        key: ValueKey('exp-${item.id}'),
+                                        icon: Icons.work_outline_rounded,
+                                        title: item.role,
+                                        subtitle: item.subtitle,
+                                        editLabel: l10n.portfolioEditorEdit,
+                                        onEdit: () => _editExperience(item),
+                                        dragHandle:
+                                            ReorderableDragStartListener(
+                                          index: index,
+                                          child: const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 4,
+                                            ),
+                                            child: Icon(
+                                              Icons.drag_handle_rounded,
+                                              color: AppColors.textSecondary,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
                                   _DashedButton(
                                     label: l10n.portfolioEditorAddExperience,
                                     onTap: () => _editExperience(
@@ -922,14 +843,55 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
                                     l10n.portfolioEditorTeaching,
                                     l10n.portfolioEditorEntries(_teachings.length),
                                   ),
-                                  for (final item in _teachings)
-                                    _EntryTile(
-                                      icon: Icons.school_outlined,
-                                      title: item.title,
-                                      subtitle: item.subtitle,
-                                      editLabel: l10n.portfolioEditorEdit,
-                                      onEdit: () => _editTeaching(item),
+                                  if (_teachings.length > 1)
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 8),
+                                      child: Text(
+                                        l10n.portfolioEditorReorderHint,
+                                        style: const TextStyle(
+                                          color: AppColors.textSecondary,
+                                          fontSize: 12,
+                                        ),
+                                      ),
                                     ),
+                                  ReorderableListView.builder(
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    buildDefaultDragHandles: false,
+                                    itemCount: _teachings.length,
+                                    onReorder: (oldIndex, newIndex) {
+                                      setState(() {
+                                        if (newIndex > oldIndex) newIndex -= 1;
+                                        final item =
+                                            _teachings.removeAt(oldIndex);
+                                        _teachings.insert(newIndex, item);
+                                      });
+                                    },
+                                    itemBuilder: (context, index) {
+                                      final item = _teachings[index];
+                                      return _EntryTile(
+                                        key: ValueKey('teach-${item.id}'),
+                                        icon: Icons.school_outlined,
+                                        title: item.title,
+                                        subtitle: item.subtitle,
+                                        editLabel: l10n.portfolioEditorEdit,
+                                        onEdit: () => _editTeaching(item),
+                                        dragHandle:
+                                            ReorderableDragStartListener(
+                                          index: index,
+                                          child: const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 4,
+                                            ),
+                                            child: Icon(
+                                              Icons.drag_handle_rounded,
+                                              color: AppColors.textSecondary,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
                                   _DashedButton(
                                     label: l10n.portfolioEditorAddTeaching,
                                     onTap: () => _editTeaching(
@@ -1057,7 +1019,7 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
                           children: [
                             Expanded(
                               child: OutlinedButton(
-                                onPressed: (_saving || _importingCv) ? null : _preview,
+                                onPressed: _saving ? null : _preview,
                                 style: OutlinedButton.styleFrom(
                                   minimumSize: const Size.fromHeight(52),
                                   foregroundColor: AppColors.textPrimary,
@@ -1074,7 +1036,7 @@ class _PortfolioEditorScreenState extends State<PortfolioEditorScreen> {
                             Expanded(
                               flex: 2,
                               child: FilledButton(
-                                onPressed: (_saving || _importingCv) ? null : _publish,
+                                onPressed: _saving ? null : _publish,
                                 style: FilledButton.styleFrom(
                                   minimumSize: const Size.fromHeight(52),
                                   backgroundColor: AppColors.bleu_primaire,
@@ -1377,6 +1339,8 @@ class _EntryTile extends StatelessWidget {
     required this.subtitle,
     required this.editLabel,
     required this.onEdit,
+    this.dragHandle,
+    super.key,
   });
 
   final IconData icon;
@@ -1384,6 +1348,7 @@ class _EntryTile extends StatelessWidget {
   final String subtitle;
   final String editLabel;
   final VoidCallback onEdit;
+  final Widget? dragHandle;
 
   @override
   Widget build(BuildContext context) {
@@ -1397,6 +1362,10 @@ class _EntryTile extends StatelessWidget {
       ),
       child: Row(
         children: [
+          if (dragHandle != null) ...[
+            dragHandle!,
+            const SizedBox(width: 2),
+          ],
           Container(
             width: 40,
             height: 40,

@@ -473,6 +473,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get portfolioEditorEdit => 'Edit';
 
   @override
+  String get portfolioEditorReorderHint => 'Hold ≡ to reorder the display';
+
+  @override
   String get portfolioEditorSkills => 'Skills (with level)';
 
   @override

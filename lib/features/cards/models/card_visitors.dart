@@ -120,6 +120,25 @@ class CardVisitor {
     if (value == null || value.isEmpty) return null;
     return value;
   }
+
+  String? get contactEmail {
+    final value = guestEmail?.trim();
+    if (value == null || value.isEmpty) return null;
+    return value;
+  }
+
+  String? get guestFullName {
+    final first = guestFirstName?.trim() ?? '';
+    final last = guestLastName?.trim() ?? '';
+    final full = '$first $last'.trim();
+    if (full.isNotEmpty) return full;
+    return null;
+  }
+
+  /// Visiteur sans compte qui a laissé au moins une coordonnée.
+  bool get hasGuestContact =>
+      !isDropOneUser &&
+      (guestFullName != null || contactEmail != null || contactPhone != null);
 }
 
 class CardVisitorsResult {

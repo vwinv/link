@@ -109,7 +109,7 @@ class _SplashScreenState extends State<SplashScreen> {
             const Positioned(
               left: 0,
               right: 0,
-              bottom: AppSpacing.lg,
+              bottom: 0,
               child: CreatedByMega(),
             ),
           ],

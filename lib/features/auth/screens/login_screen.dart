@@ -81,13 +81,16 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: ResponsiveLayout(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: ResponsiveLayout(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
                   SizedBox(
                     height: context.responsive(
                       mobile: AppSpacing.xl,
@@ -225,12 +228,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  const CreatedByMega(),
-                  const SizedBox(height: AppSpacing.lg),
-                ],
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
+            const CreatedByMega(),
+          ],
         ),
       ),
     );

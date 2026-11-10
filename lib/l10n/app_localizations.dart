@@ -918,6 +918,12 @@ abstract class AppLocalizations {
   /// **'Modifier'**
   String get portfolioEditorEdit;
 
+  /// No description provided for @portfolioEditorReorderHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Maintenez l’icône ≡ pour réordonner l’affichage'**
+  String get portfolioEditorReorderHint;
+
   /// No description provided for @portfolioEditorSkills.
   ///
   /// In fr, this message translates to:

@@ -71,13 +71,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: ResponsiveLayout(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: ResponsiveLayout(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
                   const SizedBox(height: AppSpacing.lg),
                   const LinkBackButton(),
                   SizedBox(
@@ -147,12 +150,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                   ],
                   const SizedBox(height: AppSpacing.xxl),
-                  const CreatedByMega(),
-                  const SizedBox(height: AppSpacing.lg),
-                ],
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
+            const CreatedByMega(),
+          ],
         ),
       ),
     );

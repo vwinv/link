@@ -158,10 +158,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(bottom: AppSpacing.lg),
-                child: CreatedByMega(),
-              ),
+              const CreatedByMega(),
             ],
           ),
         ),

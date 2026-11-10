@@ -196,6 +196,7 @@
   },
   "portfolioEditorAddTeaching": "Ajouter une expérience pédagogique",
   "portfolioEditorEdit": "Modifier",
+  "portfolioEditorReorderHint": "Maintenez l’icône ≡ pour réordonner l’affichage",
   "portfolioEditorSkills": "Skills (avec niveau)",
   "portfolioEditorAddSkill": "Ajouter un skill",
   "portfolioEditorCompetences": "Compétences",

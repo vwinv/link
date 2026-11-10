@@ -184,6 +184,7 @@
   },
   "portfolioEditorAddTeaching": "Add a teaching experience",
   "portfolioEditorEdit": "Edit",
+  "portfolioEditorReorderHint": "Hold ≡ to reorder the display",
   "portfolioEditorSkills": "Skills (with level)",
   "portfolioEditorAddSkill": "Add a skill",
   "portfolioEditorCompetences": "Competences",
